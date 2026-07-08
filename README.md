@@ -1,5 +1,6 @@
 # Drillset — Senior Engineer Interview Prep
 
+Live Demo: https://alexharrison-js.github.io/SoftwareInterviewPrep/
 A single-page flashcard app for drilling three interview tracks:
 
 1. **DSA** — LeetCode-style problems → pick the right pattern/data-structure → view a reference solution in Python, Java, TypeScript, JavaScript, C++, or Go.
@@ -12,7 +13,9 @@ No build step — plain HTML/CSS/JS + JSON data files.
 
 ## Deploy to GitHub Pages
 
-1. Create a new GitHub repo (or use an existing one) and push this folder's contents to it:
+This uses the same deployment method as most modern Vite/React GitHub Pages projects: a GitHub Actions workflow that uploads the site as a Pages artifact and deploys it directly — **no Jekyll build in the middle**, which is what was silently mangling the JSON fetches in an earlier version of this app's deploy setup.
+
+1. Push this folder's contents (including the `.github/workflows/deploy.yml` file) to a GitHub repo:
    ```bash
    git init
    git add .
@@ -21,10 +24,17 @@ No build step — plain HTML/CSS/JS + JSON data files.
    git remote add origin https://github.com/<your-username>/<your-repo>.git
    git push -u origin main
    ```
-2. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, branch `main`, folder `/ (root)`. Save.
-3. Your app will be live at `https://<your-username>.github.io/<your-repo>/` within a minute or two.
+2. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions** (not "Deploy from a branch" — that path routes through Jekyll and is the more error-prone option).
+3. Pushing to `main` automatically triggers the `Deploy to GitHub Pages` workflow (check the **Actions** tab for progress). Once it finishes, your app is live at `https://<your-username>.github.io/<your-repo>/`.
 
-That's it — everything (including the JSON data) is static and same-origin, so it works as-is on GitHub Pages. No server, database, or API keys needed.
+There's no build step in the workflow (no `npm run build`) because this app has no bundler — it's plain HTML/CSS/JS, so the workflow just uploads the repo as-is and deploys it.
+
+### If you still see "Couldn't load flashcard data"
+
+- Open the browser console (or Network tab) and look at the failing request's actual URL and response — that tells you exactly what's wrong, and the app now surfaces that message directly in the UI instead of a generic error.
+- Confirm `data/dsa.json`, `data/system_design.json`, and `data/ml.json` are actually present in the repo (check the **Actions** run's uploaded artifact, or just browse the repo on GitHub) — a `.gitignore` rule or a partial `git add` is the most common reason files silently don't make it in.
+- Try loading the JSON file's URL directly in the browser (e.g. `https://<you>.github.io/<repo>/data/dsa.json`) — if that itself 404s or shows GitHub's own error page, the deployment/path is the issue, not the app code.
+- Hard-refresh (or open in a private/incognito window) to rule out a stale cached `app.js` from a previous deploy.
 
 ## Running locally
 
@@ -48,6 +58,7 @@ This ships with a **curated, hand-verified set** rather than an exhaustive scrap
 Each file is plain JSON — add new entries following the existing shape and they'll show up automatically (the retry-queue engine works off however many IDs exist).
 
 **`dsa.json`** — top-level `{ patternPool: [...], problems: [...] }`. Each problem:
+
 ```json
 {
   "id": 17,
@@ -57,12 +68,21 @@ Each file is plain JSON — add new entries following the existing shape and the
   "correctPattern": "Binary Search",
   "options": ["Binary Search", "Two Pointers", "Hash Map", "Sliding Window"],
   "description": "...",
-  "solutions": { "python": "...", "java": "...", "typescript": "...", "javascript": "...", "cpp": "...", "go": "..." }
+  "solutions": {
+    "python": "...",
+    "java": "...",
+    "typescript": "...",
+    "javascript": "...",
+    "cpp": "...",
+    "go": "..."
+  }
 }
 ```
+
 `options` should include `correctPattern` plus a few plausible distractors (ideally drawn from `patternPool`). `id` must be unique; `next id = max existing id + 1`.
 
 **`system_design.json`** — an array of:
+
 ```json
 {
   "id": 9,
@@ -74,6 +94,7 @@ Each file is plain JSON — add new entries following the existing shape and the
   "diagram": "flowchart LR\n    A --> B"
 }
 ```
+
 `diagram` is [Mermaid](https://mermaid.js.org/) syntax (flowchart is used throughout, but any Mermaid diagram type works). The last stage's answer is shown together with the diagram.
 
 **`ml.json`** — a flat array of `{ "id": 59, "category": "LLMs", "question": "...", "answer": "..." }`.
