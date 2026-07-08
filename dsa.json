@@ -1,0 +1,373 @@
+{
+  "patternPool": [
+    "Hash Map",
+    "Two Pointers",
+    "Sliding Window",
+    "Stack",
+    "Binary Search",
+    "Linked List",
+    "Tree BFS/DFS",
+    "Heap / Priority Queue",
+    "Backtracking",
+    "Graph BFS/DFS",
+    "Dynamic Programming",
+    "Greedy / Intervals",
+    "Trie",
+    "Bit Manipulation",
+    "Union Find"
+  ],
+  "problems": [
+    {
+      "number": 1,
+      "title": "Two Sum",
+      "difficulty": "Easy",
+      "correctPattern": "Hash Map",
+      "options": [
+        "Sliding Window",
+        "Two Pointers",
+        "Sorting",
+        "Hash Map"
+      ],
+      "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Assume exactly one solution exists, and you may not use the same element twice.",
+      "solutions": {
+        "python": "def two_sum(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        complement = target - n\n        if complement in seen:\n            return [seen[complement], i]\n        seen[n] = i\n    return []",
+        "java": "public int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> seen = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n        int complement = target - nums[i];\n        if (seen.containsKey(complement)) {\n            return new int[]{seen.get(complement), i};\n        }\n        seen.put(nums[i], i);\n    }\n    return new int[]{};\n}",
+        "typescript": "function twoSum(nums: number[], target: number): number[] {\n  const seen = new Map<number, number>();\n  for (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    if (seen.has(complement)) return [seen.get(complement)!, i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}",
+        "javascript": "function twoSum(nums, target) {\n  const seen = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    if (seen.has(complement)) return [seen.get(complement), i];\n    seen.set(nums[i], i);\n  }\n  return [];\n}",
+        "cpp": "vector<int> twoSum(vector<int>& nums, int target) {\n    unordered_map<int, int> seen;\n    for (int i = 0; i < nums.size(); i++) {\n        int complement = target - nums[i];\n        if (seen.count(complement)) return {seen[complement], i};\n        seen[nums[i]] = i;\n    }\n    return {};\n}",
+        "go": "func twoSum(nums []int, target int) []int {\n    seen := make(map[int]int)\n    for i, n := range nums {\n        if j, ok := seen[target-n]; ok {\n            return []int{j, i}\n        }\n        seen[n] = i\n    }\n    return []int{}\n}"
+      },
+      "id": 1
+    },
+    {
+      "number": 49,
+      "title": "Group Anagrams",
+      "difficulty": "Medium",
+      "correctPattern": "Hash Map",
+      "options": [
+        "Two Pointers",
+        "Trie",
+        "Hash Map",
+        "Sorting"
+      ],
+      "description": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+      "solutions": {
+        "python": "def group_anagrams(strs):\n    groups = {}\n    for s in strs:\n        key = ''.join(sorted(s))\n        groups.setdefault(key, []).append(s)\n    return list(groups.values())",
+        "java": "public List<List<String>> groupAnagrams(String[] strs) {\n    Map<String, List<String>> groups = new HashMap<>();\n    for (String s : strs) {\n        char[] chars = s.toCharArray();\n        Arrays.sort(chars);\n        String key = new String(chars);\n        groups.computeIfAbsent(key, k -> new ArrayList<>()).add(s);\n    }\n    return new ArrayList<>(groups.values());\n}",
+        "typescript": "function groupAnagrams(strs: string[]): string[][] {\n  const groups = new Map<string, string[]>();\n  for (const s of strs) {\n    const key = s.split('').sort().join('');\n    if (!groups.has(key)) groups.set(key, []);\n    groups.get(key)!.push(s);\n  }\n  return Array.from(groups.values());\n}",
+        "javascript": "function groupAnagrams(strs) {\n  const groups = new Map();\n  for (const s of strs) {\n    const key = s.split('').sort().join('');\n    if (!groups.has(key)) groups.set(key, []);\n    groups.get(key).push(s);\n  }\n  return Array.from(groups.values());\n}",
+        "cpp": "vector<vector<string>> groupAnagrams(vector<string>& strs) {\n    unordered_map<string, vector<string>> groups;\n    for (auto& s : strs) {\n        string key = s;\n        sort(key.begin(), key.end());\n        groups[key].push_back(s);\n    }\n    vector<vector<string>> result;\n    for (auto& [k, v] : groups) result.push_back(v);\n    return result;\n}",
+        "go": "func groupAnagrams(strs []string) [][]string {\n    groups := make(map[string][]string)\n    for _, s := range strs {\n        b := []byte(s)\n        sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })\n        key := string(b)\n        groups[key] = append(groups[key], s)\n    }\n    result := [][]string{}\n    for _, v := range groups {\n        result = append(result, v)\n    }\n    return result\n}"
+      },
+      "id": 2
+    },
+    {
+      "number": 125,
+      "title": "Valid Palindrome",
+      "difficulty": "Easy",
+      "correctPattern": "Two Pointers",
+      "options": [
+        "Stack",
+        "Hash Map",
+        "Sliding Window",
+        "Two Pointers"
+      ],
+      "description": "Given a string s, return true if it is a palindrome, considering only alphanumeric characters and ignoring case.",
+      "solutions": {
+        "python": "def is_palindrome(s):\n    s = [c.lower() for c in s if c.isalnum()]\n    l, r = 0, len(s) - 1\n    while l < r:\n        if s[l] != s[r]:\n            return False\n        l += 1\n        r -= 1\n    return True",
+        "java": "public boolean isPalindrome(String s) {\n    int l = 0, r = s.length() - 1;\n    while (l < r) {\n        while (l < r && !Character.isLetterOrDigit(s.charAt(l))) l++;\n        while (l < r && !Character.isLetterOrDigit(s.charAt(r))) r--;\n        if (Character.toLowerCase(s.charAt(l)) != Character.toLowerCase(s.charAt(r))) return false;\n        l++; r--;\n    }\n    return true;\n}",
+        "typescript": "function isPalindrome(s: string): boolean {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  let l = 0, r = clean.length - 1;\n  while (l < r) {\n    if (clean[l] !== clean[r]) return false;\n    l++; r--;\n  }\n  return true;\n}",
+        "javascript": "function isPalindrome(s) {\n  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');\n  let l = 0, r = clean.length - 1;\n  while (l < r) {\n    if (clean[l] !== clean[r]) return false;\n    l++; r--;\n  }\n  return true;\n}",
+        "cpp": "bool isPalindrome(string s) {\n    int l = 0, r = s.size() - 1;\n    while (l < r) {\n        while (l < r && !isalnum(s[l])) l++;\n        while (l < r && !isalnum(s[r])) r--;\n        if (tolower(s[l]) != tolower(s[r])) return false;\n        l++; r--;\n    }\n    return true;\n}",
+        "go": "func isPalindrome(s string) bool {\n    clean := []rune{}\n    for _, c := range strings.ToLower(s) {\n        if unicode.IsLetter(c) || unicode.IsDigit(c) {\n            clean = append(clean, c)\n        }\n    }\n    l, r := 0, len(clean)-1\n    for l < r {\n        if clean[l] != clean[r] {\n            return false\n        }\n        l++; r--\n    }\n    return true\n}"
+      },
+      "id": 3
+    },
+    {
+      "number": 11,
+      "title": "Container With Most Water",
+      "difficulty": "Medium",
+      "correctPattern": "Two Pointers",
+      "options": [
+        "Dynamic Programming",
+        "Sliding Window",
+        "Two Pointers",
+        "Greedy / Intervals"
+      ],
+      "description": "Given n non-negative integers height[i] representing vertical lines, find two lines that together with the x-axis form a container that holds the most water.",
+      "solutions": {
+        "python": "def max_area(height):\n    l, r = 0, len(height) - 1\n    best = 0\n    while l < r:\n        best = max(best, (r - l) * min(height[l], height[r]))\n        if height[l] < height[r]:\n            l += 1\n        else:\n            r -= 1\n    return best",
+        "java": "public int maxArea(int[] height) {\n    int l = 0, r = height.length - 1, best = 0;\n    while (l < r) {\n        best = Math.max(best, (r - l) * Math.min(height[l], height[r]));\n        if (height[l] < height[r]) l++; else r--;\n    }\n    return best;\n}",
+        "typescript": "function maxArea(height: number[]): number {\n  let l = 0, r = height.length - 1, best = 0;\n  while (l < r) {\n    best = Math.max(best, (r - l) * Math.min(height[l], height[r]));\n    if (height[l] < height[r]) l++; else r--;\n  }\n  return best;\n}",
+        "javascript": "function maxArea(height) {\n  let l = 0, r = height.length - 1, best = 0;\n  while (l < r) {\n    best = Math.max(best, (r - l) * Math.min(height[l], height[r]));\n    if (height[l] < height[r]) l++; else r--;\n  }\n  return best;\n}",
+        "cpp": "int maxArea(vector<int>& height) {\n    int l = 0, r = height.size() - 1, best = 0;\n    while (l < r) {\n        best = max(best, (r - l) * min(height[l], height[r]));\n        if (height[l] < height[r]) l++; else r--;\n    }\n    return best;\n}",
+        "go": "func maxArea(height []int) int {\n    l, r, best := 0, len(height)-1, 0\n    for l < r {\n        h := height[l]\n        if height[r] < h { h = height[r] }\n        area := (r - l) * h\n        if area > best { best = area }\n        if height[l] < height[r] { l++ } else { r-- }\n    }\n    return best\n}"
+      },
+      "id": 4
+    },
+    {
+      "number": 3,
+      "title": "Longest Substring Without Repeating Characters",
+      "difficulty": "Medium",
+      "correctPattern": "Sliding Window",
+      "options": [
+        "Two Pointers",
+        "Hash Map",
+        "Dynamic Programming",
+        "Sliding Window"
+      ],
+      "description": "Given a string s, find the length of the longest substring without repeating characters.",
+      "solutions": {
+        "python": "def length_of_longest_substring(s):\n    seen = {}\n    l = 0\n    best = 0\n    for r, c in enumerate(s):\n        if c in seen and seen[c] >= l:\n            l = seen[c] + 1\n        seen[c] = r\n        best = max(best, r - l + 1)\n    return best",
+        "java": "public int lengthOfLongestSubstring(String s) {\n    Map<Character, Integer> seen = new HashMap<>();\n    int l = 0, best = 0;\n    for (int r = 0; r < s.length(); r++) {\n        char c = s.charAt(r);\n        if (seen.containsKey(c) && seen.get(c) >= l) l = seen.get(c) + 1;\n        seen.put(c, r);\n        best = Math.max(best, r - l + 1);\n    }\n    return best;\n}",
+        "typescript": "function lengthOfLongestSubstring(s: string): number {\n  const seen = new Map<string, number>();\n  let l = 0, best = 0;\n  for (let r = 0; r < s.length; r++) {\n    const c = s[r];\n    if (seen.has(c) && seen.get(c)! >= l) l = seen.get(c)! + 1;\n    seen.set(c, r);\n    best = Math.max(best, r - l + 1);\n  }\n  return best;\n}",
+        "javascript": "function lengthOfLongestSubstring(s) {\n  const seen = new Map();\n  let l = 0, best = 0;\n  for (let r = 0; r < s.length; r++) {\n    const c = s[r];\n    if (seen.has(c) && seen.get(c) >= l) l = seen.get(c) + 1;\n    seen.set(c, r);\n    best = Math.max(best, r - l + 1);\n  }\n  return best;\n}",
+        "cpp": "int lengthOfLongestSubstring(string s) {\n    unordered_map<char, int> seen;\n    int l = 0, best = 0;\n    for (int r = 0; r < s.size(); r++) {\n        if (seen.count(s[r]) && seen[s[r]] >= l) l = seen[s[r]] + 1;\n        seen[s[r]] = r;\n        best = max(best, r - l + 1);\n    }\n    return best;\n}",
+        "go": "func lengthOfLongestSubstring(s string) int {\n    seen := make(map[byte]int)\n    l, best := 0, 0\n    for r := 0; r < len(s); r++ {\n        if idx, ok := seen[s[r]]; ok && idx >= l {\n            l = idx + 1\n        }\n        seen[s[r]] = r\n        if r-l+1 > best { best = r - l + 1 }\n    }\n    return best\n}"
+      },
+      "id": 5
+    },
+    {
+      "number": 20,
+      "title": "Valid Parentheses",
+      "difficulty": "Easy",
+      "correctPattern": "Stack",
+      "options": [
+        "Two Pointers",
+        "Queue",
+        "Hash Map",
+        "Stack"
+      ],
+      "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid (every opening bracket is closed by the same type in the correct order).",
+      "solutions": {
+        "python": "def is_valid(s):\n    pairs = {')': '(', ']': '[', '}': '{'}\n    stack = []\n    for c in s:\n        if c in pairs:\n            if not stack or stack.pop() != pairs[c]:\n                return False\n        else:\n            stack.append(c)\n    return not stack",
+        "java": "public boolean isValid(String s) {\n    Deque<Character> stack = new ArrayDeque<>();\n    Map<Character, Character> pairs = Map.of(')', '(', ']', '[', '}', '{');\n    for (char c : s.toCharArray()) {\n        if (pairs.containsKey(c)) {\n            if (stack.isEmpty() || stack.pop() != pairs.get(c)) return false;\n        } else {\n            stack.push(c);\n        }\n    }\n    return stack.isEmpty();\n}",
+        "typescript": "function isValid(s: string): boolean {\n  const pairs: Record<string, string> = { ')': '(', ']': '[', '}': '{' };\n  const stack: string[] = [];\n  for (const c of s) {\n    if (c in pairs) {\n      if (stack.pop() !== pairs[c]) return false;\n    } else {\n      stack.push(c);\n    }\n  }\n  return stack.length === 0;\n}",
+        "javascript": "function isValid(s) {\n  const pairs = { ')': '(', ']': '[', '}': '{' };\n  const stack = [];\n  for (const c of s) {\n    if (c in pairs) {\n      if (stack.pop() !== pairs[c]) return false;\n    } else {\n      stack.push(c);\n    }\n  }\n  return stack.length === 0;\n}",
+        "cpp": "bool isValid(string s) {\n    unordered_map<char, char> pairs = {{')', '('}, {']', '['}, {'}', '{'}};\n    stack<char> st;\n    for (char c : s) {\n        if (pairs.count(c)) {\n            if (st.empty() || st.top() != pairs[c]) return false;\n            st.pop();\n        } else {\n            st.push(c);\n        }\n    }\n    return st.empty();\n}",
+        "go": "func isValid(s string) bool {\n    pairs := map[byte]byte{')': '(', ']': '[', '}': '{'}\n    stack := []byte{}\n    for i := 0; i < len(s); i++ {\n        c := s[i]\n        if open, ok := pairs[c]; ok {\n            if len(stack) == 0 || stack[len(stack)-1] != open {\n                return false\n            }\n            stack = stack[:len(stack)-1]\n        } else {\n            stack = append(stack, c)\n        }\n    }\n    return len(stack) == 0\n}"
+      },
+      "id": 6
+    },
+    {
+      "number": 33,
+      "title": "Search in Rotated Sorted Array",
+      "difficulty": "Medium",
+      "correctPattern": "Binary Search",
+      "options": [
+        "Sliding Window",
+        "Two Pointers",
+        "Binary Search",
+        "Hash Map"
+      ],
+      "description": "Given a rotated sorted array of distinct integers nums and a target value, return the index of target if it exists, otherwise -1. Must run in O(log n).",
+      "solutions": {
+        "python": "def search(nums, target):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        m = (l + r) // 2\n        if nums[m] == target:\n            return m\n        if nums[l] <= nums[m]:\n            if nums[l] <= target < nums[m]:\n                r = m - 1\n            else:\n                l = m + 1\n        else:\n            if nums[m] < target <= nums[r]:\n                l = m + 1\n            else:\n                r = m - 1\n    return -1",
+        "java": "public int search(int[] nums, int target) {\n    int l = 0, r = nums.length - 1;\n    while (l <= r) {\n        int m = (l + r) / 2;\n        if (nums[m] == target) return m;\n        if (nums[l] <= nums[m]) {\n            if (nums[l] <= target && target < nums[m]) r = m - 1; else l = m + 1;\n        } else {\n            if (nums[m] < target && target <= nums[r]) l = m + 1; else r = m - 1;\n        }\n    }\n    return -1;\n}",
+        "typescript": "function search(nums: number[], target: number): number {\n  let l = 0, r = nums.length - 1;\n  while (l <= r) {\n    const m = Math.floor((l + r) / 2);\n    if (nums[m] === target) return m;\n    if (nums[l] <= nums[m]) {\n      if (nums[l] <= target && target < nums[m]) r = m - 1; else l = m + 1;\n    } else {\n      if (nums[m] < target && target <= nums[r]) l = m + 1; else r = m - 1;\n    }\n  }\n  return -1;\n}",
+        "javascript": "function search(nums, target) {\n  let l = 0, r = nums.length - 1;\n  while (l <= r) {\n    const m = Math.floor((l + r) / 2);\n    if (nums[m] === target) return m;\n    if (nums[l] <= nums[m]) {\n      if (nums[l] <= target && target < nums[m]) r = m - 1; else l = m + 1;\n    } else {\n      if (nums[m] < target && target <= nums[r]) l = m + 1; else r = m - 1;\n    }\n  }\n  return -1;\n}",
+        "cpp": "int search(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int m = (l + r) / 2;\n        if (nums[m] == target) return m;\n        if (nums[l] <= nums[m]) {\n            if (nums[l] <= target && target < nums[m]) r = m - 1; else l = m + 1;\n        } else {\n            if (nums[m] < target && target <= nums[r]) l = m + 1; else r = m - 1;\n        }\n    }\n    return -1;\n}",
+        "go": "func search(nums []int, target int) int {\n    l, r := 0, len(nums)-1\n    for l <= r {\n        m := (l + r) / 2\n        if nums[m] == target { return m }\n        if nums[l] <= nums[m] {\n            if nums[l] <= target && target < nums[m] { r = m - 1 } else { l = m + 1 }\n        } else {\n            if nums[m] < target && target <= nums[r] { l = m + 1 } else { r = m - 1 }\n        }\n    }\n    return -1\n}"
+      },
+      "id": 7
+    },
+    {
+      "number": 206,
+      "title": "Reverse Linked List",
+      "difficulty": "Easy",
+      "correctPattern": "Linked List",
+      "options": [
+        "Stack",
+        "Recursion",
+        "Linked List",
+        "Two Pointers"
+      ],
+      "description": "Given the head of a singly linked list, reverse the list, and return the reversed list's head.",
+      "solutions": {
+        "python": "def reverse_list(head):\n    prev = None\n    curr = head\n    while curr:\n        nxt = curr.next\n        curr.next = prev\n        prev = curr\n        curr = nxt\n    return prev",
+        "java": "public ListNode reverseList(ListNode head) {\n    ListNode prev = null, curr = head;\n    while (curr != null) {\n        ListNode next = curr.next;\n        curr.next = prev;\n        prev = curr;\n        curr = next;\n    }\n    return prev;\n}",
+        "typescript": "function reverseList(head: ListNode | null): ListNode | null {\n  let prev: ListNode | null = null;\n  let curr = head;\n  while (curr) {\n    const next = curr.next;\n    curr.next = prev;\n    prev = curr;\n    curr = next;\n  }\n  return prev;\n}",
+        "javascript": "function reverseList(head) {\n  let prev = null;\n  let curr = head;\n  while (curr) {\n    const next = curr.next;\n    curr.next = prev;\n    prev = curr;\n    curr = next;\n  }\n  return prev;\n}",
+        "cpp": "ListNode* reverseList(ListNode* head) {\n    ListNode* prev = nullptr;\n    ListNode* curr = head;\n    while (curr) {\n        ListNode* next = curr->next;\n        curr->next = prev;\n        prev = curr;\n        curr = next;\n    }\n    return prev;\n}",
+        "go": "func reverseList(head *ListNode) *ListNode {\n    var prev *ListNode\n    curr := head\n    for curr != nil {\n        next := curr.Next\n        curr.Next = prev\n        prev = curr\n        curr = next\n    }\n    return prev\n}"
+      },
+      "id": 8
+    },
+    {
+      "number": 102,
+      "title": "Binary Tree Level Order Traversal",
+      "difficulty": "Medium",
+      "correctPattern": "Tree BFS/DFS",
+      "options": [
+        "Tree BFS/DFS",
+        "Heap / Priority Queue",
+        "Stack",
+        "Dynamic Programming"
+      ],
+      "description": "Given the root of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level).",
+      "solutions": {
+        "python": "from collections import deque\ndef level_order(root):\n    if not root:\n        return []\n    result, queue = [], deque([root])\n    while queue:\n        level = []\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result",
+        "java": "public List<List<Integer>> levelOrder(TreeNode root) {\n    List<List<Integer>> result = new ArrayList<>();\n    if (root == null) return result;\n    Queue<TreeNode> queue = new LinkedList<>();\n    queue.add(root);\n    while (!queue.isEmpty()) {\n        int size = queue.size();\n        List<Integer> level = new ArrayList<>();\n        for (int i = 0; i < size; i++) {\n            TreeNode node = queue.poll();\n            level.add(node.val);\n            if (node.left != null) queue.add(node.left);\n            if (node.right != null) queue.add(node.right);\n        }\n        result.add(level);\n    }\n    return result;\n}",
+        "typescript": "function levelOrder(root: TreeNode | null): number[][] {\n  const result: number[][] = [];\n  if (!root) return result;\n  let queue: TreeNode[] = [root];\n  while (queue.length) {\n    const level: number[] = [];\n    const next: TreeNode[] = [];\n    for (const node of queue) {\n      level.push(node.val);\n      if (node.left) next.push(node.left);\n      if (node.right) next.push(node.right);\n    }\n    result.push(level);\n    queue = next;\n  }\n  return result;\n}",
+        "javascript": "function levelOrder(root) {\n  const result = [];\n  if (!root) return result;\n  let queue = [root];\n  while (queue.length) {\n    const level = [];\n    const next = [];\n    for (const node of queue) {\n      level.push(node.val);\n      if (node.left) next.push(node.left);\n      if (node.right) next.push(node.right);\n    }\n    result.push(level);\n    queue = next;\n  }\n  return result;\n}",
+        "cpp": "vector<vector<int>> levelOrder(TreeNode* root) {\n    vector<vector<int>> result;\n    if (!root) return result;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        int size = q.size();\n        vector<int> level;\n        for (int i = 0; i < size; i++) {\n            TreeNode* node = q.front(); q.pop();\n            level.push_back(node->val);\n            if (node->left) q.push(node->left);\n            if (node->right) q.push(node->right);\n        }\n        result.push_back(level);\n    }\n    return result;\n}",
+        "go": "func levelOrder(root *TreeNode) [][]int {\n    result := [][]int{}\n    if root == nil { return result }\n    queue := []*TreeNode{root}\n    for len(queue) > 0 {\n        level := []int{}\n        next := []*TreeNode{}\n        for _, node := range queue {\n            level = append(level, node.Val)\n            if node.Left != nil { next = append(next, node.Left) }\n            if node.Right != nil { next = append(next, node.Right) }\n        }\n        result = append(result, level)\n        queue = next\n    }\n    return result\n}"
+      },
+      "id": 9
+    },
+    {
+      "number": 215,
+      "title": "Kth Largest Element in an Array",
+      "difficulty": "Medium",
+      "correctPattern": "Heap / Priority Queue",
+      "options": [
+        "Binary Search",
+        "Two Pointers",
+        "Heap / Priority Queue",
+        "Sorting"
+      ],
+      "description": "Given an integer array nums and an integer k, return the kth largest element in the array.",
+      "solutions": {
+        "python": "import heapq\ndef find_kth_largest(nums, k):\n    heap = nums[:k]\n    heapq.heapify(heap)\n    for n in nums[k:]:\n        if n > heap[0]:\n            heapq.heapreplace(heap, n)\n    return heap[0]",
+        "java": "public int findKthLargest(int[] nums, int k) {\n    PriorityQueue<Integer> heap = new PriorityQueue<>();\n    for (int n : nums) {\n        heap.offer(n);\n        if (heap.size() > k) heap.poll();\n    }\n    return heap.peek();\n}",
+        "typescript": "function findKthLargest(nums: number[], k: number): number {\n  const sorted = [...nums].sort((a, b) => b - a);\n  return sorted[k - 1];\n}",
+        "javascript": "function findKthLargest(nums, k) {\n  const sorted = [...nums].sort((a, b) => b - a);\n  return sorted[k - 1];\n}",
+        "cpp": "int findKthLargest(vector<int>& nums, int k) {\n    priority_queue<int, vector<int>, greater<int>> heap;\n    for (int n : nums) {\n        heap.push(n);\n        if (heap.size() > k) heap.pop();\n    }\n    return heap.top();\n}",
+        "go": "func findKthLargest(nums []int, k int) int {\n    h := &IntHeap{}\n    heap.Init(h)\n    for _, n := range nums {\n        heap.Push(h, n)\n        if h.Len() > k {\n            heap.Pop(h)\n        }\n    }\n    return (*h)[0]\n}\n// IntHeap implements container/heap.Interface as a min-heap of ints"
+      },
+      "id": 10
+    },
+    {
+      "number": 78,
+      "title": "Subsets",
+      "difficulty": "Medium",
+      "correctPattern": "Backtracking",
+      "options": [
+        "Bit Manipulation",
+        "Dynamic Programming",
+        "Graph BFS/DFS",
+        "Backtracking"
+      ],
+      "description": "Given an integer array nums of unique elements, return all possible subsets (the power set).",
+      "solutions": {
+        "python": "def subsets(nums):\n    result = []\n    path = []\n    def backtrack(start):\n        result.append(path[:])\n        for i in range(start, len(nums)):\n            path.append(nums[i])\n            backtrack(i + 1)\n            path.pop()\n    backtrack(0)\n    return result",
+        "java": "public List<List<Integer>> subsets(int[] nums) {\n    List<List<Integer>> result = new ArrayList<>();\n    backtrack(nums, 0, new ArrayList<>(), result);\n    return result;\n}\nprivate void backtrack(int[] nums, int start, List<Integer> path, List<List<Integer>> result) {\n    result.add(new ArrayList<>(path));\n    for (int i = start; i < nums.length; i++) {\n        path.add(nums[i]);\n        backtrack(nums, i + 1, path, result);\n        path.remove(path.size() - 1);\n    }\n}",
+        "typescript": "function subsets(nums: number[]): number[][] {\n  const result: number[][] = [];\n  const path: number[] = [];\n  function backtrack(start: number) {\n    result.push([...path]);\n    for (let i = start; i < nums.length; i++) {\n      path.push(nums[i]);\n      backtrack(i + 1);\n      path.pop();\n    }\n  }\n  backtrack(0);\n  return result;\n}",
+        "javascript": "function subsets(nums) {\n  const result = [];\n  const path = [];\n  function backtrack(start) {\n    result.push([...path]);\n    for (let i = start; i < nums.length; i++) {\n      path.push(nums[i]);\n      backtrack(i + 1);\n      path.pop();\n    }\n  }\n  backtrack(0);\n  return result;\n}",
+        "cpp": "void backtrack(vector<int>& nums, int start, vector<int>& path, vector<vector<int>>& result) {\n    result.push_back(path);\n    for (int i = start; i < nums.size(); i++) {\n        path.push_back(nums[i]);\n        backtrack(nums, i + 1, path, result);\n        path.pop_back();\n    }\n}\nvector<vector<int>> subsets(vector<int>& nums) {\n    vector<vector<int>> result;\n    vector<int> path;\n    backtrack(nums, 0, path, result);\n    return result;\n}",
+        "go": "func subsets(nums []int) [][]int {\n    result := [][]int{}\n    path := []int{}\n    var backtrack func(start int)\n    backtrack = func(start int) {\n        cp := make([]int, len(path))\n        copy(cp, path)\n        result = append(result, cp)\n        for i := start; i < len(nums); i++ {\n            path = append(path, nums[i])\n            backtrack(i + 1)\n            path = path[:len(path)-1]\n        }\n    }\n    backtrack(0)\n    return result\n}"
+      },
+      "id": 11
+    },
+    {
+      "number": 200,
+      "title": "Number of Islands",
+      "difficulty": "Medium",
+      "correctPattern": "Graph BFS/DFS",
+      "options": [
+        "Backtracking",
+        "Dynamic Programming",
+        "Union Find",
+        "Graph BFS/DFS"
+      ],
+      "description": "Given an m x n 2D binary grid which represents a map of '1's (land) and '0's (water), return the number of islands (connected groups of '1's, horizontally or vertically).",
+      "solutions": {
+        "python": "def num_islands(grid):\n    if not grid:\n        return 0\n    rows, cols = len(grid), len(grid[0])\n    def dfs(r, c):\n        if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] != '1':\n            return\n        grid[r][c] = '0'\n        dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1)\n    count = 0\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == '1':\n                count += 1\n                dfs(r, c)\n    return count",
+        "java": "public int numIslands(char[][] grid) {\n    int count = 0;\n    for (int r = 0; r < grid.length; r++) {\n        for (int c = 0; c < grid[0].length; c++) {\n            if (grid[r][c] == '1') {\n                count++;\n                dfs(grid, r, c);\n            }\n        }\n    }\n    return count;\n}\nprivate void dfs(char[][] grid, int r, int c) {\n    if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] != '1') return;\n    grid[r][c] = '0';\n    dfs(grid, r + 1, c); dfs(grid, r - 1, c); dfs(grid, r, c + 1); dfs(grid, r, c - 1);\n}",
+        "typescript": "function numIslands(grid: string[][]): number {\n  const rows = grid.length, cols = grid[0].length;\n  function dfs(r: number, c: number) {\n    if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] !== '1') return;\n    grid[r][c] = '0';\n    dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1);\n  }\n  let count = 0;\n  for (let r = 0; r < rows; r++) {\n    for (let c = 0; c < cols; c++) {\n      if (grid[r][c] === '1') { count++; dfs(r, c); }\n    }\n  }\n  return count;\n}",
+        "javascript": "function numIslands(grid) {\n  const rows = grid.length, cols = grid[0].length;\n  function dfs(r, c) {\n    if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] !== '1') return;\n    grid[r][c] = '0';\n    dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1);\n  }\n  let count = 0;\n  for (let r = 0; r < rows; r++) {\n    for (let c = 0; c < cols; c++) {\n      if (grid[r][c] === '1') { count++; dfs(r, c); }\n    }\n  }\n  return count;\n}",
+        "cpp": "void dfs(vector<vector<char>>& grid, int r, int c) {\n    if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size() || grid[r][c] != '1') return;\n    grid[r][c] = '0';\n    dfs(grid, r + 1, c); dfs(grid, r - 1, c); dfs(grid, r, c + 1); dfs(grid, r, c - 1);\n}\nint numIslands(vector<vector<char>>& grid) {\n    int count = 0;\n    for (int r = 0; r < grid.size(); r++) {\n        for (int c = 0; c < grid[0].size(); c++) {\n            if (grid[r][c] == '1') { count++; dfs(grid, r, c); }\n        }\n    }\n    return count;\n}",
+        "go": "func numIslands(grid [][]byte) int {\n    rows, cols := len(grid), len(grid[0])\n    var dfs func(r, c int)\n    dfs = func(r, c int) {\n        if r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] != '1' { return }\n        grid[r][c] = '0'\n        dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    }\n    count := 0\n    for r := 0; r < rows; r++ {\n        for c := 0; c < cols; c++ {\n            if grid[r][c] == '1' {\n                count++\n                dfs(r, c)\n            }\n        }\n    }\n    return count\n}"
+      },
+      "id": 12
+    },
+    {
+      "number": 322,
+      "title": "Coin Change",
+      "difficulty": "Medium",
+      "correctPattern": "Dynamic Programming",
+      "options": [
+        "Graph BFS/DFS",
+        "Greedy / Intervals",
+        "Dynamic Programming",
+        "Backtracking"
+      ],
+      "description": "You are given an integer array coins representing coin denominations and an integer amount. Return the fewest number of coins needed to make up that amount. If impossible, return -1.",
+      "solutions": {
+        "python": "def coin_change(coins, amount):\n    dp = [0] + [float('inf')] * amount\n    for a in range(1, amount + 1):\n        for c in coins:\n            if c <= a:\n                dp[a] = min(dp[a], dp[a - c] + 1)\n    return dp[amount] if dp[amount] != float('inf') else -1",
+        "java": "public int coinChange(int[] coins, int amount) {\n    int[] dp = new int[amount + 1];\n    Arrays.fill(dp, amount + 1);\n    dp[0] = 0;\n    for (int a = 1; a <= amount; a++) {\n        for (int c : coins) {\n            if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);\n        }\n    }\n    return dp[amount] > amount ? -1 : dp[amount];\n}",
+        "typescript": "function coinChange(coins: number[], amount: number): number {\n  const dp = new Array(amount + 1).fill(Infinity);\n  dp[0] = 0;\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);\n    }\n  }\n  return dp[amount] === Infinity ? -1 : dp[amount];\n}",
+        "javascript": "function coinChange(coins, amount) {\n  const dp = new Array(amount + 1).fill(Infinity);\n  dp[0] = 0;\n  for (let a = 1; a <= amount; a++) {\n    for (const c of coins) {\n      if (c <= a) dp[a] = Math.min(dp[a], dp[a - c] + 1);\n    }\n  }\n  return dp[amount] === Infinity ? -1 : dp[amount];\n}",
+        "cpp": "int coinChange(vector<int>& coins, int amount) {\n    vector<int> dp(amount + 1, amount + 1);\n    dp[0] = 0;\n    for (int a = 1; a <= amount; a++) {\n        for (int c : coins) {\n            if (c <= a) dp[a] = min(dp[a], dp[a - c] + 1);\n        }\n    }\n    return dp[amount] > amount ? -1 : dp[amount];\n}",
+        "go": "func coinChange(coins []int, amount int) int {\n    dp := make([]int, amount+1)\n    for i := 1; i <= amount; i++ { dp[i] = amount + 1 }\n    for a := 1; a <= amount; a++ {\n        for _, c := range coins {\n            if c <= a && dp[a-c]+1 < dp[a] {\n                dp[a] = dp[a-c] + 1\n            }\n        }\n    }\n    if dp[amount] > amount { return -1 }\n    return dp[amount]\n}"
+      },
+      "id": 13
+    },
+    {
+      "number": 56,
+      "title": "Merge Intervals",
+      "difficulty": "Medium",
+      "correctPattern": "Greedy / Intervals",
+      "options": [
+        "Two Pointers",
+        "Stack",
+        "Sorting",
+        "Greedy / Intervals"
+      ],
+      "description": "Given an array of intervals where intervals[i] = [start_i, end_i], merge all overlapping intervals and return an array of the non-overlapping intervals covering all the input intervals.",
+      "solutions": {
+        "python": "def merge(intervals):\n    intervals.sort(key=lambda x: x[0])\n    result = [intervals[0]]\n    for start, end in intervals[1:]:\n        if start <= result[-1][1]:\n            result[-1][1] = max(result[-1][1], end)\n        else:\n            result.append([start, end])\n    return result",
+        "java": "public int[][] merge(int[][] intervals) {\n    Arrays.sort(intervals, (a, b) -> a[0] - b[0]);\n    List<int[]> result = new ArrayList<>();\n    for (int[] interval : intervals) {\n        if (!result.isEmpty() && interval[0] <= result.get(result.size() - 1)[1]) {\n            result.get(result.size() - 1)[1] = Math.max(result.get(result.size() - 1)[1], interval[1]);\n        } else {\n            result.add(interval);\n        }\n    }\n    return result.toArray(new int[result.size()][]);\n}",
+        "typescript": "function merge(intervals: number[][]): number[][] {\n  intervals.sort((a, b) => a[0] - b[0]);\n  const result: number[][] = [intervals[0]];\n  for (let i = 1; i < intervals.length; i++) {\n    const last = result[result.length - 1];\n    if (intervals[i][0] <= last[1]) {\n      last[1] = Math.max(last[1], intervals[i][1]);\n    } else {\n      result.push(intervals[i]);\n    }\n  }\n  return result;\n}",
+        "javascript": "function merge(intervals) {\n  intervals.sort((a, b) => a[0] - b[0]);\n  const result = [intervals[0]];\n  for (let i = 1; i < intervals.length; i++) {\n    const last = result[result.length - 1];\n    if (intervals[i][0] <= last[1]) {\n      last[1] = Math.max(last[1], intervals[i][1]);\n    } else {\n      result.push(intervals[i]);\n    }\n  }\n  return result;\n}",
+        "cpp": "vector<vector<int>> merge(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end());\n    vector<vector<int>> result = {intervals[0]};\n    for (int i = 1; i < intervals.size(); i++) {\n        if (intervals[i][0] <= result.back()[1]) {\n            result.back()[1] = max(result.back()[1], intervals[i][1]);\n        } else {\n            result.push_back(intervals[i]);\n        }\n    }\n    return result;\n}",
+        "go": "func merge(intervals [][]int) [][]int {\n    sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })\n    result := [][]int{intervals[0]}\n    for _, interval := range intervals[1:] {\n        last := result[len(result)-1]\n        if interval[0] <= last[1] {\n            if interval[1] > last[1] { last[1] = interval[1] }\n        } else {\n            result = append(result, interval)\n        }\n    }\n    return result\n}"
+      },
+      "id": 14
+    },
+    {
+      "number": 208,
+      "title": "Implement Trie (Prefix Tree)",
+      "difficulty": "Medium",
+      "correctPattern": "Trie",
+      "options": [
+        "Trie",
+        "Hash Map",
+        "Backtracking",
+        "Tree BFS/DFS"
+      ],
+      "description": "Implement a trie with insert, search, and startsWith methods for efficient prefix-based string storage and lookup.",
+      "solutions": {
+        "python": "class Trie:\n    def __init__(self):\n        self.children = {}\n        self.is_end = False\n\n    def insert(self, word):\n        node = self\n        for c in word:\n            node = node.children.setdefault(c, Trie())\n        node.is_end = True\n\n    def search(self, word):\n        node = self._find(word)\n        return node is not None and node.is_end\n\n    def starts_with(self, prefix):\n        return self._find(prefix) is not None\n\n    def _find(self, s):\n        node = self\n        for c in s:\n            if c not in node.children:\n                return None\n            node = node.children[c]\n        return node",
+        "java": "class Trie {\n    Map<Character, Trie> children = new HashMap<>();\n    boolean isEnd = false;\n\n    public void insert(String word) {\n        Trie node = this;\n        for (char c : word.toCharArray()) {\n            node = node.children.computeIfAbsent(c, k -> new Trie());\n        }\n        node.isEnd = true;\n    }\n    public boolean search(String word) {\n        Trie node = find(word);\n        return node != null && node.isEnd;\n    }\n    public boolean startsWith(String prefix) {\n        return find(prefix) != null;\n    }\n    private Trie find(String s) {\n        Trie node = this;\n        for (char c : s.toCharArray()) {\n            node = node.children.get(c);\n            if (node == null) return null;\n        }\n        return node;\n    }\n}",
+        "typescript": "class Trie {\n  children: Map<string, Trie> = new Map();\n  isEnd = false;\n\n  insert(word: string): void {\n    let node: Trie = this;\n    for (const c of word) {\n      if (!node.children.has(c)) node.children.set(c, new Trie());\n      node = node.children.get(c)!;\n    }\n    node.isEnd = true;\n  }\n  search(word: string): boolean {\n    const node = this.find(word);\n    return node !== null && node.isEnd;\n  }\n  startsWith(prefix: string): boolean {\n    return this.find(prefix) !== null;\n  }\n  private find(s: string): Trie | null {\n    let node: Trie = this;\n    for (const c of s) {\n      if (!node.children.has(c)) return null;\n      node = node.children.get(c)!;\n    }\n    return node;\n  }\n}",
+        "javascript": "class Trie {\n  constructor() {\n    this.children = new Map();\n    this.isEnd = false;\n  }\n  insert(word) {\n    let node = this;\n    for (const c of word) {\n      if (!node.children.has(c)) node.children.set(c, new Trie());\n      node = node.children.get(c);\n    }\n    node.isEnd = true;\n  }\n  search(word) {\n    const node = this.find(word);\n    return node !== null && node.isEnd;\n  }\n  startsWith(prefix) {\n    return this.find(prefix) !== null;\n  }\n  find(s) {\n    let node = this;\n    for (const c of s) {\n      if (!node.children.has(c)) return null;\n      node = node.children.get(c);\n    }\n    return node;\n  }\n}",
+        "cpp": "class Trie {\npublic:\n    unordered_map<char, Trie*> children;\n    bool isEnd = false;\n\n    void insert(string word) {\n        Trie* node = this;\n        for (char c : word) {\n            if (!node->children.count(c)) node->children[c] = new Trie();\n            node = node->children[c];\n        }\n        node->isEnd = true;\n    }\n    bool search(string word) {\n        Trie* node = find(word);\n        return node != nullptr && node->isEnd;\n    }\n    bool startsWith(string prefix) {\n        return find(prefix) != nullptr;\n    }\nprivate:\n    Trie* find(string s) {\n        Trie* node = this;\n        for (char c : s) {\n            if (!node->children.count(c)) return nullptr;\n            node = node->children[c];\n        }\n        return node;\n    }\n};",
+        "go": "type Trie struct {\n    children map[byte]*Trie\n    isEnd    bool\n}\nfunc Constructor() Trie { return Trie{children: make(map[byte]*Trie)} }\nfunc (t *Trie) Insert(word string) {\n    node := t\n    for i := 0; i < len(word); i++ {\n        c := word[i]\n        if node.children[c] == nil {\n            child := Constructor()\n            node.children[c] = &child\n        }\n        node = node.children[c]\n    }\n    node.isEnd = true\n}\nfunc (t *Trie) find(s string) *Trie {\n    node := t\n    for i := 0; i < len(s); i++ {\n        node = node.children[s[i]]\n        if node == nil { return nil }\n    }\n    return node\n}\nfunc (t *Trie) Search(word string) bool {\n    node := t.find(word)\n    return node != nil && node.isEnd\n}\nfunc (t *Trie) StartsWith(prefix string) bool {\n    return t.find(prefix) != nil\n}"
+      },
+      "id": 15
+    },
+    {
+      "number": 136,
+      "title": "Single Number",
+      "difficulty": "Easy",
+      "correctPattern": "Bit Manipulation",
+      "options": [
+        "Two Pointers",
+        "Bit Manipulation",
+        "Sorting",
+        "Hash Map"
+      ],
+      "description": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one in O(n) time and O(1) space.",
+      "solutions": {
+        "python": "def single_number(nums):\n    result = 0\n    for n in nums:\n        result ^= n\n    return result",
+        "java": "public int singleNumber(int[] nums) {\n    int result = 0;\n    for (int n : nums) result ^= n;\n    return result;\n}",
+        "typescript": "function singleNumber(nums: number[]): number {\n  return nums.reduce((acc, n) => acc ^ n, 0);\n}",
+        "javascript": "function singleNumber(nums) {\n  return nums.reduce((acc, n) => acc ^ n, 0);\n}",
+        "cpp": "int singleNumber(vector<int>& nums) {\n    int result = 0;\n    for (int n : nums) result ^= n;\n    return result;\n}",
+        "go": "func singleNumber(nums []int) int {\n    result := 0\n    for _, n := range nums {\n        result ^= n\n    }\n    return result\n}"
+      },
+      "id": 16
+    }
+  ]
+}

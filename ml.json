@@ -1,0 +1,350 @@
+[
+  {
+    "id": 1,
+    "category": "History",
+    "question": "When was the term 'Artificial Intelligence' coined, and by whom?",
+    "answer": "1956, by John McCarthy at the Dartmouth Conference, widely considered the founding event of AI as a field."
+  },
+  {
+    "id": 2,
+    "category": "History",
+    "question": "What was Deep Blue and why was it significant?",
+    "answer": "IBM's chess-playing computer that defeated world champion Garry Kasparov in 1997, the first time a computer beat a reigning world chess champion in a match under standard time controls."
+  },
+  {
+    "id": 3,
+    "category": "History",
+    "question": "What was the 'AI Winter'?",
+    "answer": "Periods (roughly the mid-1970s and late 1980s-90s) when AI research funding and interest sharply declined after earlier hype failed to deliver on inflated expectations."
+  },
+  {
+    "id": 4,
+    "category": "History",
+    "question": "What is ImageNet and why did the 2012 ImageNet competition matter?",
+    "answer": "ImageNet is a large labeled image dataset (14M+ images). In 2012, AlexNet (a deep convolutional neural network) won the ImageNet competition by a huge margin, kicking off the modern deep learning boom."
+  },
+  {
+    "id": 5,
+    "category": "History",
+    "question": "When was TensorFlow released and what does it do?",
+    "answer": "Released by Google in November 2015. TensorFlow is an open-source framework for building, training, and deploying machine learning models, particularly neural networks, using computational graphs of tensor operations that can run on CPUs, GPUs, or TPUs."
+  },
+  {
+    "id": 6,
+    "category": "History",
+    "question": "When was PyTorch released and how does it compare to TensorFlow?",
+    "answer": "Released by Facebook (Meta) AI Research in 2016/2017. PyTorch uses dynamic (define-by-run) computation graphs, which many researchers find more intuitive for debugging and experimentation, while TensorFlow originally used static graphs (though TF2 added eager execution to close this gap)."
+  },
+  {
+    "id": 7,
+    "category": "History",
+    "question": "What is the 'Transformer' architecture and when was it introduced?",
+    "answer": "Introduced in the 2017 paper 'Attention Is All You Need' by Google researchers. It replaced recurrence with self-attention, allowing much more parallelizable training and becoming the foundation for nearly all modern large language models."
+  },
+  {
+    "id": 8,
+    "category": "History",
+    "question": "When did OpenAI release GPT-3, and why was it a milestone?",
+    "answer": "June 2020. GPT-3 (175 billion parameters) demonstrated strong few-shot learning - performing new tasks from just a few examples in the prompt, without fine-tuning - which suggested capability could scale substantially with model and data size."
+  },
+  {
+    "id": 9,
+    "category": "History",
+    "question": "When was ChatGPT released and why did it have such an outsized impact?",
+    "answer": "November 30, 2022. It packaged an instruction-tuned GPT-3.5 model with a simple chat interface and RLHF-based alignment, making powerful LLM capabilities accessible to non-technical users for the first time at massive scale, reaching 100 million users within about two months."
+  },
+  {
+    "id": 10,
+    "category": "History",
+    "question": "What is AlphaGo and what did it achieve?",
+    "answer": "A DeepMind system that in 2016 defeated world champion Lee Sedol at Go, a game with far more possible positions than chess, using deep neural networks combined with Monte Carlo tree search and reinforcement learning."
+  },
+  {
+    "id": 11,
+    "category": "History",
+    "question": "What is the significance of the paper 'Attention Is All You Need'?",
+    "answer": "It introduced the Transformer architecture, which relies entirely on self-attention mechanisms rather than recurrence or convolution, enabling far more efficient parallel training and becoming the basis for BERT, GPT, and virtually all modern LLMs."
+  },
+  {
+    "id": 12,
+    "category": "History",
+    "question": "What was AlexNet and why is it considered a turning point for deep learning?",
+    "answer": "A deep convolutional neural network by Krizhevsky, Sutskever, and Hinton that won the 2012 ImageNet competition using GPUs for training, dramatically outperforming prior approaches and proving deep learning's practical viability at scale."
+  },
+  {
+    "id": 13,
+    "category": "History",
+    "question": "What is RLHF and which product popularized it?",
+    "answer": "Reinforcement Learning from Human Feedback: a technique where a model is fine-tuned using a reward model trained on human preference rankings of outputs, to make model behavior more helpful, honest, and aligned with human intent. It was central to InstructGPT and ChatGPT's training pipeline."
+  },
+  {
+    "id": 14,
+    "category": "History",
+    "question": "What was Word2Vec and when was it introduced?",
+    "answer": "Introduced by Google researchers (Mikolov et al.) in 2013. It's a technique for learning dense vector representations (embeddings) of words such that semantically similar words are close together in vector space, a major step toward modern representation learning."
+  },
+  {
+    "id": 15,
+    "category": "History",
+    "question": "What is BERT and how does it differ from GPT?",
+    "answer": "BERT (Bidirectional Encoder Representations from Transformers, Google 2018) is trained to understand context from both directions (bidirectional, using masked-language-modeling) and is typically used for understanding tasks (classification, Q&A). GPT is a decoder-only, unidirectional (left-to-right) autoregressive model optimized for text generation."
+  },
+  {
+    "id": 16,
+    "category": "Core ML",
+    "question": "What is the difference between supervised, unsupervised, and reinforcement learning?",
+    "answer": "Supervised learning trains on labeled input-output pairs to predict outputs for new inputs. Unsupervised learning finds structure (clusters, patterns) in unlabeled data. Reinforcement learning trains an agent to take actions in an environment to maximize cumulative reward through trial and error."
+  },
+  {
+    "id": 17,
+    "category": "Core ML",
+    "question": "What is overfitting, and how can you mitigate it?",
+    "answer": "Overfitting is when a model learns noise/idiosyncrasies of the training data rather than generalizable patterns, performing well on training data but poorly on unseen data. Mitigations include regularization (L1/L2), dropout, early stopping, cross-validation, more training data, and reducing model complexity."
+  },
+  {
+    "id": 18,
+    "category": "Core ML",
+    "question": "What is the bias-variance tradeoff?",
+    "answer": "Bias is error from overly simplistic assumptions (underfitting); variance is error from sensitivity to small fluctuations in training data (overfitting). Reducing one often increases the other, so model selection aims to balance both to minimize total generalization error."
+  },
+  {
+    "id": 19,
+    "category": "Core ML",
+    "question": "What is gradient descent?",
+    "answer": "An optimization algorithm that iteratively adjusts model parameters in the direction that most reduces a loss function, by moving opposite to the gradient (the direction of steepest increase) of the loss with respect to the parameters."
+  },
+  {
+    "id": 20,
+    "category": "Core ML",
+    "question": "What is the difference between batch, stochastic, and mini-batch gradient descent?",
+    "answer": "Batch gradient descent computes the gradient using the entire dataset per update (accurate but slow). Stochastic gradient descent (SGD) updates parameters using a single example at a time (fast but noisy). Mini-batch gradient descent, the common practice, updates using small batches, balancing speed and stability."
+  },
+  {
+    "id": 21,
+    "category": "Core ML",
+    "question": "What is regularization and why is it used?",
+    "answer": "Techniques that add a penalty to the loss function (or otherwise constrain the model) to discourage overly complex models and reduce overfitting. L1 (Lasso) encourages sparsity; L2 (Ridge) shrinks weights smoothly; dropout randomly disables neurons during training."
+  },
+  {
+    "id": 22,
+    "category": "Core ML",
+    "question": "What is a confusion matrix, and what do precision and recall mean?",
+    "answer": "A confusion matrix tabulates predicted vs actual classes (true positives, false positives, true negatives, false negatives). Precision = TP / (TP + FP), the fraction of positive predictions that were correct. Recall = TP / (TP + FN), the fraction of actual positives that were correctly identified."
+  },
+  {
+    "id": 23,
+    "category": "Core ML",
+    "question": "What is the F1 score?",
+    "answer": "The harmonic mean of precision and recall: 2 * (precision * recall) / (precision + recall). It balances the two metrics, useful when you need a single number and both false positives and false negatives matter."
+  },
+  {
+    "id": 24,
+    "category": "Core ML",
+    "question": "What is cross-validation?",
+    "answer": "A technique for estimating model performance on unseen data by splitting the training data into multiple folds, training on some folds and validating on the held-out fold, and rotating which fold is held out (e.g., k-fold cross-validation) to get a more robust performance estimate than a single train/test split."
+  },
+  {
+    "id": 25,
+    "category": "Core ML",
+    "question": "What is the vanishing gradient problem?",
+    "answer": "In deep networks trained via backpropagation, gradients can shrink exponentially as they're propagated backward through many layers (especially with sigmoid/tanh activations), causing early layers to learn extremely slowly or not at all. Solutions include ReLU activations, batch normalization, residual/skip connections, and careful weight initialization."
+  },
+  {
+    "id": 26,
+    "category": "Core ML",
+    "question": "What is the difference between a generative and a discriminative model?",
+    "answer": "A discriminative model learns the boundary between classes, i.e., P(label | data), such as logistic regression or a standard classifier. A generative model learns the underlying data distribution, i.e., P(data) or P(data, label), and can generate new samples resembling the training data, such as GANs, VAEs, or diffusion models."
+  },
+  {
+    "id": 27,
+    "category": "Core ML",
+    "question": "What is transfer learning?",
+    "answer": "Reusing a model (or its learned representations) trained on one task/dataset as the starting point for a related task, typically by fine-tuning a pretrained model on a smaller task-specific dataset rather than training from scratch, saving compute and data."
+  },
+  {
+    "id": 28,
+    "category": "Core ML",
+    "question": "What is a convolutional neural network (CNN) used for and why?",
+    "answer": "CNNs are primarily used for image (and other grid-like) data. Convolutional layers apply learned filters that detect local spatial patterns (edges, textures, shapes) with shared weights across the input, making them far more parameter-efficient and translation-invariant than fully-connected networks for visual tasks."
+  },
+  {
+    "id": 29,
+    "category": "Core ML",
+    "question": "What is a recurrent neural network (RNN) and what problem does it address?",
+    "answer": "An RNN processes sequential data by maintaining a hidden state that's updated at each time step, letting information persist across the sequence - useful for tasks like language modeling or time series, before largely being superseded by Transformers for most NLP tasks due to RNNs' difficulty capturing long-range dependencies and lack of parallelizability."
+  },
+  {
+    "id": 30,
+    "category": "Core ML",
+    "question": "What is the difference between L1 and L2 regularization?",
+    "answer": "L1 regularization (Lasso) adds the sum of absolute weight values to the loss, tending to push some weights to exactly zero (producing sparse models, useful for feature selection). L2 regularization (Ridge) adds the sum of squared weight values, shrinking weights smoothly toward zero without necessarily eliminating them."
+  },
+  {
+    "id": 31,
+    "category": "LLMs",
+    "question": "How are LLMs fundamentally different from traditional (pre-deep-learning) machine learning models?",
+    "answer": "Traditional ML models (e.g., logistic regression, decision trees, SVMs) typically require hand-engineered features and are trained on a specific narrow task with labeled data. LLMs are pretrained on massive unlabeled text corpora using self-supervised objectives (like next-token prediction) to learn general-purpose language representations, then can perform many downstream tasks via prompting or light fine-tuning, without task-specific feature engineering."
+  },
+  {
+    "id": 32,
+    "category": "LLMs",
+    "question": "What is 'attention' in the context of Transformers?",
+    "answer": "A mechanism that lets a model weigh how relevant every other token in the input is to the token currently being processed, computing a weighted combination of value vectors based on similarity (via query/key dot products) - allowing the model to capture relationships between tokens regardless of their distance in the sequence."
+  },
+  {
+    "id": 33,
+    "category": "LLMs",
+    "question": "What is self-attention vs cross-attention?",
+    "answer": "Self-attention computes attention within a single sequence (each token attends to other tokens in the same sequence), used in both encoder and decoder blocks. Cross-attention lets one sequence (e.g., decoder tokens) attend to a different sequence (e.g., encoder outputs), used in encoder-decoder architectures like the original Transformer for translation."
+  },
+  {
+    "id": 34,
+    "category": "LLMs",
+    "question": "What does 'autoregressive' mean in the context of language models like GPT?",
+    "answer": "The model generates text one token at a time, with each new token predicted based on all previously generated tokens, feeding its own output back in as input for the next step."
+  },
+  {
+    "id": 35,
+    "category": "LLMs",
+    "question": "What is tokenization, and why don't LLMs process raw text directly?",
+    "answer": "Tokenization splits text into smaller units (tokens - often subwords, via algorithms like Byte-Pair Encoding or SentencePiece) that are mapped to integer IDs, which are then embedded into vectors. This lets models handle any text (including rare/unseen words) with a fixed, manageable vocabulary size."
+  },
+  {
+    "id": 36,
+    "category": "LLMs",
+    "question": "What is a context window in an LLM?",
+    "answer": "The maximum number of tokens (input + output) a model can attend to / process in a single forward pass. Content beyond this limit is truncated or must be handled via techniques like retrieval or summarization."
+  },
+  {
+    "id": 37,
+    "category": "LLMs",
+    "question": "What is fine-tuning, and how does it differ from prompting?",
+    "answer": "Fine-tuning updates a pretrained model's weights using additional (often task-specific or preference) data, permanently changing its behavior. Prompting instead guides a frozen model's behavior at inference time purely through the input text, without changing any weights."
+  },
+  {
+    "id": 38,
+    "category": "LLMs",
+    "question": "What is RAG (Retrieval-Augmented Generation)?",
+    "answer": "An architecture that retrieves relevant documents/passages from an external knowledge source (typically via vector similarity search over embeddings) and includes them in the model's prompt/context, letting the model ground its answer in up-to-date or proprietary information it wasn't trained on, and reducing hallucination."
+  },
+  {
+    "id": 39,
+    "category": "LLMs",
+    "question": "What is a vector embedding and what is it used for?",
+    "answer": "A dense numerical vector representation of data (text, images, etc.) such that semantically similar items are close together in the vector space. Used for semantic search, RAG retrieval, clustering, recommendation, and as intermediate representations inside neural networks."
+  },
+  {
+    "id": 40,
+    "category": "LLMs",
+    "question": "What is 'hallucination' in LLMs?",
+    "answer": "When a model generates text that is fluent and confident-sounding but factually incorrect or not grounded in its training data or provided context - a known failure mode of generative language models."
+  },
+  {
+    "id": 41,
+    "category": "LLMs",
+    "question": "What is the difference between zero-shot, one-shot, and few-shot prompting?",
+    "answer": "Zero-shot: the model is asked to perform a task with no examples, only an instruction. One-shot: exactly one example is given in the prompt. Few-shot: several examples are given in the prompt to demonstrate the desired input-output pattern, all without updating model weights."
+  },
+  {
+    "id": 42,
+    "category": "LLMs",
+    "question": "What is Chain-of-Thought (CoT) prompting?",
+    "answer": "A prompting technique where the model is encouraged (via instruction or examples) to generate intermediate reasoning steps before producing a final answer, which has been shown to improve performance on multi-step reasoning tasks like math and logic problems."
+  },
+  {
+    "id": 43,
+    "category": "LLMs",
+    "question": "What is Mixture of Experts (MoE) in the context of LLM architecture?",
+    "answer": "An architecture where, instead of every parameter being used for every input, the model has multiple 'expert' sub-networks and a routing mechanism that activates only a subset of experts per token, allowing the total parameter count to scale up while keeping the compute cost per token much lower (sparse activation)."
+  },
+  {
+    "id": 44,
+    "category": "LLMs",
+    "question": "What is model quantization?",
+    "answer": "Reducing the numerical precision of a model's weights/activations (e.g., from 32-bit floating point to 8-bit or 4-bit integers) to shrink memory footprint and speed up inference, typically with a small tradeoff in accuracy."
+  },
+  {
+    "id": 45,
+    "category": "LLMs",
+    "question": "What is the difference between a base model and an instruction-tuned (chat) model?",
+    "answer": "A base model is trained purely on next-token prediction over raw text and tends to just continue text patterns. An instruction-tuned model is further trained (via supervised fine-tuning on instruction-response pairs, often plus RLHF/RLAIF) to follow instructions and behave helpfully in a conversational format."
+  },
+  {
+    "id": 46,
+    "category": "LLMs",
+    "question": "What is catastrophic forgetting?",
+    "answer": "When a model, after being fine-tuned on new data/tasks, loses performance on previously learned tasks because the new training overwrites relevant weights - a key challenge in continual learning and a reason fine-tuning must be done carefully (e.g., with lower learning rates or techniques like LoRA)."
+  },
+  {
+    "id": 47,
+    "category": "LLMs",
+    "question": "What is LoRA (Low-Rank Adaptation)?",
+    "answer": "A parameter-efficient fine-tuning technique that freezes the pretrained model's weights and injects small trainable low-rank matrices into each layer, drastically reducing the number of trainable parameters (and memory/compute needed) while achieving performance close to full fine-tuning."
+  },
+  {
+    "id": 48,
+    "category": "LLMs",
+    "question": "What is the difference between a foundation model and a task-specific model?",
+    "answer": "A foundation model is trained on broad, diverse data at scale and is designed to be adapted (via fine-tuning or prompting) to many downstream tasks. A task-specific model is trained or adapted for a single narrow purpose and typically isn't intended for general reuse."
+  },
+  {
+    "id": 49,
+    "category": "LLMs",
+    "question": "What does 'emergent ability' mean in the context of scaling LLMs?",
+    "answer": "A capability that appears (often somewhat abruptly) in larger models but is absent or near-random in smaller models of the same architecture and training approach - such as multi-step arithmetic or certain reasoning tasks - suggesting some capabilities aren't present until sufficient scale is reached."
+  },
+  {
+    "id": 50,
+    "category": "Applied AI",
+    "question": "What is a vector database, and why is it used with LLMs?",
+    "answer": "A database optimized for storing and performing fast approximate nearest-neighbor search over high-dimensional embedding vectors, used to power semantic search and retrieval (e.g., in RAG systems) by finding the most relevant stored content to a query embedding."
+  },
+  {
+    "id": 51,
+    "category": "Applied AI",
+    "question": "What is prompt injection, and why is it a security concern?",
+    "answer": "An attack where malicious instructions are embedded in input data (e.g., a document, webpage, or user message) that an LLM processes, attempting to override the system's intended instructions and make the model perform unintended actions - a significant concern for LLM applications that read untrusted external content."
+  },
+  {
+    "id": 52,
+    "category": "Applied AI",
+    "question": "What is the difference between latency and throughput when serving an LLM in production?",
+    "answer": "Latency is the time to get a response for a single request (e.g., time-to-first-token, or total generation time). Throughput is the total volume of requests/tokens a system can process per unit time across many concurrent requests. Optimizing for one (e.g., batching to improve throughput) can sometimes worsen the other (increasing per-request latency)."
+  },
+  {
+    "id": 53,
+    "category": "Applied AI",
+    "question": "What is KV (key-value) caching in transformer inference, and why does it matter?",
+    "answer": "During autoregressive generation, the key and value vectors computed for previous tokens in self-attention are cached and reused rather than recomputed at every new token, since they don't change - this dramatically speeds up generation by avoiding redundant computation, at the cost of memory to store the cache."
+  },
+  {
+    "id": 54,
+    "category": "Applied AI",
+    "question": "What is an AI agent, in the context of LLM-based systems?",
+    "answer": "A system where an LLM plans and takes a sequence of actions (often calling external tools/APIs, reasoning about results, and iterating) to accomplish a multi-step goal, rather than just producing a single text response - typically involving a loop of observe -> reason -> act."
+  },
+  {
+    "id": 55,
+    "category": "Applied AI",
+    "question": "What is tool use / function calling in LLM APIs?",
+    "answer": "A capability where the model can be given a set of available functions (with descriptions/schemas) and, instead of only generating text, can output a structured request to call one of those functions with specific arguments, letting the surrounding application execute real actions (like querying a database or calling an API) and return results to the model."
+  },
+  {
+    "id": 56,
+    "category": "Applied AI",
+    "question": "Why is evaluating LLM outputs harder than evaluating traditional ML model outputs?",
+    "answer": "Traditional ML tasks (like classification) often have clear ground-truth labels and simple metrics (accuracy, F1). LLM outputs are often open-ended free text where 'correctness' can be subjective, context-dependent, or have multiple valid answers, requiring techniques like human evaluation, LLM-as-judge, or task-specific rubrics rather than simple exact-match metrics."
+  },
+  {
+    "id": 57,
+    "category": "Applied AI",
+    "question": "What is model distillation?",
+    "answer": "Training a smaller 'student' model to mimic the behavior/outputs of a larger 'teacher' model, aiming to retain much of the teacher's performance while being cheaper and faster to run at inference time."
+  },
+  {
+    "id": 58,
+    "category": "Applied AI",
+    "question": "What is the difference between online and batch/offline inference?",
+    "answer": "Online inference serves individual requests in real time with low latency requirements (e.g., a chat response). Batch/offline inference processes large volumes of data at once without strict per-item latency requirements (e.g., generating embeddings for an entire document corpus overnight), typically prioritizing throughput and cost-efficiency over speed of any single result."
+  }
+]

@@ -1,0 +1,154 @@
+[
+  {
+    "id": 1,
+    "title": "Design a URL Shortener",
+    "stages": [
+      {
+        "prompt": "Design a URL shortener (like bit.ly) that serves 300,000 requests per minute. What infrastructure, classes, and data model would you use?",
+        "answer": "Core API: POST /shorten (long_url) -> short_code, GET /{short_code} -> 302 redirect. Generate short codes with a base62 counter (or hash + collision check) stored in a key-value table {short_code, long_url, created_at, expires_at, owner_id}. 300K req/min (~5K req/s) is mostly read-heavy (redirects >> creations), so put a CDN/edge cache or Redis cache in front of a relational or key-value store (DynamoDB/Cassandra) keyed by short_code. Use a load balancer -> stateless API servers -> cache -> database. Rate-limit the write path, and use a separate counter/ID-generation service (e.g. Snowflake-style IDs or a pre-allocated block of IDs per server) to avoid a single point of contention when minting new codes."
+      },
+      {
+        "prompt": "Traffic suddenly grows to 4,000,000 requests per minute (~66K req/s). What has to change? How does this affect your storage and database choices?",
+        "answer": "At ~66K req/s reads, a single database (even read-replicas) becomes a bottleneck, so lean harder on caching: a multi-layer cache (CDN edge caching for redirects, then a distributed in-memory cache like Redis/Memcached cluster) should absorb the vast majority of traffic since URL access is heavily skewed (Pareto - a small % of links get most clicks). Move from a single relational DB to a horizontally-partitioned/sharded key-value store (DynamoDB, Cassandra) sharded by short_code hash, so no single node is a hotspot. Writes (new short URLs) stay comparatively low volume, so a single write path with async replication is fine. Add read-replicas per shard, and consider consistent hashing so adding shards doesn't require a full re-shard. Also introduce circuit breakers and autoscaling for API servers behind the load balancer."
+      },
+      {
+        "prompt": "What managed/out-of-the-box cloud services would you use to implement this end-to-end?",
+        "answer": "AWS example: CloudFront (CDN/edge cache) -> API Gateway or an ALB in front of stateless services on ECS/EKS or Lambda -> DynamoDB (auto-sharded, single-digit ms latency) with DynamoDB Accelerator (DAX) as an in-memory cache layer -> S3 + Athena for click-analytics logs -> Route 53 for DNS -> CloudWatch for monitoring/alerting and auto-scaling triggers. Equivalent GCP stack: Cloud CDN, Cloud Load Balancing, Cloud Run/GKE, Firestore/Bigtable, Memorystore (Redis), BigQuery for analytics."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client -->|GET short_code| CDN[CDN / Edge Cache]\n    CDN -->|cache miss| LB[Load Balancer]\n    LB --> API1[API Server]\n    LB --> API2[API Server]\n    API1 --> Cache[(Redis Cache)]\n    API2 --> Cache\n    Cache -->|cache miss| DB[(Sharded KV Store\\nDynamoDB/Cassandra)]\n    API1 --> IDGen[ID Generator\\nSnowflake-style]\n    IDGen --> DB"
+  },
+  {
+    "id": 2,
+    "title": "Design a Cloud Image/File Storage System",
+    "stages": [
+      {
+        "prompt": "Design a cloud image storage system (like Google Photos or S3) supporting uploads, downloads, and metadata search for millions of users.",
+        "answer": "Separate metadata from blob storage. Metadata service (relational or document DB) stores {file_id, owner_id, filename, size, content_type, storage_path, thumbnails, created_at, tags}. Actual bytes go to an object store (blob storage split into shards/buckets by hash of file_id) designed for large binary objects with high durability (replicate 3x across availability zones). Upload flow: client requests a pre-signed upload URL from the metadata/API service, uploads directly to object storage (bypassing the app server for the large payload), then confirms completion so metadata is written. Downloads: served via CDN using signed URLs. A background worker generates thumbnails/transcodes and updates metadata asynchronously via a queue."
+      },
+      {
+        "prompt": "How would you scale this to support 500 million users uploading billions of images, while keeping search over metadata (like 'photos from last summer' or tags) fast?",
+        "answer": "Shard the object store by consistent hashing on file_id/user_id to spread load evenly, and use erasure coding or replication for durability at that scale. For metadata, a single relational DB won't scale to billions of rows with flexible search; move to a combination of a sharded document store (partitioned by user_id, since most queries are per-user) plus a dedicated search index (Elasticsearch/OpenSearch) for tag/date/full-text search, updated asynchronously via change-data-capture from the metadata store. Use a message queue (Kafka) to decouple upload confirmation from thumbnail generation, ML-based tagging, and search-index updates so the write path stays fast. Cache 'hot' metadata (recent photos, popular shares) in Redis."
+      },
+      {
+        "prompt": "What managed cloud services would map to this architecture?",
+        "answer": "AWS: S3 for blob storage (built-in multi-AZ replication and lifecycle tiers like S3 Glacier for cold storage), S3 pre-signed URLs for direct client upload, DynamoDB or Aurora (sharded) for metadata, OpenSearch Service for tag/date search, SQS/Kafka (MSK) for the async processing queue, Lambda or ECS workers for thumbnail generation, Rekognition for automatic tagging, and CloudFront for downloads. Equivalent: GCS + Firestore/Cloud SQL + Cloud Search + Pub/Sub + Cloud Functions + Vision AI + Cloud CDN."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client -->|1. request upload URL| API[Metadata API]\n    API -->|2. pre-signed URL| Client\n    Client -->|3. upload bytes| Blob[(Object Storage\\nS3/GCS, sharded)]\n    Client -->|4. confirm upload| API\n    API --> MetaDB[(Metadata DB\\nsharded by user_id)]\n    API --> Queue[(Message Queue)]\n    Queue --> Worker[Thumbnail/Tagging Worker]\n    Worker --> Blob\n    Worker --> SearchIdx[(Search Index)]\n    Client -->|search| SearchIdx\n    Client -->|download| CDN[CDN] --> Blob"
+  },
+  {
+    "id": 3,
+    "title": "Design a Rate Limiter",
+    "stages": [
+      {
+        "prompt": "Design a rate limiter that can be applied to an API gateway to limit clients to N requests per minute.",
+        "answer": "Use the token bucket or sliding-window-counter algorithm. Store per-client counters in a fast in-memory store (Redis) keyed by client_id + time window, using atomic INCR with an expiry (TTL) equal to the window size. On each request, increment the counter; if it exceeds the limit, reject with HTTP 429. Token bucket is preferred when you want to allow short bursts: each client has a bucket with a max capacity and a refill rate; a request consumes a token if available."
+      },
+      {
+        "prompt": "How do you make this rate limiter work correctly across many API gateway instances (distributed), without a shared Redis becoming a bottleneck or single point of failure?",
+        "answer": "Use a Redis cluster (sharded by client_id) rather than a single instance, with replicas for failover. To cut network round-trips, use local in-memory approximate counters on each gateway node that sync to Redis periodically (or use Redis Lua scripts to make the check-and-increment atomic in one round trip). For very high scale, consider a sliding-window-log approach approximated with fixed windows to bound memory, and accept slight over/under-counting at the edges as a tradeoff for performance. Add circuit breaking so if Redis is unreachable, the gateway fails open (allow traffic) or fails closed (block) based on the criticality of the service."
+      },
+      {
+        "prompt": "What out-of-the-box services or API gateway features would you use instead of building this from scratch?",
+        "answer": "Most managed API gateways have this built in: AWS API Gateway usage plans/throttling, Amazon CloudFront + AWS WAF rate-based rules, Kong or Envoy rate-limiting plugins backed by Redis, or Google Cloud Armor / Apigee for GCP. For a custom microservice mesh, Envoy's global rate limit service (backed by Redis) is a common off-the-shelf building block."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client --> GW1[Gateway Node 1]\n    Client --> GW2[Gateway Node 2]\n    GW1 -->|INCR client_id, window| Redis[(Redis Cluster\\nsharded counters)]\n    GW2 -->|INCR client_id, window| Redis\n    Redis -->|count > limit?| GW1\n    GW1 -->|429 Too Many Requests| Client"
+  },
+  {
+    "id": 4,
+    "title": "Design a Chat/Messaging System",
+    "stages": [
+      {
+        "prompt": "Design a real-time chat system (like WhatsApp or Slack) supporting 1-on-1 and group messaging.",
+        "answer": "Clients hold a persistent WebSocket connection to a connection-gateway layer; each gateway server tracks which user_ids are connected to it. Sending a message: client -> gateway -> message service, which persists the message to a database (partitioned by conversation_id) and looks up which gateway server(s) the recipient(s) are connected to (via a connection-registry service, e.g. Redis mapping user_id -> gateway_node), then pushes the message over that recipient's WebSocket. If the recipient is offline, the message waits in their inbox/queue and a push notification is sent instead. Message ordering per conversation is preserved with a monotonically increasing sequence number per conversation."
+      },
+      {
+        "prompt": "How do you scale this to hundreds of millions of concurrent users while keeping message delivery low-latency and ensuring no messages are lost if a gateway server crashes?",
+        "answer": "Shard the connection-registry (Redis) and message store by user_id/conversation_id across many nodes. Use a pub/sub backbone (Kafka) so the message service publishes to a topic per shard, and gateway servers subscribe to the shards containing their connected users, decoupling delivery from a direct service-to-service call. For crash recovery: since the message was already durably written to the database/Kafka before acknowledging the sender, a crashed gateway simply means the client reconnects (to a different gateway) and the connection-registry is updated; undelivered messages are re-sent from the persisted store when the client reconnects and requests messages since its last-seen sequence number. Use consistent hashing so gateway/registry rebalancing on scale-out is minimally disruptive."
+      },
+      {
+        "prompt": "What managed cloud services would you use?",
+        "answer": "AWS: API Gateway WebSocket APIs or ALB with sticky sessions for the connection layer, DynamoDB (partitioned by conversation_id) for message storage, Kinesis or MSK (managed Kafka) for the pub/sub backbone, ElastiCache (Redis) for the connection registry, SNS/Amazon Pinpoint for push notifications to offline users. Alternatively, many teams use a managed pub/sub chat backend outright (e.g., AWS AppSync with GraphQL subscriptions, or Firebase Realtime Database/Firestore with its built-in listeners) to avoid building the WebSocket fan-out layer themselves."
+      }
+    ],
+    "diagram": "flowchart TD\n    C1[Client A] <-->|WebSocket| GW1[Gateway Node 1]\n    C2[Client B] <-->|WebSocket| GW2[Gateway Node 2]\n    GW1 --> MsgSvc[Message Service]\n    MsgSvc --> DB[(Message Store\\nsharded by conversation_id)]\n    MsgSvc --> Registry[(Connection Registry\\nuser_id -> gateway_node)]\n    MsgSvc --> Bus[(Pub/Sub - Kafka)]\n    Bus --> GW2\n    GW2 -->|push message| C2"
+  },
+  {
+    "id": 5,
+    "title": "Design a News Feed System",
+    "stages": [
+      {
+        "prompt": "Design a social media news feed (like Twitter/X or Instagram's feed) that shows a user posts from people they follow, ranked roughly by recency.",
+        "answer": "Two classic approaches: fan-out-on-write (push) and fan-out-on-read (pull). Push: when a user posts, write the post_id into every follower's precomputed feed list (stored in Redis/Cassandra as a per-user list). Reading the feed is then just an O(1) lookup - very fast for the common read-heavy case. Pull: store posts per author; on read, merge the latest posts from everyone the user follows on-the-fly (like a k-way merge). Push is fast to read but expensive to write for high-follower accounts (celebrities); pull is the opposite."
+      },
+      {
+        "prompt": "How do you handle celebrity accounts with 50 million followers, where fan-out-on-write would mean 50 million writes per post?",
+        "answer": "Use a hybrid approach: for normal users, fan-out-on-write into follower feed lists as before. For celebrity/high-follower accounts (above some threshold), skip fan-out entirely and instead merge their recent posts into the requester's feed at read-time (pull), since celebrities are relatively few and their posts can be cached and merged on-demand. This bounds worst-case write amplification. Also cache the precomputed feed lists in Redis with a bounded length (e.g., last 500 items) and lazily backfill from the database on scroll (pagination) rather than storing unbounded history in the hot cache."
+      },
+      {
+        "prompt": "What managed services and ranking considerations would you add for a production system?",
+        "answer": "Use a message queue (Kafka) to decouple 'post created' events from the fan-out workers so posting stays fast even if fan-out takes time. Store feed lists in a low-latency store like Redis/DynamoDB, posts themselves in a sharded database or object store (for media, S3 + CDN). For ranking beyond pure recency, a separate ranking/ML service scores candidate posts (engagement prediction) and can be added as a re-ranking step after retrieving candidates from the feed list, often using a feature store and a model-serving service (e.g., SageMaker, Vertex AI) - but the core retrieval architecture (hybrid push/pull) stays the same."
+      }
+    ],
+    "diagram": "flowchart TD\n    Post[New Post by User] --> Queue[(Kafka: post-created)]\n    Queue --> FanOut[Fan-out Worker]\n    FanOut -->|normal user: push to followers| FeedStore[(Per-user Feed Lists\\nRedis/Cassandra)]\n    Celeb[Celebrity Post] -.->|skip fan-out| PullMerge[Read-time Merge]\n    Client -->|GET feed| FeedSvc[Feed Service]\n    FeedSvc --> FeedStore\n    FeedSvc --> PullMerge\n    FeedSvc --> Rank[Ranking Service]\n    Rank --> Client"
+  },
+  {
+    "id": 6,
+    "title": "Design a Distributed Cache",
+    "stages": [
+      {
+        "prompt": "Design a distributed, in-memory caching layer (like a simplified Redis/Memcached cluster) that sits in front of a database.",
+        "answer": "Cache API: get(key), set(key, value, ttl), delete(key). Use consistent hashing to map keys to a set of cache nodes so that adding/removing nodes only reshuffles a small fraction of keys. On a read: check cache first (cache-aside pattern) - on a hit, return immediately; on a miss, read from the database, populate the cache, and return. On a write: either write-through (update cache and DB together) or invalidate the cache key so the next read repopulates it. Each entry has a TTL to bound staleness and memory usage; use an LRU/LFU eviction policy when a node is at capacity."
+      },
+      {
+        "prompt": "How do you handle a 'hot key' problem, where one key (e.g., a viral post) receives a disproportionate share of traffic and overwhelms the single cache node responsible for it?",
+        "answer": "Detect hot keys (via sampling/monitoring request rates per key) and replicate that specific key across multiple cache nodes rather than relying on consistent hashing to route all its traffic to one node; the client or a routing layer picks a random replica for reads. Alternatively, add a small local (in-process) cache on each application server for the very hottest keys, so most reads never even reach the distributed cache. Also consider request coalescing: if many concurrent requests miss the cache for the same key simultaneously, only let one of them query the database (others wait on that in-flight result) to avoid a 'thundering herd' on the DB."
+      },
+      {
+        "prompt": "What managed cloud offerings would you use instead of self-hosting this?",
+        "answer": "AWS ElastiCache (Redis or Memcached, managed clustering/sharding/replication built in), Google Cloud Memorystore, Azure Cache for Redis. These handle consistent hashing, failover, and monitoring for you; you'd typically only build custom logic for hot-key mitigation and cache-aside/invalidation patterns in your application layer on top of the managed service."
+      }
+    ],
+    "diagram": "flowchart LR\n    App[App Server] -->|1. get key| Router[Consistent Hash Router]\n    Router --> N1[(Cache Node 1)]\n    Router --> N2[(Cache Node 2)]\n    Router --> N3[(Cache Node 3)]\n    App -->|2. miss -> read| DB[(Database)]\n    App -->|3. populate cache| N2\n    Hot[Hot Key Detector] -.->|replicate hot key| N1\n    Hot -.-> N3"
+  },
+  {
+    "id": 7,
+    "title": "Design a Web Crawler",
+    "stages": [
+      {
+        "prompt": "Design a web crawler that can index a large portion of the public web.",
+        "answer": "Core components: a URL frontier (queue of URLs to crawl, prioritized and deduplicated), a fetcher pool (workers that download pages), a parser (extracts links and content), and a store (raw HTML + extracted text/metadata). Use a distributed queue (Kafka/SQS) for the frontier so many fetcher workers can pull URLs in parallel. Maintain a 'seen URL' set (bloom filter or hash set in a fast store) to avoid re-crawling the same URL. Respect robots.txt and apply per-domain rate limiting so the crawler doesn't overwhelm any single site."
+      },
+      {
+        "prompt": "How do you scale this to billions of pages while being polite to individual domains (not hammering any one site) and avoiding duplicate crawls of near-identical content?",
+        "answer": "Partition the frontier by domain (e.g., consistent hashing on domain) so each domain's URLs are handled by a bounded set of workers, letting you enforce a per-domain politeness delay/rate limit centrally (a per-domain queue with its own throttle). Use a distributed bloom filter (or a sharded key-value store) for the 'seen URL' set to handle billions of URLs without one node holding all of them in memory. For near-duplicate detection, compute a content fingerprint (e.g., SimHash or MinHash) of each page and check it against previously seen fingerprints to skip near-identical pages (common with mirrors/URL parameters)."
+      },
+      {
+        "prompt": "What existing tools or cloud services would you leverage rather than building everything from scratch?",
+        "answer": "Use an existing crawler framework (Apache Nutch, Scrapy with a distributed scheduler like scrapy-redis) rather than writing a fetcher/parser from scratch. For infrastructure: SQS/Kafka for the frontier queue, S3 for raw page storage, DynamoDB or a Bloom-filter-backed Redis for URL dedup, Lambda/ECS for stateless fetcher workers, and Elasticsearch/OpenSearch for the resulting search index. Managed crawling APIs (e.g., Common Crawl's open dataset) can also be a starting point instead of crawling the entire web yourself."
+      }
+    ],
+    "diagram": "flowchart LR\n    Frontier[(URL Frontier\\npartitioned by domain)] --> W1[Fetcher Worker]\n    Frontier --> W2[Fetcher Worker]\n    W1 --> Parser[Parser]\n    Parser -->|new links| Dedup{Seen URL?\\nBloom Filter}\n    Dedup -->|no| Frontier\n    Parser --> Store[(Page Store - S3)]\n    Parser --> Fingerprint[SimHash Dedup]\n    Store --> Index[(Search Index)]"
+  },
+  {
+    "id": 8,
+    "title": "Design a Ride-Sharing Dispatch System",
+    "stages": [
+      {
+        "prompt": "Design the core system for matching riders with nearby drivers (like Uber/Lyft dispatch).",
+        "answer": "Drivers periodically send location updates (lat/lng) over a lightweight connection; store current driver locations in a geospatial index (e.g., a grid/geohash-based structure or Redis with GEO commands) so 'find drivers near X' is fast. When a rider requests a ride, query the geospatial index for nearby available drivers, rank by ETA (distance + traffic), and send a match request to the top candidate(s); the driver has a short window to accept before it's offered to the next. Store trip state (requested -> matched -> in-progress -> completed) in a trip service backed by a database keyed by trip_id."
+      },
+      {
+        "prompt": "How do you handle a huge spike in demand in one area (e.g., a concert letting out) where supply of drivers is temporarily insufficient?",
+        "answer": "Introduce surge pricing computed per geographic cell (geohash region) based on the real-time ratio of open ride requests to available drivers in that cell, which both signals riders to expect a wait/pay more and incentivizes nearby drivers to reposition into the surge area. Widen the search radius for driver matching in undersupplied cells. Queue excess ride requests instead of failing them outright, with an estimated wait time shown to the rider. This all requires the geospatial index and matching service to be able to compute supply/demand ratios per cell in near real-time, typically via a streaming aggregation job (e.g., Kafka Streams/Flink) over location and request events."
+      },
+      {
+        "prompt": "What managed cloud/geospatial services would you use?",
+        "answer": "Use a managed geospatial data store rather than building your own index: Redis with GEO commands (or Amazon ElastiCache for Redis), or a purpose-built geospatial database (MongoDB geospatial indexes, PostGIS on Aurora/RDS). For real-time location ingestion at scale, Kinesis or Kafka (MSK) streams driver pings into a stream-processing job (Kinesis Data Analytics/Flink) that maintains the live geospatial index and supply/demand aggregates. Google Maps Platform or Mapbox APIs provide routing/ETA calculations instead of building your own mapping engine."
+      }
+    ],
+    "diagram": "flowchart TD\n    Driver[Driver App] -->|location ping| LocSvc[Location Ingest]\n    LocSvc --> GeoIndex[(Geospatial Index\\nRedis GEO / geohash grid)]\n    Rider[Rider App] -->|request ride| MatchSvc[Matching Service]\n    MatchSvc --> GeoIndex\n    GeoIndex -->|nearby drivers| MatchSvc\n    MatchSvc --> TripSvc[Trip Service]\n    TripSvc --> DB[(Trip DB)]\n    Stream[Streaming Aggregator] --> GeoIndex\n    Stream --> Surge[Surge Pricing Calc]"
+  }
+]
