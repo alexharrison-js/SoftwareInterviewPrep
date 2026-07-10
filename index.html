@@ -6,6 +6,27 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
     />
+    <script>
+      // Mobile browsers (especially iOS Safari) report `100vh` as taller than the
+      // actually-visible viewport, since it includes space that's currently
+      // covered by the address bar/toolbar. That extra height is exactly what
+      // was causing the app shell to be scrollable when it shouldn't be. This
+      // measures the real visible height via window.innerHeight and exposes it
+      // as a CSS custom property that the layout uses instead of a bare vh unit,
+      // updating on resize/orientation change (e.g. when the address bar
+      // collapses on scroll or the keyboard opens).
+      (function () {
+        function setAppVH() {
+          document.documentElement.style.setProperty(
+            "--app-vh",
+            window.innerHeight + "px",
+          );
+        }
+        setAppVH();
+        window.addEventListener("resize", setAppVH);
+        window.addEventListener("orientationchange", setAppVH);
+      })();
+    </script>
     <title>Drillset · Senior Engineer Interview Prep</title>
     <meta
       name="description"
