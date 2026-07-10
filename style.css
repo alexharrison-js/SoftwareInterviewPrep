@@ -1,20 +1,33 @@
 :root {
-  --bg: #0F1115;
-  --surface: #171A21;
-  --surface-raised: #1E2230;
-  --border: #2A2F3D;
-  --text: #EDEFF4;
-  --text-muted: #8B93A7;
-  --text-faint: #5C6377;
-  --accent-correct: #4FD1C5;
-  --accent-correct-dim: #1D3B39;
-  --accent-wrong: #F2726F;
-  --accent-wrong-dim: #3A2426;
-  --accent-amber: #E8B34C;
-  --accent-violet: #9B8CFF;
+  /* ===== EVA-01 / Amethyst ===== */
+
+  --bg: #161125;
+  --surface: #221A36;
+  --surface-raised: #2C2147;
+  --border: #49356F;
+
+  --text: #F2F5FF;
+  --text-muted: #B9B5D3;
+  --text-faint: #7F789C;
+
+  /* EVA Green */
+  --accent-correct: #8FFF3A;
+  --accent-correct-dim: #233815;
+
+  /* Error */
+  --accent-wrong: #FF5A7A;
+  --accent-wrong-dim: #44202D;
+
+  /* Amber */
+  --accent-amber: #FFC857;
+
+  /* Purple */
+  --accent-violet: #B67BFF;
+
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
   --radius: 14px;
   --radius-sm: 8px;
 }
@@ -34,8 +47,9 @@ html, body {
 
 body {
   background-image:
-    radial-gradient(circle at 15% -10%, rgba(155, 140, 255, 0.08), transparent 40%),
-    radial-gradient(circle at 90% 0%, rgba(79, 209, 197, 0.06), transparent 35%);
+    radial-gradient(circle at 12% -8%, rgba(182,123,255,.15), transparent 42%),
+    radial-gradient(circle at 95% 0%, rgba(143,255,58,.10), transparent 36%),
+    radial-gradient(circle at 50% 120%, rgba(98,58,170,.12), transparent 45%);
   background-attachment: fixed;
 }
 
@@ -182,8 +196,8 @@ button { font-family: inherit; cursor: pointer; }
 .deck-card:active { transform: scale(0.98); }
 
 .deck-card:hover {
-  border-color: rgba(79, 209, 197, 0.35);
-  background: var(--surface-raised);
+  border-color: rgba(143,255,58,.55);
+  box-shadow: 0 0 18px rgba(143,255,58,.10);
 }
 
 .deck-tab {
@@ -297,7 +311,9 @@ button { font-family: inherit; cursor: pointer; }
   min-height: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 18px 40px -20px rgba(0,0,0,0.6);
+  box-shadow:
+      0 18px 40px -20px rgba(0,0,0,.75),
+      0 0 28px rgba(120,70,220,.08);
 }
 
 .card-tab {
@@ -451,7 +467,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .code-block {
-  background: #0B0D12;
+  background:#120E1F;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 16px;
@@ -501,9 +517,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .btn-primary {
-  background: var(--accent-correct);
-  border-color: var(--accent-correct);
-  color: #06201D;
+    background: var(--accent-correct);
+    border-color: var(--accent-correct);
+    color:#11140B;
+    font-weight:700;
 }
 .btn-primary:hover { filter: brightness(1.08); }
 
@@ -541,8 +558,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-violet);
-  outline-offset: 2px;
+    outline:2px solid var(--accent-correct);
+    outline-offset:2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
