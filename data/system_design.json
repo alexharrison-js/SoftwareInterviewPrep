@@ -150,5 +150,423 @@
       }
     ],
     "diagram": "flowchart TD\n    Driver[Driver App] -->|location ping| LocSvc[Location Ingest]\n    LocSvc --> GeoIndex[(Geospatial Index\\nRedis GEO / geohash grid)]\n    Rider[Rider App] -->|request ride| MatchSvc[Matching Service]\n    MatchSvc --> GeoIndex\n    GeoIndex -->|nearby drivers| MatchSvc\n    MatchSvc --> TripSvc[Trip Service]\n    TripSvc --> DB[(Trip DB)]\n    Stream[Streaming Aggregator] --> GeoIndex\n    Stream --> Surge[Surge Pricing Calc]"
+  },
+  {
+    "title": "Design a Notification System",
+    "stages": [
+      {
+        "prompt": "Design a notification system that can send push notifications, emails, and SMS to users based on events in your product (e.g., 'someone liked your post').",
+        "answer": "Producers (application services) publish notification events to a message queue rather than calling notification providers directly, decoupling business logic from delivery. A notification service consumes events, looks up the user's preferences (which channels they've enabled, quiet hours, do-not-disturb settings) from a preferences store, renders the message from a template, and dispatches to the appropriate channel-specific worker (push worker, email worker, SMS worker), each of which calls a third-party provider (APNs/FCM for push, an email API, an SMS gateway). Store a delivery log/status per notification for auditing and retry."
+      },
+      {
+        "prompt": "How do you handle a burst of 10 million notifications needing to go out within a few minutes (e.g., a breaking news alert), without overwhelming downstream providers or losing messages?",
+        "answer": "Partition the queue (Kafka topics/partitions) so many consumer instances can process in parallel, and apply per-provider rate limiting/backpressure in each channel worker to stay within third-party API quotas (batch APIs where available, e.g., FCM's batch send). Use exponential backoff and dead-letter queues for failed sends so a provider hiccup doesn't drop messages, and prioritize/queue by urgency (time-sensitive alerts before digest-style notifications) so critical messages aren't stuck behind bulk traffic. Horizontally scale worker pools based on queue depth (autoscaling on backlog size, not just CPU)."
+      },
+      {
+        "prompt": "What managed cloud services would you use to build this?",
+        "answer": "AWS: SNS or Amazon Pinpoint for multi-channel delivery (push/email/SMS) with built-in provider integrations, SQS/Kinesis or MSK for the event queue, DynamoDB for preferences and delivery logs, Lambda for lightweight channel workers, and CloudWatch alarms on queue depth for autoscaling. Firebase Cloud Messaging (FCM) and Apple Push Notification service (APNs) remain the underlying push delivery mechanisms regardless of cloud provider."
+      }
+    ],
+    "diagram": "flowchart LR\n    App[App Service] -->|event| Queue[(Kafka / SQS)]\n    Queue --> NotifSvc[Notification Service]\n    NotifSvc --> Prefs[(User Preferences)]\n    NotifSvc --> PushW[Push Worker] --> FCM[FCM / APNs]\n    NotifSvc --> EmailW[Email Worker] --> EmailAPI[Email Provider]\n    NotifSvc --> SMSW[SMS Worker] --> SMSGW[SMS Gateway]\n    NotifSvc --> Log[(Delivery Log)]",
+    "id": 9
+  },
+  {
+    "title": "Design a Distributed Task Scheduler / Job Queue",
+    "stages": [
+      {
+        "prompt": "Design a distributed job scheduler that lets services enqueue tasks (e.g., 'send this email in 10 minutes', 'run this report at midnight') and guarantees each task runs at least once, at roughly the right time.",
+        "answer": "Core components: an API to enqueue a job (payload + run_at time + retry policy), a persistent job store (database table indexed by run_at/status), and a pool of worker processes that poll for due jobs (status=pending AND run_at <= now), claim them (e.g., via a conditional update setting status=in_progress with a lease/lock so no two workers grab the same job), execute them, and mark them complete or reschedule on failure. Use a heap/priority-queue-like index on run_at for efficient polling of 'what's due now'."
+      },
+      {
+        "prompt": "How do you scale this to millions of scheduled jobs and ensure jobs aren't lost or double-executed if a worker crashes mid-task?",
+        "answer": "Shard the job store by job_id or run_at bucket across multiple database partitions so no single node holds all jobs. Use a lease-based claiming mechanism: a worker claims a job with a time-limited lease (e.g., 'in_progress until T+5min'); if the worker crashes, the lease expires and another worker can reclaim the job, giving at-least-once execution semantics (making job handlers idempotent is important since a job could theoretically run twice). For efficient polling at scale, avoid full-table scans by using a proper index (or a separate 'due soon' cache/priority queue like Redis sorted sets keyed by run_at) that's populated ahead of time rather than querying the whole job table every poll cycle."
+      },
+      {
+        "prompt": "What existing tools or managed services would you use instead of building this from scratch?",
+        "answer": "Managed options: AWS EventBridge Scheduler or Step Functions for scheduled/orchestrated workflows, Google Cloud Tasks or Cloud Scheduler, or a well-established open-source job queue (Sidekiq, Celery with Redis/RabbitMQ, or Temporal for more complex durable workflows with retries and long-running state). Temporal in particular is popular for senior-level system design discussions because it explicitly solves the 'exactly-once-ish, crash-resilient, long-running workflow' problem with built-in state persistence."
+      }
+    ],
+    "diagram": "flowchart LR\n    API[Enqueue API] --> Store[(Job Store\\nsharded by job_id)]\n    Store --> DueIdx[(Due-soon Index\\nRedis sorted set)]\n    Worker1[Worker Pool] -->|poll + lease claim| DueIdx\n    Worker1 -->|execute| Handler[Job Handler]\n    Handler -->|success| Store\n    Handler -->|failure: retry/backoff| Store",
+    "id": 10
+  },
+  {
+    "title": "Design a Payments / Ledger System",
+    "stages": [
+      {
+        "prompt": "Design the core of a payments system that records money moving between accounts (e.g., a wallet or marketplace ledger), ensuring balances are always accurate.",
+        "answer": "Use double-entry bookkeeping: every transaction creates two ledger entries (a debit and a credit) that must sum to zero, stored as immutable rows in an append-only ledger table (never update or delete existing entries - corrections are new offsetting entries). An account's balance is derived by summing its ledger entries (or maintained as a cached running balance updated transactionally alongside the ledger write). All writes happen inside a single database transaction so a transfer's debit and credit either both commit or neither does (atomicity), which is critical for financial correctness."
+      },
+      {
+        "prompt": "How do you handle this at a scale of tens of thousands of transactions per second across many currencies and account shards, while keeping strong consistency for balance correctness?",
+        "answer": "Shard accounts across multiple database instances (e.g., by account_id hash), but a naive shard-per-account design breaks transactions that move money between accounts on different shards. Common approaches: use a distributed transaction protocol (two-phase commit) sparingly since it's slow, or model transfers as an asynchronous saga - reserve funds on the source shard, then apply the credit on the destination shard, with a compensating reversal if the second step fails, tracked via a transaction state machine. For read scaling, maintain eventually-consistent read replicas for balance lookups/statements while the ledger writes themselves stay strongly consistent on the primary shard owning that account."
+      },
+      {
+        "prompt": "What existing infrastructure or protocols would a real fintech company lean on rather than building all of this from scratch?",
+        "answer": "Many companies use a dedicated ledger service (in-house or a vendor like Modern Treasury, or open-source ledger engines) that already encodes double-entry invariants, rather than reinventing balance logic per team. For actual money movement (as opposed to internal bookkeeping), rely on regulated payment rails and providers (Stripe, Adyen, ACH/SWIFT networks) rather than building settlement infrastructure yourself; your ledger records what happened, the payment processor handles moving real money and its own idempotency/retry guarantees (idempotency keys on payment API calls are essential to avoid double-charging on retries)."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client -->|transfer request| API[Ledger API]\n    API -->|idempotency key check| IdemStore[(Idempotency Store)]\n    API -->|debit+credit, one txn| Ledger[(Append-only Ledger\\nsharded by account)]\n    Ledger --> BalanceCache[(Cached Balances)]\n    API -->|cross-shard transfer| Saga[Saga Orchestrator]\n    Saga -->|reserve| ShardA[(Account Shard A)]\n    Saga -->|credit or compensate| ShardB[(Account Shard B)]",
+    "id": 11
+  },
+  {
+    "title": "Design a Search Autocomplete / Typeahead System",
+    "stages": [
+      {
+        "prompt": "Design a search-box autocomplete system that, as a user types, suggests the top completions (like Google Search suggestions).",
+        "answer": "Precompute a trie (prefix tree) where each node represents a character and stores the top-k most frequent/popular completions for that prefix, built offline from historical query logs (aggregate query frequency, then propagate top completions up the trie). At request time, the client sends the current prefix, the server walks the trie to that node, and returns its precomputed top-k list - an O(prefix length) lookup, independent of the total number of possible completions."
+      },
+      {
+        "prompt": "How do you keep suggestions fresh (reflecting trending/recent queries) without rebuilding the entire trie from scratch constantly, and how do you scale reads to handle every keystroke from millions of users?",
+        "answer": "Rebuild the trie incrementally/periodically (e.g., every few minutes) from a streaming aggregation of recent query counts (Kafka Streams/Flink maintaining a sliding-window frequency count), rather than a full batch rebuild each time, and merge in a decayed weighting so older queries gradually lose influence versus trending ones. Since it's read-extremely-heavy (every keystroke is a request) and read latency needs to be very low, keep the entire trie (or sharded portions of it, e.g., by first 1-2 characters) in memory across a fleet of read replicas, and put a CDN/edge cache in front of common short prefixes (like single letters) which are requested constantly and change rarely."
+      },
+      {
+        "prompt": "What managed services or existing tools would you use?",
+        "answer": "Elasticsearch/OpenSearch has built-in completion suggester functionality that implements this trie-like prefix matching, and can offload most of the heavy lifting rather than hand-building a custom trie service. For the streaming aggregation layer, Kinesis Data Analytics or a managed Flink/Kafka Streams deployment computes trending-query frequencies; ElastiCache (Redis) can cache the hottest prefixes at the edge for sub-millisecond responses."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client -->|keystroke: prefix| Edge[CDN / Edge Cache]\n    Edge -->|cache miss| API[Autocomplete API]\n    API --> Trie[(In-memory Trie\\nsharded by prefix)]\n    LogStream[Query Log Stream] --> Aggregator[Streaming Aggregator]\n    Aggregator -->|periodic rebuild| Trie",
+    "id": 12
+  },
+  {
+    "title": "Design a Video Streaming Service",
+    "stages": [
+      {
+        "prompt": "Design the core architecture for a video streaming platform (like YouTube or Netflix): uploading a video and having viewers stream it smoothly on various devices/networks.",
+        "answer": "Upload flow: client uploads the raw video to object storage (S3-like), which triggers an async transcoding pipeline that converts it into multiple resolutions/bitrates (e.g., 240p-4K) and chunks it for adaptive bitrate streaming (HLS/DASH format), storing the resulting segments back in object storage alongside a manifest file listing available quality levels. Playback flow: the client's video player requests the manifest, then streams segments through a CDN, dynamically switching bitrate based on measured network conditions, so playback keeps up without buffering rather than always requesting the highest quality."
+      },
+      {
+        "prompt": "How do you scale transcoding for millions of daily uploads (some very large) and ensure playback stays smooth for viewers worldwide with varying network quality?",
+        "answer": "Use a distributed transcoding worker pool (e.g., containers autoscaling on job queue depth) that processes chunks of a video in parallel rather than one worker handling an entire file serially, checkpointing progress so a crashed worker doesn't restart the whole job. Prioritize the encoding queue so short/popular content transcodes faster than a rarely-watched long video. For global playback smoothness, rely heavily on a multi-region CDN with edge caching (popular videos get cached close to viewers, reducing origin load and latency) and adaptive bitrate streaming client-side logic that continuously re-evaluates network throughput and switches quality mid-playback."
+      },
+      {
+        "prompt": "What managed cloud services handle most of this instead of building it in-house?",
+        "answer": "AWS Elemental MediaConvert (transcoding), MediaPackage (packaging into HLS/DASH), and CloudFront (CDN delivery) form a common managed pipeline; S3 stores both raw uploads and processed segments. Equivalent stacks exist on GCP (Transcoder API + Cloud CDN) and Azure (Media Services). Very few companies build their own transcoding pipeline from scratch given how mature these managed offerings are - the differentiated engineering work is usually in recommendation, encoding-cost optimization, and player-side adaptive streaming logic rather than the pipeline itself."
+      }
+    ],
+    "diagram": "flowchart TD\n    Uploader -->|raw video| RawStore[(Raw Video Storage - S3)]\n    RawStore --> Queue[(Transcode Job Queue)]\n    Queue --> Workers[Transcoding Workers\\nparallel chunks]\n    Workers --> SegStore[(Segment Storage\\nmultiple bitrates)]\n    SegStore --> CDN[Global CDN]\n    Viewer -->|adaptive bitrate request| CDN\n    Viewer -->|fetch manifest| API[Playback API]",
+    "id": 13
+  },
+  {
+    "title": "Design a Distributed Logging / Monitoring Pipeline",
+    "stages": [
+      {
+        "prompt": "Design a system that collects logs and metrics from thousands of application servers, lets engineers search logs, and alerts on anomalies.",
+        "answer": "Each application server runs a lightweight log-shipping agent that tails log files (or receives structured log events directly) and forwards them to a durable ingestion buffer (Kafka), decoupling producers from the downstream processing rate. Consumers read from Kafka and index logs into a search-optimized store (Elasticsearch/OpenSearch) for querying, while a separate metrics pipeline aggregates numeric time-series data (request counts, latencies) into a time-series database (Prometheus-style) for dashboards. An alerting service evaluates rules against the metrics store (e.g., 'error rate > 5% for 5 minutes') and fires notifications."
+      },
+      {
+        "prompt": "How do you handle a scale of terabytes of logs per day without the ingestion pipeline falling behind or costs spiraling out of control?",
+        "answer": "Apply sampling and log-level filtering at the source (don't ship every debug log at full fidelity in production; sample high-volume, low-value events) and use tiered storage - keep recent logs (e.g., last 7-14 days) in the hot, queryable search index, then roll older logs into cheap cold storage (S3/Glacier) that's only queried occasionally via batch jobs (Athena-style), rather than keeping everything in the expensive search cluster indefinitely. Scale the Kafka cluster and search cluster horizontally by partitioning by service/host, and pre-aggregate metrics at the edge (compute percentiles/counts locally before shipping) rather than shipping every raw data point, since most alerting only needs aggregates, not raw log lines."
+      },
+      {
+        "prompt": "What managed/off-the-shelf tools would you use instead of building this pipeline yourself?",
+        "answer": "The 'ELK stack' (Elasticsearch, Logstash/Fluentd for shipping, Kibana for visualization) or its managed equivalent (Elastic Cloud, AWS OpenSearch Service) is the standard building block for log search. For metrics and alerting, Prometheus + Grafana (or managed equivalents like Amazon Managed Service for Prometheus, Datadog, or New Relic) handle time-series storage, dashboards, and alerting rules out of the box, so most teams integrate these rather than building a custom pipeline end-to-end."
+      }
+    ],
+    "diagram": "flowchart LR\n    App1[App Server] -->|agent| Kafka[(Kafka Ingestion Buffer)]\n    App2[App Server] -->|agent| Kafka\n    Kafka --> LogIndex[(Search Index\\nElasticsearch)]\n    Kafka --> MetricsDB[(Time-series DB\\nPrometheus)]\n    LogIndex --> Dashboard[Search UI - Kibana]\n    MetricsDB --> Grafana[Dashboards - Grafana]\n    MetricsDB --> Alerting[Alerting Rules Engine]\n    Alerting -->|fires| Notify[On-call Notification]",
+    "id": 14
+  },
+  {
+    "title": "Design a Collaborative Document Editor",
+    "stages": [
+      {
+        "prompt": "Design a collaborative document editor (like Google Docs) where multiple users can edit the same document simultaneously and see each other's changes in near real-time.",
+        "answer": "Each client holds a local copy of the document and sends edit operations (not the whole document) to a central server over a WebSocket connection - e.g., 'insert character X at position 5'. The server broadcasts each operation to all other connected clients editing that document, and every client applies incoming operations to its local copy in the order received, keeping copies in sync. The server also persists a snapshot plus an operation log periodically so the document can be reconstructed and late-joining clients can catch up."
+      },
+      {
+        "prompt": "Two users edit the same region of the document at nearly the same time - how do you resolve the conflict so both edits are preserved correctly and everyone converges to the same final document?",
+        "answer": "This is the core hard problem, typically solved with Operational Transformation (OT) or Conflict-free Replicated Data Types (CRDTs). OT transforms an incoming operation against any operations that happened concurrently before applying it, so that applying operations in different orders on different clients still converges to the same result (this is what Google Docs originally used). CRDTs instead design the data structure itself (e.g., a sequence CRDT for text) so that concurrent operations are commutative and always merge deterministically without needing a central transform step, which simplifies peer-to-peer and offline scenarios at the cost of some memory overhead for tombstones/metadata. Most new collaborative editors (e.g., Figma's multiplayer engine) favor CRDT-based approaches for this reason."
+      },
+      {
+        "prompt": "What existing libraries or services would you use rather than implementing OT/CRDT logic from scratch?",
+        "answer": "Well-tested open-source CRDT libraries like Yjs or Automerge implement the hard conflict-resolution logic and are widely used in production collaborative apps, so most teams integrate one of these rather than writing OT/CRDT algorithms themselves (which are notoriously easy to get subtly wrong). For the real-time transport layer, managed WebSocket/pub-sub services (AWS AppSync, Pusher, Ably, or Firebase Realtime Database) handle connection fan-out and presence (who's currently viewing) without building a custom WebSocket gateway."
+      }
+    ],
+    "diagram": "flowchart LR\n    ClientA[Client A] <-->|WebSocket: ops| Server[Collab Server]\n    ClientB[Client B] <-->|WebSocket: ops| Server\n    Server -->|CRDT merge| DocState[(In-memory Doc State)]\n    Server -->|periodic snapshot| Persist[(Document Store)]\n    ClientA -.->|local CRDT replica| ClientA\n    ClientB -.->|local CRDT replica| ClientB",
+    "id": 15
+  },
+  {
+    "title": "Design a Content Delivery Network (CDN)",
+    "stages": [
+      {
+        "prompt": "Explain how a CDN works and design the core routing/caching logic that lets it serve static content (images, videos, JS bundles) with low latency worldwide.",
+        "answer": "A CDN operates a large number of geographically distributed edge servers (Points of Presence). When a client requests a resource, DNS-based or anycast routing directs them to the nearest/best-performing edge server rather than the origin server. That edge server checks its local cache: on a hit, it serves the content directly (fast, low latency, no origin load); on a miss, it fetches from the origin server (or a regional mid-tier cache), stores a copy locally per the cache policy (TTL-based), and serves it - subsequent nearby requests then hit the cache."
+      },
+      {
+        "prompt": "How does the CDN decide what to cache and for how long, and how do you handle invalidating cached content when the origin updates (e.g., a new app version needs old cached JS purged)?",
+        "answer": "Caching behavior is controlled via HTTP cache headers set by the origin (Cache-Control, ETag, max-age) - the CDN respects these to decide TTL and whether to revalidate. For content that rarely changes, use long TTLs plus cache-busting via versioned URLs (e.g., app.v123.js) so a new deploy is simply a new URL, avoiding invalidation entirely for immutable assets. For content that must be invalidated on demand (breaking news correction, a deleted image), CDNs provide an explicit purge/invalidation API that propagates a 'remove this from cache' instruction to all edge nodes, though this is typically slower and more expensive than TTL-based expiry, so it's used sparingly rather than as the primary strategy."
+      },
+      {
+        "prompt": "What managed CDN services would you use in practice?",
+        "answer": "CloudFront (AWS), Cloud CDN (GCP), Azure CDN, or third-party specialists like Cloudflare and Fastly - all provide the edge network, routing, and cache-invalidation APIs out of the box. Building your own global edge network is almost never justified given how commoditized and mature these offerings are; the engineering work in practice is mostly around correct cache-header configuration, cache-key design (e.g., varying cache by query params or headers when needed), and choosing a purge strategy."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client -->|DNS/anycast routing| Edge[Nearest Edge Server]\n    Edge -->|cache hit| Client\n    Edge -->|cache miss| Origin[(Origin Server)]\n    Origin --> Edge\n    Deploy[New Deploy] -->|purge API| Edge\n    Origin -->|cache headers: TTL, ETag| Edge",
+    "id": 16
+  },
+  {
+    "title": "Design an E-commerce Inventory and Order System",
+    "stages": [
+      {
+        "prompt": "Design the core of an e-commerce backend: product inventory tracking and order placement, ensuring you never oversell an item that's out of stock.",
+        "answer": "Store inventory as a row per SKU with an available_quantity column. Placing an order requires atomically decrementing inventory only if sufficient stock exists - typically a conditional update ('UPDATE inventory SET quantity = quantity - N WHERE sku = ? AND quantity >= N') inside the same database transaction as creating the order record, so either both succeed or neither does. If the conditional update affects zero rows, the order is rejected as out-of-stock before any payment is attempted."
+      },
+      {
+        "prompt": "During a flash sale, thousands of users try to buy the last 50 units of a popular item simultaneously. How do you keep this correct and fast without the inventory row becoming a massive contention bottleneck?",
+        "answer": "A single database row being updated by thousands of concurrent transactions will serialize and become a bottleneck (lock contention). Common mitigations: reserve stock with a short-lived hold (e.g., 'reserved for 5 minutes while payment completes') using an atomic decrement in a fast in-memory store (Redis, via DECR or a Lua script for atomicity) rather than hitting the primary database directly for every attempt, then asynchronously reconcile with the database. Alternatively, shard hot inventory counters (split the 50 units conceptually across multiple counter partitions) to spread contention, recombining if a shard runs out. Queue excess demand (a virtual waiting room) so the backend only processes as many concurrent purchase attempts as it can safely serialize."
+      },
+      {
+        "prompt": "What existing infrastructure patterns or services help with this?",
+        "answer": "Redis's atomic operations (INCR/DECR, or Lua scripts for compound check-and-decrement) are a standard building block for high-contention counters like flash-sale inventory. For the order/payment flow itself, most companies integrate a payment processor (Stripe, Adyen) that handles the actual charge with idempotency keys, while your own service focuses on the reservation/inventory logic; message queues (SQS/Kafka) decouple 'order placed' from downstream fulfillment/shipping systems so inventory checks stay fast and fulfillment processing happens asynchronously."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client -->|purchase request| API[Order API]\n    API -->|atomic reserve| Redis[(Redis Inventory Counter)]\n    Redis -->|reserved| Payment[Payment Processor]\n    Payment -->|success| OrderDB[(Order DB)]\n    Payment -->|success| Reconcile[Async Reconciler]\n    Reconcile --> InventoryDB[(Inventory DB - source of truth)]\n    Payment -->|failure/timeout| Release[Release Reservation]\n    Release --> Redis",
+    "id": 17
+  },
+  {
+    "title": "Design a Distributed Lock Service",
+    "stages": [
+      {
+        "prompt": "Design a distributed lock service that lets multiple processes across different machines coordinate exclusive access to a shared resource (e.g., only one worker should process a given task at a time).",
+        "answer": "A lock service exposes acquire(resource_id, ttl) and release(resource_id, token) operations. Acquiring a lock means atomically checking that no valid lock currently exists for that resource_id and, if so, writing a lock entry with a unique token and an expiry (TTL) - implemented as a single atomic operation (e.g., Redis's SET key value NX EX ttl, or a conditional write in a strongly consistent store). The TTL is critical: if the process holding the lock crashes, the lock automatically expires rather than being held forever, letting another process acquire it."
+      },
+      {
+        "prompt": "What happens if the process holding the lock is just slow (e.g., a long GC pause) and the lock expires while it's still working, letting a second process acquire the same lock and both now think they have exclusive access?",
+        "answer": "This is the classic 'lock validity vs. liveness' problem. Mitigations: use a fencing token - each successful lock acquisition returns a monotonically increasing number, and the protected resource (e.g., the storage system being written to) rejects any write that arrives with an older fencing token than one it's already seen, so even if two clients briefly believe they hold the lock, only the legitimate latest holder's writes are accepted. Additionally, the lock holder can periodically 'renew' (extend) the lease while still working, reducing (but not eliminating) the chance of premature expiry; the fencing-token check at the resource is what actually guarantees correctness, since clock/pause-based assumptions alone (like Redis's single-instance Redlock algorithm) are debated as insufficient for strict correctness guarantees."
+      },
+      {
+        "prompt": "What existing tools would you use instead of building this yourself?",
+        "answer": "ZooKeeper and etcd are purpose-built for distributed coordination (leader election, distributed locks, configuration) and provide fencing-token-like sequence numbers natively (ZooKeeper's sequential ephemeral nodes) - most production systems (Kafka historically, Kubernetes) rely on one of these rather than a hand-rolled lock service. For simpler, lower-stakes use cases, a managed Redis with the Redlock algorithm (or a single Redis instance's SET NX EX) is a common lighter-weight choice, with the caveat that it offers weaker guarantees than ZooKeeper/etcd for scenarios where correctness under network partitions is critical."
+      }
+    ],
+    "diagram": "flowchart LR\n    ClientA[Process A] -->|acquire resource_id| LockSvc[Lock Service - etcd/ZooKeeper]\n    ClientB[Process B] -->|acquire resource_id| LockSvc\n    LockSvc -->|grants w/ fencing token=42| ClientA\n    ClientA -->|write w/ token=42| Resource[(Protected Resource)]\n    ClientB -->|write w/ stale token=41| Resource\n    Resource -->|rejects stale token| ClientB",
+    "id": 18
+  },
+  {
+    "title": "Design a Metrics Aggregation System (Like Counter at Scale)",
+    "stages": [
+      {
+        "prompt": "Design a system to track and display 'like' counts on social media posts, where popular posts can receive thousands of likes per second.",
+        "answer": "Naively incrementing a single database row per like (UPDATE posts SET likes = likes + 1) becomes a severe write bottleneck for a viral post under heavy concurrent load. Instead, buffer like events into a fast in-memory counter (Redis INCR per post_id) which handles very high write throughput, and periodically (e.g., every few seconds) flush the accumulated count to the durable database asynchronously, rather than hitting the database on every single like."
+      },
+      {
+        "prompt": "How do you scale this to millions of distinct posts being liked simultaneously, and how do you keep the displayed count reasonably accurate without re-querying Redis on every single page view?",
+        "answer": "Shard the Redis layer by post_id (consistent hashing) so no single Redis instance becomes a hotspot even under many simultaneously-viral posts. For serving the count to viewers, don't query Redis on every page render - instead maintain a short-lived cached/denormalized count (e.g., in the CDN or an application-level cache with a few seconds of staleness) since like counts don't need to be real-time-exact for display purposes (a count that's a few seconds stale is an acceptable tradeoff for massively reduced read load). Use an event-driven pipeline (Kafka) to also feed the actual like events into analytics/ranking systems asynchronously, decoupled from the fast counter path."
+      },
+      {
+        "prompt": "What existing patterns or managed services fit this?",
+        "answer": "This is a textbook use case for Redis (or a managed equivalent like ElastiCache/Memorystore) as a high-throughput counter cache in front of a durable database, combined with a periodic write-back/flush job. For the broader class of 'aggregate a high-volume event stream into rollup counts,' stream-processing frameworks (Kafka Streams, Flink) with windowed aggregations are the standard tool, letting you compute not just raw counts but time-windowed trending metrics from the same event stream."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client -->|like event| API[Like API]\n    API -->|INCR post_id| Redis[(Sharded Redis Counters)]\n    Redis -->|periodic flush| DB[(Durable Post DB)]\n    API -->|event| Kafka[(Kafka - like events)]\n    Kafka --> Analytics[Analytics / Ranking Pipeline]\n    Viewer -->|read count| Cache[Short-TTL Read Cache]\n    Cache --> Redis",
+    "id": 19
+  },
+  {
+    "title": "Design a Web Analytics / Event Tracking Pipeline",
+    "stages": [
+      {
+        "prompt": "Design a system that ingests client-side analytics events (page views, button clicks) from a website with millions of daily visitors and makes them queryable for a dashboard (e.g., 'daily active users', 'conversion funnel').",
+        "answer": "The client-side SDK batches events locally and periodically sends them (e.g., every few seconds or on a batch-size threshold) to a lightweight ingestion endpoint, rather than firing a network request per single click, to reduce request volume. The ingestion service validates and writes events to a durable, high-throughput event log (Kafka), decoupling ingestion from downstream processing. A stream-processing job consumes from Kafka and writes events into an analytics-optimized data store (a columnar warehouse like BigQuery/Redshift/ClickHouse) that dashboards query."
+      },
+      {
+        "prompt": "How do you handle billions of events per day while keeping dashboard queries (like 'daily active users over the last 30 days') fast, rather than scanning raw event data every time?",
+        "answer": "Precompute rollups/aggregates on a schedule or continuously via stream processing (e.g., hourly/daily unique-user counts, funnel step counts) and store those aggregates separately from raw events, so dashboards query small precomputed tables instead of scanning billions of raw rows on every load. Use approximate algorithms for expensive distinct-count queries (HyperLogLog for approximate unique visitor counts) which trade a small, bounded error for dramatically less memory/compute than exact distinct counting at this scale. Partition the raw event warehouse table by date so queries scanning a specific time range don't touch unrelated partitions."
+      },
+      {
+        "prompt": "What managed/off-the-shelf tools would you use rather than building this pipeline yourself?",
+        "answer": "Managed analytics platforms (Google Analytics, Amplitude, Mixpanel, Segment as a collection/routing layer) already solve most of this end-to-end for many companies, and are a legitimate answer if the interviewer is asking about product decisions rather than infrastructure. For a custom in-house pipeline: Kafka or Kinesis for ingestion, a managed stream processor (Kinesis Data Analytics, Dataflow, or Flink), and a cloud data warehouse (BigQuery, Redshift, Snowflake) or a purpose-built real-time analytics database (ClickHouse, Druid) for the serving layer, with a BI tool (Looker, Tableau, Metabase) on top for dashboards."
+      }
+    ],
+    "diagram": "flowchart LR\n    Browser -->|batched events| Ingest[Ingestion API]\n    Ingest --> Kafka[(Kafka Event Log)]\n    Kafka --> Stream[Stream Processor - Flink]\n    Stream --> RawWarehouse[(Raw Event Warehouse\\npartitioned by date)]\n    Stream --> Rollups[(Precomputed Rollups\\nHyperLogLog counts)]\n    Dashboard[Analytics Dashboard] --> Rollups\n    Dashboard -.->|ad-hoc deep query| RawWarehouse",
+    "id": 20
+  },
+  {
+    "title": "Design a Distributed ID Generator",
+    "stages": [
+      {
+        "prompt": "Design a service that generates globally unique IDs across many servers, at high throughput, without a central bottleneck.",
+        "answer": "A common approach (Twitter's Snowflake) encodes an ID as a single 64-bit integer composed of a timestamp (milliseconds since a custom epoch), a machine/worker ID, and a per-millisecond sequence counter, all packed into fixed bit ranges. Each server generates its own IDs locally by combining the current timestamp with its assigned worker ID and an incrementing sequence number, requiring no coordination or round-trip to a central service, while the timestamp component keeps IDs roughly time-sortable."
+      },
+      {
+        "prompt": "How do you guarantee no two servers ever produce the same worker ID (which would cause ID collisions), especially as servers are added/removed dynamically in a cloud environment?",
+        "answer": "Use a coordination service (ZooKeeper or etcd) to atomically assign each server a unique worker ID from a bounded pool when it starts up, releasing the ID when the server shuts down cleanly; if a server crashes without releasing, a lease/TTL on the assignment lets it expire and be reclaimed. Alternatively, in containerized/cloud environments, derive the worker ID deterministically from a stable identifier the orchestrator already guarantees is unique (e.g., a Kubernetes StatefulSet's pod ordinal), avoiding the need for a coordination service at all."
+      },
+      {
+        "prompt": "What existing tools or managed services would you use instead of implementing Snowflake-style generation yourself?",
+        "answer": "Many databases have this built in: PostgreSQL/MySQL auto-increment or sequence objects work for single-database setups; for distributed systems, MongoDB's ObjectId, Cassandra/ScyllaDB's TimeUUID, or a managed distributed SQL database (CockroachDB, Google Spanner) that generates globally unique, roughly-ordered IDs natively are common choices, letting you avoid operating a separate ID-generation service entirely."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client -->|request ID| Server1[App Server 1\\nworker_id=1]\n    Client -->|request ID| Server2[App Server 2\\nworker_id=2]\n    Server1 -->|local: timestamp+workerID+seq| ID1[64-bit ID]\n    Server2 -->|local: timestamp+workerID+seq| ID2[64-bit ID]\n    Coord[Coordination Service\\netcd/ZooKeeper] -.->|assigns worker_id on startup| Server1\n    Coord -.->|assigns worker_id on startup| Server2",
+    "id": 21
+  },
+  {
+    "title": "Design a Distributed File Storage System (like Dropbox)",
+    "stages": [
+      {
+        "prompt": "Design a file-sync service (like Dropbox) that lets users upload files, sync them across multiple devices, and share them with others.",
+        "answer": "Split files into fixed-size chunks and store each chunk in a content-addressed object store (keyed by hash of contents), with a separate metadata service tracking {file_id, owner, chunk_hashes in order, version, permissions}. Chunking with content-addressing means only changed chunks need re-upload/re-download when a file is edited (deduplication), and identical chunks across different users' files are stored only once. Each client keeps a local sync agent that watches the filesystem for changes, computes changed chunks, and syncs deltas with the server rather than re-uploading whole files."
+      },
+      {
+        "prompt": "How do you handle two devices editing the same file offline and then both coming back online with conflicting changes?",
+        "answer": "Detect conflicts via version vectors or a simple last-write-wins with version numbers: each sync records the version it was based on, and if a client tries to push a change based on a stale version (because someone else's edit already landed), the server rejects it and the client resolves by creating a conflicted copy (e.g., 'file (conflicted copy).txt') rather than silently overwriting data, letting the user manually reconcile. For structured documents, more sophisticated CRDT/OT-based merging (as in a collaborative editor) can auto-merge non-conflicting changes, but for opaque binary files, conflicted-copy is the standard pragmatic approach."
+      },
+      {
+        "prompt": "What managed services would you use to implement the chunk storage and sync infrastructure?",
+        "answer": "S3 (or GCS/Azure Blob) for content-addressed chunk storage with built-in deduplication-friendly addressing, DynamoDB or a similar low-latency store for the file/chunk metadata index, and a WebSocket or long-polling notification service (API Gateway WebSockets, or a managed pub/sub like SNS) to push 'something changed, sync now' events to other online devices in near real time, rather than having every device poll constantly."
+      }
+    ],
+    "diagram": "flowchart TD\n    ClientA[Device A] -->|changed chunks| SyncAPI[Sync API]\n    ClientB[Device B] -->|changed chunks| SyncAPI\n    SyncAPI --> ChunkStore[(Content-addressed Chunk Store - S3)]\n    SyncAPI --> MetaDB[(File Metadata DB\\nversions, chunk lists)]\n    SyncAPI -->|change notification| PubSub[(Pub/Sub)]\n    PubSub -->|sync now| ClientB\n    ClientA -.->|conflict detected| ConflictCopy[Conflicted Copy Created]",
+    "id": 22
+  },
+  {
+    "title": "Design a Distributed Configuration Management Service",
+    "stages": [
+      {
+        "prompt": "Design a centralized configuration service that lets hundreds of microservices fetch and be notified of configuration changes (feature flags, rate limits, connection strings) without redeploying.",
+        "answer": "A config service stores key-value configuration (often namespaced per-service/per-environment) in a strongly consistent store, exposes a read API for services to fetch current config on startup, and supports a watch/subscribe mechanism (long-polling or streaming) so services are notified quickly when a value changes rather than needing to poll constantly. Each service caches the last-known config locally so it can keep running with stale-but-valid config even if the config service is briefly unreachable."
+      },
+      {
+        "prompt": "How do you roll out a risky configuration change (like a new rate limit) safely to thousands of service instances without causing a global outage if the value turns out to be wrong?",
+        "answer": "Support staged/percentage-based rollout: apply the new config value to a small percentage of instances or a specific canary service group first, monitor error rates/metrics, and progressively widen the rollout - functionally the same canary-deployment principle used for code deploys, applied to config. Critically, keep a fast, well-tested rollback path (revert to the previous config version) that can be triggered in seconds, since a bad config change should be as cheap to undo as it was to apply."
+      },
+      {
+        "prompt": "What existing tools would you use instead of building a config service from scratch?",
+        "answer": "etcd or Consul are purpose-built for exactly this (strongly consistent key-value storage with a watch API, used heavily by Kubernetes itself for cluster config). Feature-flag-specific platforms (LaunchDarkly, Unleash, or AWS AppConfig) add staged-rollout and targeting rules (e.g., 'enable for 5% of users in this region') on top of basic config storage, which is usually preferable to re-implementing percentage rollout logic yourself."
+      }
+    ],
+    "diagram": "flowchart LR\n    Config[Config Store - etcd/Consul] -->|watch/stream| Svc1[Service Instance 1]\n    Config -->|watch/stream| Svc2[Service Instance 2]\n    Config -->|watch/stream| Svc3[Service Instance 3 - canary]\n    Operator[Operator] -->|staged rollout: canary first| Config\n    Svc1 -.->|cached fallback config| Svc1\n    Metrics[Metrics/Alerting] -.->|bad rollout detected| Operator",
+    "id": 23
+  },
+  {
+    "title": "Design a Multiplayer Game Backend (Real-Time State Sync)",
+    "stages": [
+      {
+        "prompt": "Design the backend for a real-time multiplayer game (e.g., a battle-royale style game) where many players' actions must be synchronized with low latency.",
+        "answer": "Each active match runs on a dedicated game-server process (often one process per match instance, since game state needs low-latency, tightly-coupled simulation) that all players in that match connect to via UDP or a low-latency protocol, sending input commands and receiving authoritative world-state updates at a fixed tick rate. The server is authoritative over game state (to prevent cheating) - clients render a locally-predicted view for responsiveness (client-side prediction) and reconcile/correct when the server's authoritative update arrives, rather than waiting for a round-trip before showing any effect of a player's action."
+      },
+      {
+        "prompt": "How do you matchmake players into game-server instances at scale, and handle a game server crashing mid-match?",
+        "answer": "A separate matchmaking service queues players (often grouped by skill rating/region) and, once a suitable group is formed, requests a game-server instance from a fleet manager (which allocates a server process/container, possibly spinning up new capacity if the fleet is near saturation) and hands connection details back to the matched players. For crash resilience, the fleet manager monitors server health; if a game server crashes mid-match, there's typically no seamless mid-match recovery for real-time games (state is often lost), but the fleet manager detects the failure quickly and can notify affected players so they aren't left hanging indefinitely, and logs enough match state periodically for post-match stats/anti-cheat review even if the live match can't be resumed."
+      },
+      {
+        "prompt": "What managed game-backend services would you use rather than building the fleet/matchmaking infrastructure yourself?",
+        "answer": "Amazon GameLift (or GameLift FleetIQ) and similar managed game-server-hosting platforms handle fleet scaling, health monitoring, and matchmaking queue integration specifically for this use case, so most studios integrate one of these rather than building custom fleet management. For the low-latency networking layer itself, engines commonly use UDP-based libraries (ENet, or engine-native networking in Unreal/Unity) rather than building a custom transport protocol from scratch."
+      }
+    ],
+    "diagram": "flowchart LR\n    PlayerA[Player A] -->|queue| Matchmaker[Matchmaking Service]\n    PlayerB[Player B] -->|queue| Matchmaker\n    Matchmaker -->|allocate| Fleet[Fleet Manager]\n    Fleet -->|spin up| GameServer[Dedicated Game Server\\nauthoritative state]\n    PlayerA <-->|UDP: inputs / state updates| GameServer\n    PlayerB <-->|UDP: inputs / state updates| GameServer\n    Fleet -.->|health check| GameServer",
+    "id": 24
+  },
+  {
+    "title": "Design a Recommendation System",
+    "stages": [
+      {
+        "prompt": "Design a product/content recommendation system (like 'you might also like') for an e-commerce or streaming platform.",
+        "answer": "Two classic approaches, often combined: collaborative filtering (recommend items liked by users with similar behavior to the target user, using a user-item interaction matrix) and content-based filtering (recommend items similar in attributes/features to what the user already liked). At serving time, a candidate-generation step retrieves a broad set of plausible items quickly (e.g., via an approximate-nearest-neighbor search over learned embeddings, or precomputed 'users who liked X also liked Y' lookups), then a ranking model scores and orders that smaller candidate set using richer features, since running a heavy model over the entire catalog per request would be too slow."
+      },
+      {
+        "prompt": "How do you keep recommendations fresh (reflecting a user's behavior from the last few minutes, like items they just viewed) while still being backed by embeddings/models that are expensive to retrain frequently?",
+        "answer": "Separate the system into a slow-changing offline layer (batch-trained embeddings/models, retrained daily or hourly on aggregate historical data) and a fast online layer (a real-time feature store capturing the user's most recent actions - clicks, views - within the current session) that's blended into the ranking step at request time. This way, the expensive model training happens on a relaxed schedule, while recent-behavior signals (which don't need a full retrain to be useful, e.g., simple re-ranking boosts for recently-viewed categories) keep results feeling responsive to what the user is doing right now."
+      },
+      {
+        "prompt": "What existing infrastructure/services would you use rather than building the whole recommendation pipeline from scratch?",
+        "answer": "Managed ML platforms (AWS Personalize, Google Recommendations AI/Vertex AI Matching Engine) provide built-in collaborative-filtering and candidate-generation pipelines specifically for recommendations, letting teams skip building the training infrastructure. For custom pipelines, a vector database (Pinecone, Weaviate, or pgvector on Postgres) handles the approximate-nearest-neighbor candidate generation over learned embeddings, while a feature store (Feast, or a cloud-native equivalent) supplies the real-time behavioral features to the ranking step, and the ranking model itself is typically served via a standard model-serving platform (SageMaker, Vertex AI Prediction, or a lightweight in-house service)."
+      }
+    ],
+    "diagram": "flowchart TD\n    Batch[Offline Batch Training] -->|embeddings| VectorDB[(Vector DB - candidate gen)]\n    Client -->|request recs| CandidateSvc[Candidate Generation]\n    CandidateSvc --> VectorDB\n    RecentActivity[(Real-time Feature Store\\nrecent clicks/views)] --> RankSvc[Ranking Service]\n    CandidateSvc -->|candidates| RankSvc\n    RankSvc -->|ranked list| Client",
+    "id": 25
+  },
+  {
+    "title": "Design an Ad Click Tracking and Billing System",
+    "stages": [
+      {
+        "prompt": "Design a system that tracks ad impressions and clicks at scale and accurately bills advertisers based on a cost-per-click model.",
+        "answer": "When an ad is served, log an impression event (ad_id, user_id, timestamp, a unique impression_id) to a durable event pipeline. When a click occurs, the click event references the impression_id, letting the system attribute the click to the exact ad serving that generated it and reject fraudulent or duplicate clicks not tied to a valid recent impression. Billing aggregates valid clicks per advertiser per billing period and deducts from their budget, with the aggregation computed asynchronously from the raw event stream rather than synchronously on every click, since billing correctness matters more than billing latency."
+      },
+      {
+        "prompt": "How do you prevent click fraud (bots or malicious actors generating fake clicks to drain a competitor's budget) and ensure an advertiser is never billed twice for the same click, even with retries in a distributed system?",
+        "answer": "For fraud, apply multiple signals: rate-limit clicks per user/IP within short windows, use bot-detection heuristics (mouse movement, timing patterns, known bot IP ranges), and require a valid, recent, non-reused impression_id per click, flagging statistical anomalies (e.g., a single IP generating an implausible click-through rate) for review or automatic exclusion from billing. For exactly-once billing despite retries, generate an idempotency key per click event (e.g., derived from impression_id) and use it to deduplicate at the aggregation stage, so a network retry that resends the same click event doesn't get double-counted, similar to idempotency-key patterns used in payment processing."
+      },
+      {
+        "prompt": "What data infrastructure would you use to handle this at scale (billions of ad events per day)?",
+        "answer": "Kafka (or Kinesis) ingests the raw impression/click event stream at high throughput; a stream processor (Flink or Kafka Streams) performs real-time deduplication and fraud-signal scoring; aggregated, validated click counts land in a data warehouse (BigQuery/Redshift/Snowflake) for billing computation and advertiser-facing reporting dashboards. Real-time budget enforcement (pausing an ad campaign once its budget is exhausted) typically uses a fast in-memory counter (Redis) updated as valid clicks are confirmed, similar to the rate-limiter and hot-counter patterns used elsewhere in high-throughput systems."
+      }
+    ],
+    "diagram": "flowchart LR\n    AdServe[Ad Served] -->|impression event| Kafka[(Kafka)]\n    ClickEvent[Click Event] -->|references impression_id| Kafka\n    Kafka --> Stream[Stream Processor\\ndedup + fraud scoring]\n    Stream --> Warehouse[(Data Warehouse\\nbilling aggregation)]\n    Stream --> BudgetCounter[(Redis Budget Counter)]\n    BudgetCounter -->|budget exhausted| PauseCampaign[Pause Ad Campaign]",
+    "id": 26
+  },
+  {
+    "title": "Design a Health-Check / Service Discovery System",
+    "stages": [
+      {
+        "prompt": "Design a service discovery system that lets microservices find healthy instances of other services to call, in an environment where instances are constantly starting, stopping, and scaling.",
+        "answer": "Each service instance registers itself with a service registry on startup (announcing its address and the service name it provides) and periodically sends heartbeats to prove it's still alive; the registry removes entries whose heartbeat has expired. When service A wants to call service B, it queries the registry for currently healthy instances of B and picks one (often via client-side load balancing - round robin or least-connections among the returned healthy instances) rather than going through a single central load balancer for every call."
+      },
+      {
+        "prompt": "What happens if the service registry itself becomes unavailable or slow - does every service call in your whole system now fail?",
+        "answer": "This is why clients should cache the last-known-healthy instance list locally and continue using it (with periodic background refresh) rather than querying the registry synchronously on every single call - a brief registry outage then just means slightly stale routing information rather than a total system outage. The registry itself should also be run as a highly-available cluster (e.g., a Raft-based consensus cluster like etcd/Consul, which tolerates the failure of a minority of its nodes) rather than a single instance, since it's a piece of shared infrastructure that many services depend on."
+      },
+      {
+        "prompt": "What existing tools handle this instead of building a custom registry?",
+        "answer": "Consul, etcd, and Apache ZooKeeper are the standard building blocks for service registration and discovery, each providing consistent storage plus health-checking and watch APIs. In Kubernetes environments, this is largely built in already: Kubernetes Services and DNS-based discovery, combined with the kubelet's liveness/readiness probes, provide registration and health-checking without needing a separate registry component at all."
+      }
+    ],
+    "diagram": "flowchart LR\n    SvcB1[Service B Instance 1] -->|register + heartbeat| Registry[(Service Registry - Consul/etcd)]\n    SvcB2[Service B Instance 2] -->|register + heartbeat| Registry\n    SvcA[Service A] -->|query: healthy B instances| Registry\n    Registry -->|B1, B2| SvcA\n    SvcA -->|client-side load balance| SvcB1\n    SvcA -.->|cached fallback list| SvcA",
+    "id": 27
+  },
+  {
+    "title": "Design a Distributed Web Cache Invalidation System",
+    "stages": [
+      {
+        "prompt": "Design a system to keep cached data (e.g., in a CDN or application cache layer) consistent when the underlying source data changes across a large, geographically distributed cache fleet.",
+        "answer": "Most systems favor TTL-based expiry as the default (cached entries simply expire after a set time and are refetched), which requires no coordination at all and tolerates some staleness by design. For cases needing faster invalidation, tag cached entries with the resource(s) they depend on, and when that resource changes, publish an invalidation event (resource key) to a pub/sub system that all cache nodes subscribe to, so each node can purge matching entries from its local cache upon receiving the event."
+      },
+      {
+        "prompt": "At a scale of thousands of cache nodes across many regions, how do you avoid the invalidation event itself becoming a bottleneck or arriving too slowly to matter?",
+        "answer": "Use a fan-out pub/sub backbone (Kafka, or a purpose-built CDN invalidation API) that's designed for high-throughput broadcast rather than point-to-point delivery to each node, and batch invalidations where possible (e.g., invalidate by a prefix or a versioned cache key rather than issuing one event per exact key) to reduce event volume. A common practical trick that sidesteps propagation-speed concerns almost entirely is cache-key versioning: instead of invalidating an old cache entry, encode a version number in the cache key itself (e.g., derived from a 'last updated' timestamp on the source data); a data change simply produces a new key that nobody has cached yet, and the old entry harmlessly expires via its normal TTL rather than needing to be actively purged anywhere."
+      },
+      {
+        "prompt": "What existing services/patterns would you rely on rather than building fleet-wide invalidation from scratch?",
+        "answer": "CDNs (CloudFront, Fastly, Cloudflare) provide built-in purge/invalidation APIs that handle fleet-wide propagation for you; application-level caches typically use Redis pub/sub or a message queue (Kafka/SNS) to broadcast invalidation events to subscriber instances. In practice, most senior engineers reach for TTL-plus-versioned-keys as the default strategy specifically because it avoids needing a fleet-wide invalidation system at all for the majority of use cases."
+      }
+    ],
+    "diagram": "flowchart LR\n    Source[Source Data Changes] -->|publish invalidation| PubSub[(Pub/Sub - Kafka/Redis)]\n    PubSub --> Cache1[Cache Node - Region A]\n    PubSub --> Cache2[Cache Node - Region B]\n    PubSub --> Cache3[Cache Node - Region C]\n    Source -.->|alt: versioned cache key| VersionedKey[New key: resource:v124]\n    VersionedKey -.->|old key expires via TTL| OldEntry[resource:v123 - stale, unused]",
+    "id": 28
+  },
+  {
+    "title": "Design a Two-Factor Authentication (2FA) System",
+    "stages": [
+      {
+        "prompt": "Design a two-factor authentication system supporting time-based one-time passwords (TOTP, like Google Authenticator) as a second login factor.",
+        "answer": "On enrollment, generate a random secret key for the user, share it with their authenticator app (via QR code), and store it securely (encrypted at rest) associated with the user's account. TOTP codes are generated by both the app and the server independently using the shared secret combined with the current time (rounded to a time step, typically 30 seconds), via an HMAC-based algorithm - since both sides compute the same code from the same secret and time without any network communication needed, verification is just comparing the server's independently-computed expected code against what the user submits."
+      },
+      {
+        "prompt": "How do you handle clock drift between the user's device and your server (which would cause valid codes to be rejected), and how do you prevent a leaked/intercepted code from being replayed?",
+        "answer": "Accept codes from a small window of adjacent time steps (e.g., the current step plus one step before/after) to tolerate minor clock drift, rather than requiring exact synchronization - this is a standard, bounded tolerance built into the TOTP spec's usage recommendations. To prevent replay, once a code has been successfully used, record it (or its time step) as consumed for that user and reject any repeat submission of the same code within its validity window, so even if an attacker intercepts a valid code, it can't be reused after the legitimate login completes."
+      },
+      {
+        "prompt": "What existing libraries or services would you use rather than implementing the TOTP algorithm and secret management yourself?",
+        "answer": "TOTP (RFC 6238) is a well-standardized algorithm with mature, audited libraries in every major language (e.g., pyotp for Python, otplib for JavaScript) - implementing the cryptographic HMAC logic yourself is unnecessary and risky. For enrollment/secret storage and broader 2FA flows (including SMS or push-based factors as alternatives), managed identity platforms (Auth0, AWS Cognito, Okta) provide this out of the box, which is often preferable to self-hosting secret storage given the security sensitivity of the data involved."
+      }
+    ],
+    "diagram": "flowchart LR\n    User[User Enrolls] -->|shared secret via QR code| App[Authenticator App]\n    User -->|shared secret| Server[(Encrypted Secret Store)]\n    App -->|HMAC secret+time| Code1[Generated Code]\n    Server -->|HMAC secret+time| Code2[Expected Code]\n    User -->|submits code| LoginAPI[Login API]\n    LoginAPI -->|compare| Code2\n    LoginAPI -->|check not reused| UsedCodes[(Consumed Codes Log)]",
+    "id": 29
+  },
+  {
+    "title": "Design a Distributed Job Deduplication System",
+    "stages": [
+      {
+        "prompt": "Design a system to prevent the same logical job (e.g., 'send welcome email to user X') from being processed twice, even if it's accidentally enqueued multiple times by an upstream producer.",
+        "answer": "Assign each job a deterministic idempotency key derived from its logical identity (e.g., a hash of user_id + email_type + a coarse time bucket, so retries of 'the same' job produce the same key) rather than a random ID. Before processing a job, atomically check-and-set that key in a fast store (e.g., Redis SETNX with a TTL, or a unique-constraint insert into a database table) - if the key already exists, skip processing since it's a duplicate; if not, the atomic set both claims the job and records that it's being handled."
+      },
+      {
+        "prompt": "What happens if a worker claims a job (successfully sets the dedup key) but then crashes before finishing it \u2014 does the job get silently lost forever since the key now permanently blocks reprocessing?",
+        "answer": "Set the dedup key with a TTL slightly longer than the expected job processing time, and only mark it as 'permanently complete' (or extend/remove the TTL appropriately) after the job actually finishes successfully. If a worker crashes mid-processing, the dedup key simply expires after its TTL, allowing another worker to pick up and reprocess the job - trading a small risk of duplicate processing after a crash (which the idempotency key at least bounds to a narrow window) for guaranteed eventual completion, rather than permanently losing jobs whenever a worker dies mid-task."
+      },
+      {
+        "prompt": "What existing infrastructure supports this pattern rather than building custom dedup logic?",
+        "answer": "Most modern message queues have deduplication built in for exactly this scenario: Amazon SQS FIFO queues support a MessageDeduplicationId with a 5-minute dedup window natively, and Kafka can achieve similar guarantees via idempotent producers plus consumer-side deduplication using a processed-offsets store. For custom job queues, Redis's atomic SET NX EX (set-if-not-exists with expiry) remains the standard building block underlying most homegrown implementations of this pattern."
+      }
+    ],
+    "diagram": "flowchart LR\n    Producer[Job Producer\\nmay retry/duplicate] -->|enqueue job| Queue[(Job Queue)]\n    Queue --> Worker[Worker]\n    Worker -->|SETNX dedup_key TTL| DedupStore[(Redis Dedup Store)]\n    DedupStore -->|key existed: skip| Worker\n    DedupStore -->|key new: proceed| Process[Process Job]\n    Process -->|crash before finish| Expire[Key expires via TTL]\n    Expire -.->|reclaimable| Worker",
+    "id": 30
   }
 ]

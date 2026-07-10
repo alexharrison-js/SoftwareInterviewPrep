@@ -346,5 +346,773 @@
     "category": "Applied AI",
     "question": "What is the difference between online and batch/offline inference?",
     "answer": "Online inference serves individual requests in real time with low latency requirements (e.g., a chat response). Batch/offline inference processes large volumes of data at once without strict per-item latency requirements (e.g., generating embeddings for an entire document corpus overnight), typically prioritizing throughput and cost-efficiency over speed of any single result."
+  },
+  {
+    "category": "NLP",
+    "question": "What is a bag-of-words model?",
+    "answer": "A simple text representation that treats a document as an unordered collection (multiset) of its words, typically as word counts or frequencies, discarding grammar and word order entirely.",
+    "id": 59
+  },
+  {
+    "category": "NLP",
+    "question": "What is TF-IDF?",
+    "answer": "Term Frequency-Inverse Document Frequency: a weighting scheme that scores a word's importance in a document relative to a corpus - high for words frequent in the document but rare across the corpus, low for common words (like 'the') that appear everywhere and carry little distinguishing information.",
+    "id": 60
+  },
+  {
+    "category": "NLP",
+    "question": "What is Named Entity Recognition (NER)?",
+    "answer": "An NLP task that identifies and classifies spans of text into predefined categories such as person names, organizations, locations, and dates.",
+    "id": 61
+  },
+  {
+    "category": "NLP",
+    "question": "What is part-of-speech (POS) tagging?",
+    "answer": "Labeling each word in a sentence with its grammatical role (noun, verb, adjective, etc.), often used as a preprocessing step for downstream parsing or information extraction.",
+    "id": 62
+  },
+  {
+    "category": "NLP",
+    "question": "What is the difference between stemming and lemmatization?",
+    "answer": "Stemming crudely chops word endings using heuristic rules to reach a root form (e.g., 'running' -> 'run', but sometimes producing non-words like 'studies' -> 'studi'). Lemmatization uses vocabulary and morphological analysis to return the actual dictionary base form (lemma), e.g., 'better' -> 'good', and is generally more accurate but more computationally expensive.",
+    "id": 63
+  },
+  {
+    "category": "NLP",
+    "question": "What is perplexity, as used to evaluate language models?",
+    "answer": "A measurement of how well a probability model predicts a sample, calculated as the exponentiated average negative log-likelihood per token; lower perplexity means the model assigns higher probability to the actual next tokens, indicating a better fit (though it doesn't always correlate perfectly with downstream task quality or human judgments of output quality).",
+    "id": 64
+  },
+  {
+    "category": "NLP",
+    "question": "What is BLEU score used for?",
+    "answer": "A metric (Bilingual Evaluation Understudy) originally developed for machine translation that measures how much n-gram overlap a generated text has with one or more reference texts, producing a score used to automatically approximate translation quality without human judges.",
+    "id": 65
+  },
+  {
+    "category": "NLP",
+    "question": "What is the difference between a language model and a masked language model?",
+    "answer": "A (causal/autoregressive) language model predicts the next token given only preceding tokens (left-to-right), as in GPT. A masked language model instead randomly masks tokens throughout the input and predicts them using context from both directions, as in BERT - suited to understanding tasks rather than open-ended generation.",
+    "id": 66
+  },
+  {
+    "category": "NLP",
+    "question": "What is sentiment analysis?",
+    "answer": "An NLP task that classifies text according to the emotional tone or opinion it expresses, commonly positive/negative/neutral, used for applications like analyzing product reviews or social media sentiment.",
+    "id": 67
+  },
+  {
+    "category": "NLP",
+    "question": "What is coreference resolution?",
+    "answer": "The task of determining which words/phrases in a text refer to the same real-world entity, e.g., linking 'she' back to 'Maria' mentioned earlier in the same passage.",
+    "id": 68
+  },
+  {
+    "category": "NLP",
+    "question": "What is word sense disambiguation?",
+    "answer": "Determining which meaning of a polysemous word (a word with multiple meanings, like 'bank') is intended given its context, a classic and still-challenging NLP problem.",
+    "id": 69
+  },
+  {
+    "category": "NLP",
+    "question": "What is byte-pair encoding (BPE) and why is it used for tokenization?",
+    "answer": "An algorithm that iteratively merges the most frequent adjacent pairs of characters/subwords in a training corpus to build a vocabulary of common subword units. It lets a model represent any input text (including rare or novel words) as a sequence of known subword pieces, balancing vocabulary size against the ability to handle out-of-vocabulary words.",
+    "id": 70
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is image segmentation, and how does it differ from classification and object detection?",
+    "answer": "Classification assigns a single label to an entire image. Object detection locates and classifies multiple objects with bounding boxes. Image segmentation goes further, assigning a class label to every individual pixel, producing a precise outline of each object's shape rather than just a rectangle around it.",
+    "id": 71
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is the difference between semantic segmentation and instance segmentation?",
+    "answer": "Semantic segmentation labels every pixel with a class (e.g., 'car') without distinguishing between separate objects of the same class. Instance segmentation additionally distinguishes individual object instances, so two overlapping cars get separate masks rather than one merged 'car' region.",
+    "id": 72
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is a pooling layer in a CNN, and why is it used?",
+    "answer": "A layer that downsamples feature maps (e.g., max pooling takes the maximum value in each local region), reducing spatial dimensions and computation while providing some translation invariance, making the network less sensitive to the exact pixel location of a detected feature.",
+    "id": 73
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is data augmentation, and why is it commonly used in computer vision?",
+    "answer": "Artificially expanding a training dataset by applying label-preserving transformations (rotation, flipping, cropping, color jitter, etc.) to existing images, which helps reduce overfitting and improves a model's robustness to variations it will encounter at inference time.",
+    "id": 74
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is a Generative Adversarial Network (GAN)?",
+    "answer": "A framework where two neural networks - a generator that creates fake samples and a discriminator that tries to distinguish real from fake - are trained adversarially against each other, with the generator improving as it learns to fool an increasingly capable discriminator, historically a popular approach for realistic image generation.",
+    "id": 75
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is a diffusion model, and how does it differ from a GAN for image generation?",
+    "answer": "A diffusion model learns to generate images by starting from random noise and iteratively denoising it over many steps, guided by a model trained to predict/remove noise at each step. Unlike GANs' adversarial training (which can be unstable and prone to mode collapse), diffusion models train via a more stable denoising objective and have become the dominant approach behind systems like Stable Diffusion and DALL-E.",
+    "id": 76
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is transfer learning's role in computer vision specifically (e.g., using ImageNet pretraining)?",
+    "answer": "A CNN pretrained on a large, general image dataset (like ImageNet) learns broadly useful low- and mid-level visual features (edges, textures, shapes) in its early layers; these can be reused by fine-tuning only the later layers (or the whole network at a low learning rate) on a smaller, task-specific dataset, dramatically reducing the data and compute needed compared to training from scratch.",
+    "id": 77
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is a Vision Transformer (ViT)?",
+    "answer": "An architecture that applies the Transformer (originally designed for text) to images by splitting an image into fixed-size patches, treating each patch like a token, and processing the sequence of patch embeddings with standard self-attention - showing that convolutional inductive biases aren't strictly necessary for strong image classification performance given enough training data.",
+    "id": 78
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is optical character recognition (OCR)?",
+    "answer": "The task of converting images of typed, handwritten, or printed text into machine-readable text, combining elements of image processing/segmentation with sequence recognition or language modeling to handle ambiguous characters.",
+    "id": 79
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is non-maximum suppression, and where is it used?",
+    "answer": "A post-processing step in object detection that removes duplicate/overlapping bounding box predictions for the same object, keeping only the highest-confidence box among a cluster of boxes that overlap significantly (measured via Intersection over Union), so each detected object ends up with one final box rather than many redundant ones.",
+    "id": 80
+  },
+  {
+    "category": "MLOps",
+    "question": "What is a feature store, and why do ML teams use one?",
+    "answer": "A centralized system for storing, managing, and serving machine learning features (both for training and low-latency online inference), ensuring consistency between the features a model was trained on and the features it sees in production, and letting teams reuse features across multiple models rather than recomputing them redundantly.",
+    "id": 81
+  },
+  {
+    "category": "MLOps",
+    "question": "What is model drift, and what are its two main types?",
+    "answer": "The degradation of a model's performance over time as the real world diverges from the conditions it was trained under. Data drift (or covariate shift) is when the distribution of input features changes; concept drift is when the actual relationship between inputs and the target output changes, even if the input distribution stays the same.",
+    "id": 82
+  },
+  {
+    "category": "MLOps",
+    "question": "What is A/B testing in the context of deploying ML models?",
+    "answer": "Serving two (or more) model versions to different randomized segments of live traffic simultaneously and comparing a business or performance metric between them, to measure a new model's real-world impact before fully rolling it out, rather than relying solely on offline evaluation metrics.",
+    "id": 83
+  },
+  {
+    "category": "MLOps",
+    "question": "What is a shadow deployment (or shadow mode)?",
+    "answer": "Running a new model in production alongside the existing live model, where the new model's predictions are logged and compared but not actually shown to users or acted upon - letting teams validate real-world behavior and catch issues before the new model affects any live traffic.",
+    "id": 84
+  },
+  {
+    "category": "MLOps",
+    "question": "What is canary deployment for ML models?",
+    "answer": "Gradually rolling out a new model version to a small percentage of production traffic first, monitoring for problems, and progressively increasing that percentage if it performs well - limiting the blast radius of a bad model compared to switching 100% of traffic at once.",
+    "id": 85
+  },
+  {
+    "category": "MLOps",
+    "question": "What is model versioning, and why does it matter?",
+    "answer": "Systematically tracking distinct trained versions of a model (along with the code, data, and hyperparameters that produced them), so you can reproduce results, roll back to a previous version if a new one underperforms, and audit which exact model produced a given historical prediction.",
+    "id": 86
+  },
+  {
+    "category": "MLOps",
+    "question": "What is the difference between training-serving skew and how can it be prevented?",
+    "answer": "Training-serving skew occurs when the feature computation logic differs between training (often batch, e.g., in a data warehouse) and serving (often real-time, in application code), causing a model to see subtly different feature values in production than it learned from - degrading performance in ways that can be hard to diagnose. It's mitigated by using the same feature computation code/pipeline (or a shared feature store) for both training and serving.",
+    "id": 87
+  },
+  {
+    "category": "MLOps",
+    "question": "What is a champion-challenger framework?",
+    "answer": "A deployment pattern where a current production ('champion') model continues serving live traffic while one or more candidate ('challenger') models are evaluated in parallel (via shadow mode or a small traffic split), and a challenger is promoted to champion only once it demonstrates better real-world performance.",
+    "id": 88
+  },
+  {
+    "category": "MLOps",
+    "question": "What is model monitoring, and what should typically be tracked in production?",
+    "answer": "Continuously observing a deployed model's inputs, outputs, and performance to catch issues early - typically tracking prediction distributions (for drift), latency/throughput, error rates, and, where ground truth becomes available with a delay, actual accuracy/business metrics, plus alerting when any of these deviate significantly from expected baselines.",
+    "id": 89
+  },
+  {
+    "category": "MLOps",
+    "question": "What is a data pipeline's role in an ML system, and why is data validation a critical step within it?",
+    "answer": "A data pipeline extracts, transforms, and loads data from raw sources into the format needed for training/serving. Data validation (schema checks, range checks, missing-value checks) catches upstream data quality issues before they silently corrupt model training or produce bad predictions - since ML systems tend to fail silently on bad data rather than crashing outright, validation is one of the most important (and often underinvested) parts of a production ML pipeline.",
+    "id": 90
+  },
+  {
+    "category": "MLOps",
+    "question": "What is the difference between online and offline evaluation of a model?",
+    "answer": "Offline evaluation measures performance on a static, historical held-out dataset before deployment (e.g., accuracy on a test set). Online evaluation measures real-world impact after deployment using live traffic (e.g., A/B test results on actual user behavior or business metrics) - a model can look great offline but underperform online due to distribution shift or metrics that don't fully capture what matters in production.",
+    "id": 91
+  },
+  {
+    "category": "MLOps",
+    "question": "What does 'CI/CD for ML' typically add on top of traditional software CI/CD?",
+    "answer": "In addition to standard code testing and deployment automation, ML CI/CD pipelines typically add data validation checks, automated model retraining and evaluation against a held-out set, comparison against the current production model's metrics before promotion, and often a staged rollout (canary/shadow) rather than an immediate full deployment, since a 'passing' model can still be a regression in ways unit tests alone wouldn't catch.",
+    "id": 92
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a p-value?",
+    "answer": "The probability, under a specified null hypothesis, of observing a result at least as extreme as the one actually observed. A small p-value suggests the observed data would be unlikely if the null hypothesis were true, commonly (though controversially) used as evidence against that null hypothesis at some significance threshold (e.g., 0.05).",
+    "id": 93
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the Central Limit Theorem, and why does it matter for ML/statistics?",
+    "answer": "It states that the sampling distribution of the mean of a sufficiently large number of independent, identically distributed random variables approaches a normal distribution, regardless of the underlying variables' original distribution. This underlies many statistical inference techniques (like confidence intervals) that assume approximate normality of sample means, even when the underlying data isn't normally distributed.",
+    "id": 94
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between correlation and causation?",
+    "answer": "Correlation measures how much two variables move together statistically. Causation means one variable actually influences/produces changes in the other. Two variables can be strongly correlated without either causing the other (e.g., both being driven by a third, confounding variable) - a foundational caution in interpreting statistical relationships.",
+    "id": 95
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a covariance matrix, and where does it show up in ML?",
+    "answer": "A matrix summarizing how every pair of variables in a dataset varies together (diagonal entries are each variable's variance, off-diagonal entries are pairwise covariances). It's central to techniques like Principal Component Analysis (which finds the covariance matrix's eigenvectors) and Gaussian-based models.",
+    "id": 96
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is Principal Component Analysis (PCA)?",
+    "answer": "A dimensionality-reduction technique that finds a new set of orthogonal axes (principal components), ordered by how much variance in the data they explain, and projects the data onto the top few components - reducing dimensionality while preserving as much of the data's variance/information as possible.",
+    "id": 97
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between a Type I and a Type II error?",
+    "answer": "A Type I error is a false positive - incorrectly rejecting a true null hypothesis (concluding an effect exists when it doesn't). A Type II error is a false negative - failing to reject a false null hypothesis (missing a real effect). There's typically a tradeoff between the two controlled by the chosen significance threshold.",
+    "id": 98
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between a parametric and a non-parametric model?",
+    "answer": "A parametric model assumes a fixed functional form with a finite, fixed number of parameters determined in advance (e.g., linear regression), regardless of dataset size. A non-parametric model doesn't assume a fixed form and can grow in complexity with the amount of data (e.g., k-nearest neighbors, decision trees), offering more flexibility at the potential cost of needing more data and being more prone to overfitting.",
+    "id": 99
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is entropy, in the information-theoretic sense used in ML?",
+    "answer": "A measure of the uncertainty or randomness in a probability distribution - higher entropy means outcomes are more unpredictable/evenly spread, lower entropy means the distribution is more concentrated/predictable. It's the basis for the cross-entropy loss function widely used to train classification models.",
+    "id": 100
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is cross-entropy loss, and why is it commonly used for classification?",
+    "answer": "A loss function that measures the difference between a predicted probability distribution and the true (target) distribution, penalizing confident wrong predictions heavily. It's derived from information theory (related to KL divergence) and provides well-behaved gradients for training classifiers via gradient descent, making it the standard loss for both binary and multi-class classification.",
+    "id": 101
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between a maximum likelihood estimate (MLE) and a maximum a posteriori (MAP) estimate?",
+    "answer": "MLE finds the parameter values that maximize the likelihood of the observed data alone. MAP additionally incorporates a prior belief/distribution over the parameters (via Bayes' theorem) and finds the parameters that maximize the posterior probability given both the data and that prior - effectively MLE plus a regularization-like pull toward the prior.",
+    "id": 102
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is Bayes' theorem, and why is it foundational in ML?",
+    "answer": "A formula for updating the probability of a hypothesis given new evidence: P(A|B) = P(B|A) * P(A) / P(B). It underlies Bayesian statistics and many ML techniques (naive Bayes classifiers, Bayesian optimization, MAP estimation) that reason about uncertainty by combining prior beliefs with observed data.",
+    "id": 103
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the curse of dimensionality?",
+    "answer": "The phenomenon where, as the number of features/dimensions grows, the volume of the space grows so fast that available data becomes increasingly sparse within it, making distance-based methods less meaningful and generally requiring exponentially more data to maintain the same statistical reliability - a key motivation for dimensionality reduction and feature selection.",
+    "id": 104
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is algorithmic bias, and where does it typically come from?",
+    "answer": "Systematic and unfair discrimination in a model's outputs against certain groups, most commonly arising from biased or unrepresentative training data (reflecting historical human biases), but also possible from biased feature/label choices or the way a model's objective is defined, even without any intentional discriminatory design.",
+    "id": 105
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is the difference between explainability and interpretability in ML?",
+    "answer": "Interpretability generally refers to how intrinsically understandable a model's internal logic is to a human (e.g., a shallow decision tree is highly interpretable; a deep neural network is not). Explainability refers to techniques applied after the fact to explain a model's predictions (e.g., SHAP, LIME) even when the model itself is a 'black box,' without necessarily revealing its true internal reasoning.",
+    "id": 106
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is differential privacy?",
+    "answer": "A formal mathematical framework for quantifying and limiting how much information a system's output reveals about any single individual in its training data, typically by adding calibrated statistical noise, such that the presence or absence of any one person's data barely changes the output - providing a provable privacy guarantee rather than just an informal one.",
+    "id": 107
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is model alignment, in the context of AI safety?",
+    "answer": "The broad goal of ensuring an AI system's behavior actually reflects the goals, values, and intentions of its designers/users, rather than optimizing for a proxy objective in ways that produce unintended or harmful behavior - a central concern as models become more capable and are given more autonomy.",
+    "id": 108
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is reward hacking (specification gaming)?",
+    "answer": "When a system trained to optimize a given reward/objective finds an unintended way to score well on that literal objective without accomplishing the actual intended goal - a classic failure mode in reinforcement learning that illustrates why precisely specifying objectives is difficult.",
+    "id": 109
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is red-teaming, in the context of AI model evaluation?",
+    "answer": "Deliberately probing a model with adversarial inputs to discover ways it can be made to produce harmful, unsafe, or otherwise undesired outputs, used before deployment to find and fix weaknesses proactively rather than discovering them after real users encounter them.",
+    "id": 110
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is the difference between fairness through unawareness and fairness-aware modeling?",
+    "answer": "Fairness through unawareness simply removes protected attributes (like race or gender) from a model's inputs, assuming this prevents discrimination - but it often fails because other correlated features (proxies) can still let the model reconstruct and act on the removed information. Fairness-aware modeling explicitly measures and constrains a model's behavior with respect to protected groups (using fairness metrics) rather than relying on omission alone.",
+    "id": 111
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is a model card, and why do organizations publish them?",
+    "answer": "A structured document accompanying a released model that describes its intended use cases, training data, performance across different conditions/subgroups, known limitations, and ethical considerations - intended to help downstream users understand appropriate and inappropriate ways to deploy the model.",
+    "id": 112
+  },
+  {
+    "category": "AI Safety & Ethics",
+    "question": "What is the alignment problem specifically as it relates to scaling up increasingly capable models?",
+    "answer": "The concern that as models become more capable and are given more autonomy/tools, ensuring their objectives and behavior remain reliably aligned with human intent becomes both more important (larger potential impact from misalignment) and potentially harder (more complex, less predictable behavior, and greater difficulty for humans to fully evaluate or oversee what a highly capable system is actually doing).",
+    "id": 113
+  },
+  {
+    "category": "History",
+    "question": "What was the Perceptron, and why is it historically significant?",
+    "answer": "Introduced by Frank Rosenblatt in 1958, the Perceptron was one of the earliest algorithms for supervised learning of binary classifiers, modeled loosely on a biological neuron. It's considered a foundational precursor to modern neural networks, though its inability to learn non-linearly separable functions (as shown in Minsky and Papert's 1969 critique) contributed to the first AI winter.",
+    "id": 114
+  },
+  {
+    "category": "History",
+    "question": "What was the significance of Google's paper introducing the sequence-to-sequence (seq2seq) framework?",
+    "answer": "Sequence-to-sequence models (2014), typically using an encoder-decoder RNN architecture, established a general framework for mapping an input sequence to an output sequence of different length, which became foundational for machine translation and later heavily influenced the design of the Transformer's own encoder-decoder structure.",
+    "id": 115
+  },
+  {
+    "category": "History",
+    "question": "What is the significance of the 2015 release of Keras?",
+    "answer": "Keras provided a high-level, user-friendly API for building neural networks that could run on top of lower-level backends (initially Theano, later TensorFlow), significantly lowering the barrier to entry for building and experimenting with deep learning models, and was eventually adopted as TensorFlow's official high-level API.",
+    "id": 116
+  },
+  {
+    "category": "History",
+    "question": "What was Stable Diffusion, and why was its release notable?",
+    "answer": "An open-source text-to-image diffusion model released by Stability AI in 2022. Its notability came partly from its capability but largely from being openly released (weights publicly available) rather than only accessible via a closed API, which significantly accelerated open experimentation, fine-tuning, and commercial use of image-generation models across the industry.",
+    "id": 117
+  },
+  {
+    "category": "History",
+    "question": "What was DeepMind's AlphaFold, and why was it a landmark achievement?",
+    "answer": "A deep learning system that predicts a protein's 3D structure from its amino acid sequence with accuracy approaching experimental methods, a problem (protein folding) that had been a major open challenge in biology for decades; its 2020/2021 results were considered a significant milestone for AI's application to scientific discovery.",
+    "id": 118
+  },
+  {
+    "category": "History",
+    "question": "What is Claude, and which company created it?",
+    "answer": "Claude is a family of large language model-based AI assistants created by Anthropic, an AI safety-focused company founded in 2021 by former OpenAI researchers, with a stated focus on developing AI systems that are helpful, honest, and harmless.",
+    "id": 119
+  },
+  {
+    "category": "History",
+    "question": "What was the significance of DeepSeek's model releases in AI industry discourse around 2024-2025?",
+    "answer": "DeepSeek, a Chinese AI lab, released open-weight models (including reasoning-focused models) that were reported to be trained at notably lower cost than many Western frontier models while achieving competitive benchmark performance, sparking widespread industry discussion about training efficiency, the cost of frontier AI development, and competitive dynamics in open-weight versus closed models.",
+    "id": 120
+  },
+  {
+    "category": "History",
+    "question": "What was Google's release of Gemini, and how did it relate to the earlier Bard product?",
+    "answer": "Gemini is Google's family of multimodal large language models, first released in December 2023; it eventually replaced Bard (Google's earlier chatbot product, built on the PaLM model family) as the underlying model and, later, the consumer product branding as well.",
+    "id": 121
+  },
+  {
+    "category": "Core ML",
+    "question": "What is an activation function, and why is non-linearity necessary in neural networks?",
+    "answer": "A function applied to a neuron's weighted input sum to determine its output (e.g., ReLU, sigmoid, tanh). Without a non-linear activation function, stacking any number of linear layers would mathematically collapse into a single linear transformation, no matter how deep the network - non-linearity is what allows neural networks to approximate complex, non-linear functions.",
+    "id": 122
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the ReLU activation function, and why has it largely replaced sigmoid/tanh in hidden layers?",
+    "answer": "ReLU (Rectified Linear Unit) outputs max(0, x) - zero for negative inputs, identity for positive inputs. It's computationally cheap and, importantly, doesn't saturate (flatten to near-zero gradient) for positive inputs the way sigmoid/tanh do, which significantly helps mitigate the vanishing gradient problem in deep networks.",
+    "id": 123
+  },
+  {
+    "category": "Core ML",
+    "question": "What is batch normalization, and what problem does it address?",
+    "answer": "A technique that normalizes a layer's inputs (across a mini-batch) to have consistent mean and variance during training, which stabilizes and speeds up training by reducing the degree to which each layer's input distribution shifts as preceding layers' weights change during training ('internal covariate shift'), and also provides some regularization benefit.",
+    "id": 124
+  },
+  {
+    "category": "Core ML",
+    "question": "What is an autoencoder?",
+    "answer": "A neural network trained to reconstruct its own input by first compressing it into a lower-dimensional latent representation (encoder) and then reconstructing the original input from that representation (decoder), useful for dimensionality reduction, denoising, and as a building block for generative models like VAEs.",
+    "id": 125
+  },
+  {
+    "category": "Core ML",
+    "question": "What is ensemble learning, and why does it often improve performance?",
+    "answer": "Combining predictions from multiple models (rather than relying on a single model) to produce a final prediction, typically via voting or averaging. It often improves accuracy and robustness because different models tend to make different errors, and combining them can cancel out individual models' mistakes, provided the models are sufficiently diverse.",
+    "id": 126
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the difference between bagging and boosting?",
+    "answer": "Bagging (bootstrap aggregating) trains multiple models independently and in parallel on different random subsets of the training data (with replacement), then averages/votes their predictions, primarily reducing variance (e.g., Random Forests). Boosting trains models sequentially, where each new model focuses on correcting the errors of the previous ones, primarily reducing bias (e.g., AdaBoost, Gradient Boosting/XGBoost).",
+    "id": 127
+  },
+  {
+    "category": "Core ML",
+    "question": "What is a Random Forest?",
+    "answer": "An ensemble of decision trees, each trained on a random bootstrap sample of the data and considering only a random subset of features at each split, with predictions combined by majority vote (classification) or averaging (regression) - the randomness reduces correlation between individual trees' errors, improving generalization over a single decision tree.",
+    "id": 128
+  },
+  {
+    "category": "Core ML",
+    "question": "What is gradient boosting, and what makes XGBoost/LightGBM popular implementations of it?",
+    "answer": "Gradient boosting builds an ensemble of weak learners (typically shallow decision trees) sequentially, where each new tree is trained to predict the residual errors (via gradient descent on a loss function) of the ensemble so far. XGBoost and LightGBM are popular optimized implementations that add regularization, efficient handling of missing data, and significant speed/scalability improvements, making gradient boosting one of the strongest general-purpose methods for tabular data.",
+    "id": 129
+  },
+  {
+    "category": "LLMs",
+    "question": "What is speculative decoding, and why is it used to speed up LLM inference?",
+    "answer": "A technique where a small, fast 'draft' model generates several candidate next tokens quickly, which the larger target model then verifies in a single parallel forward pass (accepting correct tokens and only falling back to its own generation where the draft diverges) - producing the same output distribution as running the large model alone, but faster, since verification is cheaper than sequential generation.",
+    "id": 130
+  },
+  {
+    "category": "LLMs",
+    "question": "What is the difference between top-k and top-p (nucleus) sampling when generating text from an LLM?",
+    "answer": "Top-k sampling restricts the next-token choice to the k highest-probability tokens, then samples among them. Top-p (nucleus) sampling instead selects the smallest set of tokens whose cumulative probability exceeds a threshold p, so the number of candidate tokens adapts to the model's confidence at each step (a very confident prediction might have just one or two tokens in the nucleus, an uncertain one might have many).",
+    "id": 131
+  },
+  {
+    "category": "LLMs",
+    "question": "What is temperature, when sampling from an LLM's output distribution?",
+    "answer": "A parameter that scales the logits before applying softmax during sampling; low temperature makes the distribution sharper (more deterministic, favoring the highest-probability tokens), while high temperature flattens the distribution (more random/diverse output), letting users trade off between predictable and creative generations.",
+    "id": 132
+  },
+  {
+    "category": "LLMs",
+    "question": "What is the difference between a system prompt and a user prompt in a chat-based LLM API?",
+    "answer": "A system prompt sets overarching instructions, persona, or constraints for the model's behavior throughout a conversation (typically set by the developer, not visible as a normal chat turn), while user prompts are the actual conversational turns from the end user that the model responds to within those constraints.",
+    "id": 133
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is the difference between reinforcement learning and supervised learning?",
+    "answer": "Supervised learning trains on a fixed dataset of labeled input-output pairs provided upfront. Reinforcement learning has an agent learn by interacting with an environment, receiving reward signals for its actions rather than direct labels, and must balance exploring new actions against exploiting known good ones.",
+    "id": 134
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is a policy in reinforcement learning?",
+    "answer": "A function (often denoted \u03c0) that maps a state to an action (or a probability distribution over actions) - it defines the agent's behavior, and the central goal of RL is to learn a policy that maximizes expected cumulative reward.",
+    "id": 135
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is the exploration-exploitation tradeoff?",
+    "answer": "The core dilemma in RL: an agent must balance exploiting actions it currently believes are best (to maximize immediate reward) against exploring less-tried actions that might turn out to be better, since always exploiting risks getting stuck with a suboptimal policy learned from incomplete information.",
+    "id": 136
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is a reward function, and why is designing one difficult?",
+    "answer": "A function that gives the agent a numeric signal for how good its action/state was. Designing one well is difficult because the agent will optimize exactly what's specified, and a reward function that seems reasonable can often be 'gamed' in unintended ways (reward hacking) if it doesn't perfectly capture the true intended goal.",
+    "id": 137
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is Q-learning?",
+    "answer": "A model-free reinforcement learning algorithm that learns the value (expected future reward) of taking a given action in a given state, called the Q-value, and iteratively updates these estimates using observed rewards and the Bellman equation, without needing a model of the environment's dynamics.",
+    "id": 138
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is the difference between model-based and model-free reinforcement learning?",
+    "answer": "Model-based RL learns (or is given) a model of the environment's dynamics (how states transition and what rewards result), which it can use to plan ahead. Model-free RL learns a policy or value function directly from experience without ever building an explicit model of the environment.",
+    "id": 139
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is RLHF, and how does it use reinforcement learning specifically?",
+    "answer": "Reinforcement Learning from Human Feedback fine-tunes a language model by first training a reward model on human preference comparisons between model outputs, then using an RL algorithm (commonly PPO) to update the language model's policy (its token-generation behavior) to produce outputs that score higher according to that learned reward model.",
+    "id": 140
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is the credit assignment problem in reinforcement learning?",
+    "answer": "The challenge of determining which of an agent's many past actions were actually responsible for a reward (or penalty) received much later, since rewards are often delayed and sparse relative to the individual actions that led to them.",
+    "id": 141
+  },
+  {
+    "category": "Reinforcement Learning",
+    "question": "What is PPO (Proximal Policy Optimization)?",
+    "answer": "A widely-used policy-gradient reinforcement learning algorithm that updates the policy in a way that's constrained to avoid overly large changes per update step (via a clipped objective function), which makes training more stable than earlier, more aggressive policy-gradient methods - it's the algorithm most commonly associated with RLHF fine-tuning of language models.",
+    "id": 142
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the learning rate, and what happens if it's set too high or too low?",
+    "answer": "The step size used when updating model parameters during gradient descent. Too high a learning rate can cause training to diverge or oscillate wildly, overshooting good parameter values; too low a learning rate makes training very slow and can get stuck in poor local minima or plateaus.",
+    "id": 143
+  },
+  {
+    "category": "Core ML",
+    "question": "What is a learning rate schedule (or decay)?",
+    "answer": "A strategy for changing the learning rate over the course of training, typically starting higher (for faster initial progress) and decreasing over time (for finer, more stable convergence as training progresses) - common schedules include step decay, cosine annealing, and warmup followed by decay.",
+    "id": 144
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the Adam optimizer, and why is it widely used?",
+    "answer": "An optimization algorithm that maintains per-parameter adaptive learning rates using estimates of both the first moment (mean) and second moment (variance) of past gradients, combining ideas from momentum and RMSProp. It's popular because it often converges quickly and works reasonably well across many problems with minimal hyperparameter tuning, compared to plain SGD.",
+    "id": 145
+  },
+  {
+    "category": "Core ML",
+    "question": "What is momentum in the context of gradient descent optimizers?",
+    "answer": "A technique that accumulates a moving average of past gradients and uses it (rather than just the current gradient) to update parameters, which helps accelerate convergence in consistent directions and dampens oscillation in directions where the gradient keeps changing sign.",
+    "id": 146
+  },
+  {
+    "category": "Core ML",
+    "question": "What is early stopping?",
+    "answer": "A regularization technique where training is halted once performance on a held-out validation set stops improving (or starts getting worse), rather than training for a fixed number of epochs regardless, to avoid overfitting to the training data.",
+    "id": 147
+  },
+  {
+    "category": "Core ML",
+    "question": "What is dropout, and how does it help prevent overfitting?",
+    "answer": "A regularization technique that randomly deactivates (sets to zero) a fraction of neurons during each training step, forcing the network to not rely too heavily on any single neuron or narrow set of co-adapted neurons, which improves generalization. Dropout is turned off (or scaled appropriately) at inference time.",
+    "id": 148
+  },
+  {
+    "category": "Core ML",
+    "question": "What is weight initialization, and why does it matter for training deep networks?",
+    "answer": "The strategy for setting a neural network's weights before training begins. Poor initialization (e.g., all zeros, or values too large/small) can cause vanishing or exploding gradients from the very start of training; well-designed schemes like Xavier/Glorot or He initialization set initial weight scales based on layer size to keep signal magnitudes stable through the network's depth.",
+    "id": 149
+  },
+  {
+    "category": "Core ML",
+    "question": "What is gradient clipping?",
+    "answer": "A technique that caps the magnitude of gradients during training (e.g., rescaling if their norm exceeds a threshold) to prevent exploding gradients from causing unstable, destructively large parameter updates - especially common when training RNNs or very deep networks.",
+    "id": 150
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the difference between an epoch, a batch, and an iteration in training?",
+    "answer": "An epoch is one full pass through the entire training dataset. A batch (or mini-batch) is a subset of the data processed together in one forward/backward pass. An iteration is one such single update step using one batch - so one epoch consists of (dataset size / batch size) iterations.",
+    "id": 151
+  },
+  {
+    "category": "Core ML",
+    "question": "What is data leakage, and why is it a serious problem in ML evaluation?",
+    "answer": "When information from outside the training dataset (often inadvertently from the test/validation set, or from future data that wouldn't be available at prediction time) leaks into the training process, causing the model to appear to perform much better than it actually would in real-world deployment - a common and often subtle source of misleadingly optimistic evaluation results.",
+    "id": 152
+  },
+  {
+    "category": "Core ML",
+    "question": "What is hyperparameter tuning, and what are common approaches?",
+    "answer": "The process of selecting the configuration values that aren't learned from data (like learning rate, number of layers, regularization strength) but are set before training. Common approaches include grid search (exhaustively trying combinations), random search (sampling combinations randomly, often more efficient than grid search), and Bayesian optimization (using a probabilistic model to intelligently choose which combinations to try next based on past results).",
+    "id": 153
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is a system prompt injection defense pattern like 'sandwiching' or input delimiting?",
+    "answer": "Techniques that try to help a model distinguish trusted instructions from untrusted content by clearly delimiting where external/user-provided content begins and ends (e.g., wrapping it in explicit markers) and reinforcing the original instructions after the untrusted content, reducing (though not eliminating) the chance the model treats embedded instructions in that content as commands to follow.",
+    "id": 154
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is the difference between a prompt template and a prompt?",
+    "answer": "A prompt is the actual text sent to a model for a specific request. A prompt template is a reusable pattern with placeholders (e.g., 'Summarize the following article: {article_text}') that gets filled in with specific values to produce an actual prompt, letting an application generate consistent, structured prompts across many different inputs.",
+    "id": 155
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is context window management, and why does it matter in production LLM applications?",
+    "answer": "Strategies for handling the fact that a model can only attend to a limited number of tokens at once - including truncating or summarizing older conversation history, retrieving only the most relevant documents (rather than stuffing everything into context), and monitoring token usage, since exceeding the context window causes errors or forces content to be dropped, and using it inefficiently wastes cost and can dilute the model's attention on what actually matters.",
+    "id": 156
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is an embedding model, as distinct from a generative LLM?",
+    "answer": "A model trained specifically to map input (usually text) to a fixed-size dense vector capturing its semantic meaning, optimized for tasks like similarity search and retrieval rather than generating new text - often smaller and faster than a full generative LLM, and commonly used as the retrieval component in a RAG pipeline.",
+    "id": 157
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is the difference between precision and recall in the context of a RAG system's retrieval step?",
+    "answer": "Precision measures what fraction of the retrieved documents/passages are actually relevant to the query. Recall measures what fraction of all truly relevant documents in the corpus were successfully retrieved. A RAG system with low recall might miss the one document containing the answer; low precision means the model's context is cluttered with irrelevant passages that can distract or mislead generation.",
+    "id": 158
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is guardrails or output validation in the context of LLM applications?",
+    "answer": "Techniques applied to a model's output before it's used or shown to a user - such as checking it against a schema (for structured outputs), scanning for policy violations, or using a second model call to verify factual grounding - to catch and handle problems (malformed output, unsafe content, hallucination) rather than trusting raw model output unconditionally in a production system.",
+    "id": 159
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is the difference between supervised fine-tuning (SFT) and RLHF as stages in training a chat model?",
+    "answer": "Supervised fine-tuning trains the model directly on example input-output pairs (e.g., instruction-response demonstrations written or curated by humans), teaching it the desired response format and style through standard supervised learning. RLHF is typically applied afterward, further refining behavior using a reward model trained on human preference comparisons between multiple candidate outputs, optimizing for what humans prefer rather than just mimicking fixed examples.",
+    "id": 160
+  },
+  {
+    "category": "Applied AI",
+    "question": "What is a context-stuffing anti-pattern in RAG system design?",
+    "answer": "Retrieving and inserting far more context/documents into a prompt than the model can effectively use, on the assumption that 'more context is always better' - in practice this can dilute the model's attention, increase cost and latency, and sometimes degrade answer quality compared to providing a smaller, well-curated set of highly relevant passages.",
+    "id": 161
+  },
+  {
+    "category": "History",
+    "question": "What was the ELIZA program, and why is it historically notable?",
+    "answer": "A 1966 program by Joseph Weizenbaum that simulated a Rogerian psychotherapist by pattern-matching and reflecting users' statements back as questions. It's notable both as an early natural language interaction system and because many users attributed genuine understanding to it despite its simplicity, an effect now known as the 'ELIZA effect.'",
+    "id": 162
+  },
+  {
+    "category": "History",
+    "question": "What is the significance of IBM Watson's 2011 Jeopardy! win?",
+    "answer": "Watson defeated top human champions at the natural-language quiz show Jeopardy!, demonstrating strong performance at open-domain question answering and information retrieval at a time when such capabilities were considered very difficult, predating the deep-learning-driven NLP advances that came later in the decade.",
+    "id": 163
+  },
+  {
+    "category": "History",
+    "question": "What was the significance of the 2018 release of BERT?",
+    "answer": "BERT (Bidirectional Encoder Representations from Transformers), released by Google, achieved state-of-the-art results across many NLP benchmarks by pretraining on masked-language-modeling with bidirectional context, and its pretrain-then-fine-tune paradigm became a dominant approach in NLP for several years afterward.",
+    "id": 164
+  },
+  {
+    "category": "History",
+    "question": "What was Codex, and what product did it power?",
+    "answer": "An OpenAI model (2021) fine-tuned from GPT-3 specifically on code, trained to translate natural language into code; it powered GitHub Copilot, one of the first widely-adopted AI coding-assistant products.",
+    "id": 165
+  },
+  {
+    "category": "History",
+    "question": "What is Meta's LLaMA, and why was its release significant?",
+    "answer": "A family of open-weight large language models released by Meta starting in 2023. Their release (and subsequent versions) significantly accelerated open-source LLM research and fine-tuning efforts, since researchers and companies without frontier-lab-scale resources could build on strong open-weight base models rather than starting from scratch.",
+    "id": 166
+  },
+  {
+    "category": "History",
+    "question": "What is Mixtral, and what architecture does it use?",
+    "answer": "An open-weight large language model released by Mistral AI using a Mixture-of-Experts architecture, notable for achieving strong performance while activating only a subset of its total parameters per token, demonstrating MoE's viability in prominent open-weight releases.",
+    "id": 167
+  },
+  {
+    "category": "History",
+    "question": "What was the significance of AlphaFold's protein structure database release?",
+    "answer": "Following AlphaFold's breakthrough accuracy, DeepMind and partners released predicted structures for nearly all catalogued proteins known to science as a free public database, dramatically expanding structural biology researchers' access to protein structure data that would otherwise require expensive, slow experimental methods to obtain.",
+    "id": 168
+  },
+  {
+    "category": "History",
+    "question": "What is the significance of the Turing Test, and who proposed it?",
+    "answer": "Proposed by Alan Turing in 1950 as a practical way to consider the question 'can machines think,' the test involves a human evaluator conversing (via text) with both a human and a machine without knowing which is which; if the evaluator cannot reliably distinguish them, the machine is said to have passed. It remains a widely referenced (though also widely critiqued as an incomplete measure of intelligence) touchstone in AI discourse.",
+    "id": 169
+  },
+  {
+    "category": "History",
+    "question": "What was the significance of Google's 2017 paper introducing the Transformer, in terms of its stated original application?",
+    "answer": "The paper 'Attention Is All You Need' introduced the Transformer specifically for machine translation, framed as an encoder-decoder sequence-to-sequence architecture; its self-attention mechanism later proved far more broadly applicable and became the basis for virtually all subsequent large language models, well beyond the original translation use case.",
+    "id": 170
+  },
+  {
+    "category": "History",
+    "question": "What is Anthropic, and what is its stated mission?",
+    "answer": "An AI safety and research company founded in 2021 by Dario Amodei, Daniela Amodei, and other former OpenAI researchers, with a stated focus on developing large-scale AI systems (including the Claude model family) that are safe, steerable, and beneficial, alongside research into AI alignment and interpretability.",
+    "id": 171
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a confidence interval?",
+    "answer": "A range of values, computed from sample data, that is expected to contain the true population parameter with a specified probability (the confidence level, e.g., 95%) under repeated sampling - it quantifies the uncertainty in an estimate rather than providing a single fixed guess.",
+    "id": 172
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between population and sample statistics?",
+    "answer": "A population is the entire group of interest; a sample is a subset of it actually observed/measured. Population parameters (like the true mean) are usually unknown and estimated using statistics computed from a sample, which introduces sampling variability that statistical inference methods try to quantify.",
+    "id": 173
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a normal (Gaussian) distribution, and why does it appear so often in statistics?",
+    "answer": "A symmetric, bell-shaped probability distribution fully described by its mean and variance. It appears frequently in practice partly due to the Central Limit Theorem, which shows that sums/averages of many independent random variables tend toward a normal distribution regardless of the variables' original distribution, making it a natural approximation in many real-world aggregate measurements.",
+    "id": 174
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is standard deviation, and how does it differ from variance?",
+    "answer": "Variance is the average of the squared deviations from the mean, measuring spread in squared units. Standard deviation is the square root of variance, bringing the measure of spread back into the same units as the original data, which makes it more directly interpretable.",
+    "id": 175
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a hypothesis test, at a high level?",
+    "answer": "A statistical procedure for deciding, based on sample data, whether to reject a specific claim (the null hypothesis) about a population, by computing how surprising the observed data would be if the null hypothesis were actually true (the p-value) and comparing it to a predetermined significance threshold.",
+    "id": 176
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is regularized regression (Ridge/Lasso), and why would you use it over plain linear regression?",
+    "answer": "Ridge and Lasso regression add an L2 or L1 penalty (respectively) on the coefficient magnitudes to the standard linear regression loss, shrinking coefficients toward zero. This is used when there are many correlated features or a risk of overfitting, since plain linear regression's coefficients can become large and unstable (high variance) in those situations; the penalty trades a bit of bias for a meaningful reduction in variance.",
+    "id": 177
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is the difference between a discrete and a continuous probability distribution?",
+    "answer": "A discrete distribution assigns probabilities to a countable set of distinct outcomes (like the roll of a die). A continuous distribution describes outcomes over a continuous range, where probability is expressed via a density function and the probability of any single exact value is technically zero - only probabilities over ranges/intervals are meaningful.",
+    "id": 178
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is an outlier, and why can outliers be problematic for some models?",
+    "answer": "A data point that differs substantially from the rest of the dataset. Outliers can disproportionately influence models that are sensitive to extreme values (like ordinary least-squares regression, which minimizes squared error and thus heavily penalizes large deviations), potentially distorting the fitted model away from representing the bulk of the data well.",
+    "id": 179
+  },
+  {
+    "category": "Statistics & Math",
+    "question": "What is a Markov chain?",
+    "answer": "A mathematical model of a sequence of states where the probability of transitioning to the next state depends only on the current state (not on the sequence of states that preceded it) - this 'memorylessness' property is called the Markov property, and Markov chains underlie many models including hidden Markov models and reinforcement learning's Markov Decision Process framework.",
+    "id": 180
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is the R-CNN family of models (R-CNN, Fast R-CNN, Faster R-CNN) used for, and how did they evolve?",
+    "answer": "This family of models is used for object detection. R-CNN generated region proposals and ran a separate CNN classifier on each region (slow, since each region was processed independently). Fast R-CNN shared computation by running the CNN once over the whole image and pooling features per region. Faster R-CNN went further by learning the region-proposal step itself with a neural network (a Region Proposal Network) rather than using a separate non-learned proposal algorithm, making the whole pipeline trainable end-to-end and substantially faster.",
+    "id": 181
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is YOLO ('You Only Look Once'), and how does its approach to object detection differ from R-CNN-style methods?",
+    "answer": "YOLO frames object detection as a single regression problem, predicting bounding boxes and class probabilities directly from the full image in one forward pass through the network, rather than the multi-stage propose-then-classify pipeline used by R-CNN-family models - trading some accuracy for substantially faster inference, making it well suited to real-time detection applications.",
+    "id": 182
+  },
+  {
+    "category": "Computer Vision",
+    "question": "What is image classification versus object localization versus object detection?",
+    "answer": "Image classification assigns a single label to an entire image (what is in this image). Object localization identifies where a single main object is, typically with one bounding box. Object detection combines both for potentially multiple objects: identifying what objects are present and where each one is located within the image.",
+    "id": 183
+  },
+  {
+    "category": "NLP",
+    "question": "What is an n-gram?",
+    "answer": "A contiguous sequence of n items (typically words or characters) from a text. A unigram is a single word, a bigram is a pair of consecutive words, and so on; n-gram models were a foundational (pre-deep-learning) approach to language modeling, estimating the probability of a word based on the preceding n-1 words.",
+    "id": 184
+  },
+  {
+    "category": "NLP",
+    "question": "What is the difference between extractive and abstractive text summarization?",
+    "answer": "Extractive summarization selects and stitches together existing sentences or phrases directly from the source text to form a summary. Abstractive summarization generates new sentences that may not appear verbatim in the source, potentially paraphrasing and synthesizing information more like a human-written summary - generally harder but capable of more fluent, concise results.",
+    "id": 185
+  },
+  {
+    "category": "NLP",
+    "question": "What is dependency parsing?",
+    "answer": "An NLP technique that analyzes the grammatical structure of a sentence by identifying dependency relationships between words (e.g., which word is the subject of which verb), representing the sentence as a tree of these head-dependent relationships, useful for deeper syntactic and semantic understanding tasks.",
+    "id": 186
   }
 ]

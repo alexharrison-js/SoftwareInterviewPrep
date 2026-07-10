@@ -5,18 +5,85 @@
   // Generic spaced "retry later" deck engine
   // Cards answered wrong are re-queued to reappear after RETRY_GAP
   // other cards have been shown, growing as the user keeps missing them.
+  //
+  // Ordering strategy: rather than a flat shuffle of every id (which can
+  // by chance clump several same-category cards together), ids are grouped
+  // into buckets by category (DSA pattern / ML topic), each bucket is
+  // shuffled independently, and the full-cycle order is built by drawing
+  // from a randomly rotating mix of buckets while avoiding picking the
+  // same category twice in a row whenever an alternative is available.
+  // This guarantees every card in the set is shown exactly once per full
+  // cycle (no repeats until everything has been seen), while keeping
+  // consecutive cards varied in type. Each new cycle re-shuffles
+  // independently, and since nothing is seeded, a fresh browser session
+  // with no localStorage gets its own independent random order rather
+  // than replaying the same sequence.
   // ============================================================
   const RETRY_GAP = 5;
 
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Builds one full pass over `ids`, interleaved by category so the same
+  // category rarely repeats back-to-back. `categoryOf(id)` returns a
+  // grouping key; if omitted, everything is treated as one bucket (a
+  // plain shuffle). Selection is weighted by each category's remaining
+  // count so a large category (e.g. many DP problems) gets spread across
+  // the whole cycle rather than only showing up once smaller buckets run out.
+  function buildInterleavedOrder(ids, categoryOf) {
+    const buckets = new Map();
+    for (const id of ids) {
+      const cat = categoryOf ? categoryOf(id) : "default";
+      if (!buckets.has(cat)) buckets.set(cat, []);
+      buckets.get(cat).push(id);
+    }
+    for (const bucket of buckets.values()) shuffleInPlace(bucket);
+
+    const categories = [...buckets.keys()];
+    const order = [];
+    let lastCat = null;
+    while (order.length < ids.length) {
+      const available = categories.filter((c) => buckets.get(c).length > 0);
+      const pool =
+        available.length > 1
+          ? available.filter((c) => c !== lastCat)
+          : available;
+      // weighted pick proportional to remaining bucket size
+      const totalWeight = pool.reduce(
+        (sum, c) => sum + buckets.get(c).length,
+        0,
+      );
+      let roll = Math.random() * totalWeight;
+      let cat = pool[pool.length - 1];
+      for (const c of pool) {
+        roll -= buckets.get(c).length;
+        if (roll <= 0) {
+          cat = c;
+          break;
+        }
+      }
+      order.push(buckets.get(cat).shift());
+      lastCat = cat;
+    }
+    return order;
+  }
+
   class Deck {
-    constructor(storageKey, ids) {
+    // categoryOf: optional function(id) -> string, used to interleave categories
+    constructor(storageKey, ids, categoryOf) {
       this.storageKey = storageKey;
       this.allIds = ids;
+      this.categoryOf = categoryOf || null;
       const saved = this._load();
       this.order =
         saved.order && saved.order.length === ids.length
           ? saved.order
-          : this._shuffle([...ids]);
+          : buildInterleavedOrder(ids, this.categoryOf);
       this.pointer = saved.pointer || 0;
       this.retryQueue = saved.retryQueue || []; // [{id, dueAt}]
       this.askCount = saved.askCount || 0;
@@ -24,12 +91,18 @@
       this.stats = saved.stats || { correct: 0, incorrect: 0 };
     }
 
-    _shuffle(arr) {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+    _reshuffle() {
+      this.order = buildInterleavedOrder(this.allIds, this.categoryOf);
+      // avoid the new cycle's first card being identical to the card that
+      // just ended the previous cycle
+      if (this.order.length > 1 && this.order[0] === this.currentId) {
+        const swapAt = 1 + Math.floor(Math.random() * (this.order.length - 1));
+        [this.order[0], this.order[swapAt]] = [
+          this.order[swapAt],
+          this.order[0],
+        ];
       }
-      return arr;
+      this.pointer = 0;
     }
 
     _load() {
@@ -71,19 +144,8 @@
       if (dueIdx >= 0) {
         id = this.retryQueue.splice(dueIdx, 1)[0].id;
       } else {
-        if (this.pointer >= this.order.length) {
-          this.order = this._shuffle([...this.allIds]);
-          this.pointer = 0;
-        }
+        if (this.pointer >= this.order.length) this._reshuffle();
         id = this.order[this.pointer++];
-        // avoid immediate repeat when possible
-        if (id === this.currentId && this.order.length > 1) {
-          if (this.pointer >= this.order.length) {
-            this.order = this._shuffle([...this.allIds]);
-            this.pointer = 0;
-          }
-          id = this.order[this.pointer++];
-        }
       }
       this.currentId = id;
       this._save();
@@ -158,10 +220,18 @@
     state.sysdesign = sysdesign;
     state.ml = ml;
 
+    const dsaPatternById = new Map(
+      dsa.problems.map((p) => [p.id, p.correctPattern]),
+    );
+    const mlCategoryById = new Map(ml.map((c) => [c.id, c.category]));
+
     state.decks.dsa = new Deck(
       "drillset_dsa_state",
       dsa.problems.map((p) => p.id),
+      (id) => dsaPatternById.get(id),
     );
+    // System design has no category grouping: each prompt is already a distinct
+    // topic, so a plain shuffle gives plenty of variety on its own.
     state.decks.sysdesign = new Deck(
       "drillset_sysdesign_state",
       sysdesign.map((q) => q.id),
@@ -169,6 +239,7 @@
     state.decks.ml = new Deck(
       "drillset_ml_state",
       ml.map((c) => c.id),
+      (id) => mlCategoryById.get(id),
     );
 
     renderHomeStats();
@@ -289,7 +360,7 @@
         problem.solutions[state.lang];
 
       document.getElementById("dsaNextBtn").hidden = false;
-      document.getElementById("dsaRetryBtn").hidden = true;
+      document.getElementById("dsaRetryBtn").hidden = false;
       state.decks.dsa.markResult(true);
     } else {
       btn.classList.add("wrong");
