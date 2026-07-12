@@ -128,9 +128,10 @@ button { font-family: inherit; cursor: pointer; }
   animation: fadeIn 0.25s ease;
 }
 
-/* Drill views (DSA / System Design / ML) are a fixed-height app shell:
-   header and action bar stay pinned, only the card's own content scrolls,
-   so exactly one flashcard fills the screen at a time. */
+/* Drill views (DSA / System Design / ML / Cloud / Leadership) are a
+   fixed-height app shell: header and action bar stay pinned, only the
+   card's own content scrolls, so exactly one flashcard fills the screen
+   at a time. */
 .view-drill {
   overflow: hidden;
   padding-bottom: 0;
@@ -548,8 +549,8 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ============ RESPONSIVE ============ */
 @media (min-width: 700px) {
-  .deck-grid { flex-direction: row; }
-  .deck-card { flex: 1; }
+  .deck-grid { flex-direction: row; flex-wrap: wrap; }
+  .deck-card { flex: 1 1 calc(50% - 7px); min-width: 260px; }
 }
 
 @media (max-width: 380px) {

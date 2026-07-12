@@ -1,0 +1,512 @@
+[
+  {
+    "category": "Containers",
+    "question": "What is a Docker image, and how does it differ from a container?",
+    "answer": "A Docker image is a read-only, immutable template (a stack of filesystem layers plus metadata like the entrypoint and environment) that defines what a container should contain. A container is a running (or stopped) instance of an image \u2014 the image is the blueprint, the container is the live process with its own writable layer on top.",
+    "id": 1
+  },
+  {
+    "category": "Containers",
+    "question": "What are image layers, and why does Docker build images this way?",
+    "answer": "Each instruction in a Dockerfile (FROM, RUN, COPY, etc.) produces a new immutable filesystem layer stacked on top of the previous ones. Docker caches layers by content hash, so rebuilding an image only re-executes and re-uploads layers that actually changed, and multiple images sharing a base layer (e.g., the same OS base) can share that layer on disk rather than duplicating it.",
+    "id": 2
+  },
+  {
+    "category": "Containers",
+    "question": "What is a container registry?",
+    "answer": "A storage and distribution service for container images (Docker Hub, Amazon ECR, Google Artifact Registry, GitHub Container Registry), organized by repository and tag, that lets you push built images and pull them down on any host that needs to run them \u2014 the deployment mechanism that gets an image from a build machine to a production server.",
+    "id": 3
+  },
+  {
+    "category": "Containers",
+    "question": "What is the difference between ENTRYPOINT and CMD in a Dockerfile?",
+    "answer": "ENTRYPOINT defines the fixed executable that always runs when the container starts. CMD supplies default arguments to that entrypoint (or the default command if no ENTRYPOINT is set), and CMD's value can be overridden at `docker run` time while ENTRYPOINT normally can't (without an explicit flag) \u2014 the common pattern is ENTRYPOINT for the binary, CMD for its default arguments.",
+    "id": 4
+  },
+  {
+    "category": "Containers",
+    "question": "What is a Docker volume, and why not just write data inside the container's filesystem?",
+    "answer": "A volume is storage managed by Docker that exists outside a container's writable layer, so data persists even if the container is removed and can be shared between containers. Writing data into a container's own layer means it's lost the moment the container is deleted and can't easily be shared or backed up \u2014 volumes decouple data lifecycle from container lifecycle.",
+    "id": 5
+  },
+  {
+    "category": "Containers",
+    "question": "How does container networking work by default, and what are the common Docker network modes?",
+    "answer": "By default, Docker creates a private bridge network per host; containers on it get their own internal IP and can reach each other by container name (via embedded DNS) but need explicit port mapping (-p) to be reachable from outside the host. Other modes include host networking (container shares the host's network namespace directly, no isolation/port mapping needed) and none (no networking at all) \u2014 bridge is the default and most common for multi-container apps.",
+    "id": 6
+  },
+  {
+    "category": "Containers",
+    "question": "What is a multi-stage Docker build, and why is it used?",
+    "answer": "A Dockerfile pattern that uses multiple FROM stages \u2014 typically one stage with full build tooling (compilers, dev dependencies) that produces build artifacts, and a final, much smaller stage that copies only those artifacts in, discarding the build tooling from the final image. This keeps production images small and reduces attack surface without needing a separate build pipeline.",
+    "id": 7
+  },
+  {
+    "category": "Containers",
+    "question": "What is the difference between a container and a virtual machine?",
+    "answer": "A VM virtualizes hardware and runs a full separate OS kernel per instance, managed by a hypervisor \u2014 heavier but with strong isolation. A container shares the host machine's kernel and is isolated via kernel features (namespaces, cgroups) rather than full hardware virtualization, making containers far lighter weight and faster to start, at the cost of slightly weaker isolation than a full VM.",
+    "id": 8
+  },
+  {
+    "category": "Containers",
+    "question": "Why are container images generally treated as immutable in production?",
+    "answer": "Treating a built image as immutable (never patched in place) means the exact same artifact that was tested is what runs in production, eliminating 'it worked in staging but not prod' drift from ad-hoc changes. Updates are made by building and deploying a new image with a new tag/digest, not by SSHing into a running container and editing files \u2014 this is central to reliable, reproducible deployments.",
+    "id": 9
+  },
+  {
+    "category": "Containers",
+    "question": "What is a Dockerfile's build context, and why does its size matter?",
+    "answer": "The build context is the set of files sent to the Docker daemon when building an image (typically the directory containing the Dockerfile, respecting a .dockerignore file). A large or unnecessary build context slows down builds since it all gets transferred to the daemon before the build even starts, which is why excluding things like node_modules, .git, or build artifacts via .dockerignore matters for build speed.",
+    "id": 10
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a Pod in Kubernetes, and why isn't a container the smallest deployable unit?",
+    "answer": "A Pod is the smallest deployable unit in Kubernetes \u2014 a group of one or more containers that share the same network namespace (same IP, can reach each other via localhost) and can share storage volumes. Most Pods run a single container, but the grouping exists for cases like sidecar containers (e.g., a logging agent or service mesh proxy) that need to run tightly coupled alongside a main container.",
+    "id": 11
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a ReplicaSet, and how does it relate to a Deployment?",
+    "answer": "A ReplicaSet ensures a specified number of identical Pod replicas are running at all times, replacing any that fail or are deleted. A Deployment is a higher-level object that manages ReplicaSets for you, adding rolling updates and rollback \u2014 in practice you almost always create Deployments rather than ReplicaSets directly, since the Deployment handles creating a new ReplicaSet on each update and gradually shifting traffic to it.",
+    "id": 12
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is the difference between a Deployment and a StatefulSet?",
+    "answer": "A Deployment treats its Pods as interchangeable \u2014 any replica can be replaced with a fresh one with a new random name/IP, suited to stateless workloads. A StatefulSet gives each Pod a stable, predictable identity (ordered name like pod-0, pod-1, and typically a stable network identity and its own persistent volume), which is required for stateful workloads like databases where each replica needs a consistent identity across restarts.",
+    "id": 13
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a Kubernetes Service, and why is it needed given that Pods already have IP addresses?",
+    "answer": "Pods are ephemeral \u2014 they get a new IP every time they're recreated (by a Deployment scaling, a failure, a rollout). A Service provides a stable virtual IP and DNS name that load-balances traffic across whichever Pods currently match its label selector, so other components can reliably reach 'the backend service' without tracking individual Pod IPs that constantly change.",
+    "id": 14
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What are the main Kubernetes Service types, and when would you use each?",
+    "answer": "ClusterIP (the default) exposes the service only inside the cluster, for internal communication between components. NodePort exposes it on a static port on every node's IP, mainly useful for simple external access or debugging. LoadBalancer provisions an external cloud load balancer (on supported cloud providers) pointing at the service, the standard way to expose a service to the internet.",
+    "id": 15
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is Ingress, and how does it differ from a LoadBalancer Service?",
+    "answer": "Ingress is an API object that manages external HTTP/HTTPS access to multiple services through a single entry point, using host/path-based routing rules (e.g., api.example.com goes to service A, app.example.com goes to service B) and typically handling TLS termination \u2014 one Ingress controller and one load balancer can front many services, whereas a LoadBalancer Service typically provisions one cloud load balancer per service, which gets expensive and unwieldy at scale.",
+    "id": 16
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a ConfigMap, and what is it used for?",
+    "answer": "A Kubernetes object for storing non-sensitive configuration data (key-value pairs, config files) separately from container images, which can be injected into Pods as environment variables or mounted files \u2014 letting you change configuration without rebuilding the image, and reuse the same image across environments (dev/staging/prod) with different ConfigMaps.",
+    "id": 17
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a Secret, and how does it differ from a ConfigMap?",
+    "answer": "A Secret is structurally similar to a ConfigMap (key-value data injectable into Pods) but intended for sensitive data (passwords, API keys, TLS certificates). By default Secrets are only base64-encoded, not encrypted, in etcd \u2014 real security requires enabling encryption-at-rest for the cluster's etcd store and/or using an external secrets manager, since base64 is trivially reversible and not a security control on its own.",
+    "id": 18
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a DaemonSet, and what's a typical use case?",
+    "answer": "A DaemonSet ensures exactly one copy of a Pod runs on every node (or a selected subset of nodes) in the cluster, automatically adding a copy to new nodes as they join. Typical uses include per-node infrastructure like log collectors, monitoring agents, or network plugins that need to run on every single node rather than being scheduled arbitrarily like a normal Deployment's replicas.",
+    "id": 19
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is the difference between a Kubernetes Job and a CronJob?",
+    "answer": "A Job runs one or more Pods to completion for a finite task (e.g., a batch data-processing script), retrying on failure until it succeeds or hits a retry limit, then stops. A CronJob creates Jobs on a recurring schedule (using cron syntax), for tasks that need to run periodically like a nightly report generation or scheduled cleanup.",
+    "id": 20
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is the Horizontal Pod Autoscaler (HPA)?",
+    "answer": "A controller that automatically adjusts the number of Pod replicas in a Deployment/ReplicaSet/StatefulSet based on observed metrics (commonly CPU or memory utilization, or custom metrics like request rate), scaling out under load and back in when demand drops, so capacity tracks actual traffic rather than being fixed.",
+    "id": 21
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is the Cluster Autoscaler, and how does it differ from the Horizontal Pod Autoscaler?",
+    "answer": "The HPA changes how many Pods are running, but if the cluster's existing nodes don't have enough capacity to schedule those new Pods, they'll sit Pending. The Cluster Autoscaler operates one level below that: it adds or removes actual worker nodes (VMs) from the cluster based on whether there are unschedulable Pods needing more capacity, or nodes sitting underutilized that could be removed to save cost.",
+    "id": 22
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a Persistent Volume (PV) and a Persistent Volume Claim (PVC)?",
+    "answer": "A PersistentVolume is a piece of actual storage (backed by cloud disk, NFS, etc.) provisioned in the cluster, existing independently of any Pod's lifecycle. A PersistentVolumeClaim is a request by a user/Pod for storage with certain characteristics (size, access mode) \u2014 Kubernetes binds a matching PV to the claim, and the Pod mounts the PVC, giving Pods durable storage that survives Pod restarts and rescheduling.",
+    "id": 23
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is a Kubernetes Namespace, and why use them?",
+    "answer": "A way to partition a single cluster into multiple virtual clusters, scoping resource names (two Pods named 'api' can coexist in different namespaces) and enabling per-namespace resource quotas, RBAC permissions, and organizational separation (e.g., dev/staging/prod, or per-team) without needing entirely separate physical clusters.",
+    "id": 24
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What are liveness and readiness probes, and why are they different?",
+    "answer": "A liveness probe checks whether a container is still functioning; if it fails, Kubernetes kills and restarts the container (recovering from a hung/deadlocked process). A readiness probe checks whether a container is ready to receive traffic; if it fails, the Pod is removed from Service endpoints (so it stops receiving requests) without being restarted \u2014 useful for a Pod that's alive but temporarily busy (e.g., still warming a cache) and shouldn't be killed, just shouldn't get traffic yet.",
+    "id": 25
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What does the Kubernetes control plane consist of, at a high level?",
+    "answer": "The API server (the front door for all cluster operations, including kubectl), etcd (the cluster's consistent key-value store holding all state), the scheduler (decides which node a new Pod runs on), and the controller manager (runs reconciliation loops like the Deployment and ReplicaSet controllers that continuously drive actual state toward desired state).",
+    "id": 26
+  },
+  {
+    "category": "Kubernetes",
+    "question": "What is the kubelet, and what role does it play on each node?",
+    "answer": "An agent that runs on every worker node, responsible for making sure the containers described in the Pod specs assigned to that node are actually running and healthy \u2014 it talks to the container runtime to start/stop containers, executes liveness/readiness probes, and reports node and Pod status back to the control plane.",
+    "id": 27
+  },
+  {
+    "category": "GPUs",
+    "question": "What is CUDA, and why does it matter for ML infrastructure?",
+    "answer": "NVIDIA's parallel computing platform and API that lets developers write code (kernels) that runs directly on the GPU's thousands of cores. Virtually all major deep learning frameworks (PyTorch, TensorFlow) rely on CUDA under the hood to execute the matrix operations that make up neural network training/inference on NVIDIA GPUs, making CUDA version compatibility a common source of infrastructure headaches.",
+    "id": 28
+  },
+  {
+    "category": "GPUs",
+    "question": "What is VRAM, and why does it so often become the binding constraint when serving large models?",
+    "answer": "VRAM (video RAM) is the GPU's own dedicated memory, separate from system RAM, used to hold model weights, activations, and intermediate computation during training/inference. Unlike system RAM, VRAM is typically much smaller (tens of gigabytes even on high-end GPUs) and can't be easily expanded, so it's usually the first resource exhausted when serving large models \u2014 driving techniques like quantization, model sharding, and careful batch-size tuning specifically to fit within a fixed VRAM budget.",
+    "id": 29
+  },
+  {
+    "category": "GPUs",
+    "question": "What is data parallelism, in the context of training large models across multiple GPUs?",
+    "answer": "Each GPU holds a full copy of the model but processes a different slice (shard) of the training batch; gradients computed independently on each GPU are then averaged/synchronized across GPUs before updating weights, so all copies stay in sync. It's the simplest form of multi-GPU parallelism and scales well as long as the full model fits in a single GPU's memory.",
+    "id": 30
+  },
+  {
+    "category": "GPUs",
+    "question": "What is tensor parallelism?",
+    "answer": "A model-parallelism technique that splits individual layers (specifically, the large matrix multiplications within them) across multiple GPUs, so each GPU computes only a slice of a given layer's output and the results are combined \u2014 used when a single layer is too large to fit or compute efficiently on one GPU, common for very large transformer models.",
+    "id": 31
+  },
+  {
+    "category": "GPUs",
+    "question": "What is pipeline parallelism, and how does it differ from tensor parallelism?",
+    "answer": "Pipeline parallelism splits a model by stacking different layers (or groups of layers) onto different GPUs, so data flows through GPU 1 (early layers), then GPU 2 (next layers), and so on like an assembly line \u2014 different GPUs hold entirely different layers. Tensor parallelism instead splits the computation *within* a single layer across GPUs. The two are often combined for training the largest models, alongside data parallelism, in what's called 3D parallelism.",
+    "id": 32
+  },
+  {
+    "category": "GPUs",
+    "question": "What is an inference server, and why not just call the model directly in application code?",
+    "answer": "A dedicated service (like vLLM, Triton, or TorchServe) that loads a model once and exposes it via an API, handling concerns like request batching, queuing, GPU memory management, and multi-model serving that application code shouldn't have to reimplement. Separating inference serving from application logic also lets the GPU-bound serving layer scale independently from the rest of the application.",
+    "id": 33
+  },
+  {
+    "category": "GPUs",
+    "question": "What is NVIDIA MIG (Multi-Instance GPU)?",
+    "answer": "A feature on certain NVIDIA GPUs (A100, H100, and newer) that lets a single physical GPU be partitioned into multiple fully isolated GPU instances, each with its own dedicated memory and compute cores, so several separate workloads can run concurrently on one GPU without interfering with each other \u2014 useful when a workload doesn't need a full GPU's resources and you want better utilization than time-slicing alone provides.",
+    "id": 34
+  },
+  {
+    "category": "GPUs",
+    "question": "What is request batching in the context of GPU inference, and why does it matter so much for throughput?",
+    "answer": "Grouping multiple incoming inference requests together and processing them as a single batched GPU operation, rather than one request at a time \u2014 since GPUs are massively parallel and much of a single small request's compute is 'wasted' relative to the GPU's capacity, batching dramatically improves throughput (requests served per second) at some cost to individual request latency, a core tradeoff in tuning inference-serving systems.",
+    "id": 35
+  },
+  {
+    "category": "GPUs",
+    "question": "What is continuous (or dynamic) batching, as distinct from static batching?",
+    "answer": "Static batching waits to accumulate a fixed batch size (or a timeout) before processing, so a request can be stuck waiting for the batch to fill even if the GPU is idle. Continuous batching (used in serving engines like vLLM) instead dynamically adds new requests into an in-flight batch as soon as GPU capacity frees up (e.g., when another request in the batch finishes generating), significantly improving both throughput and latency for variable-length generation workloads like LLM serving.",
+    "id": 36
+  },
+  {
+    "category": "GPUs",
+    "question": "Why is GPU scheduling in Kubernetes more complex than scheduling regular CPU/memory workloads?",
+    "answer": "GPUs are typically treated as an indivisible, non-shareable resource by default in Kubernetes (a Pod requesting a GPU gets exclusive access to the whole device, unlike CPU which can be subdivided into fractional millicores), so naive scheduling can badly underutilize expensive GPU hardware. Solutions include NVIDIA's device plugin for basic GPU scheduling, MIG for hardware-level partitioning, or third-party GPU-sharing schedulers that time-slice a GPU across multiple Pods.",
+    "id": 37
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is vLLM, and what problem was it specifically designed to solve?",
+    "answer": "An open-source LLM inference and serving engine designed for high-throughput serving, most notably introducing PagedAttention \u2014 an approach to managing the KV cache in GPU memory using techniques borrowed from OS virtual memory paging, which reduces memory waste/fragmentation and enables much higher batching efficiency than naive KV cache allocation.",
+    "id": 38
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is Triton Inference Server?",
+    "answer": "An open-source model-serving platform from NVIDIA that can serve models from multiple frameworks (PyTorch, TensorFlow, ONNX, TensorRT, and more) behind a single unified API, with built-in support for dynamic batching, concurrent model execution, and multi-GPU/multi-node deployment \u2014 commonly used when an organization needs to serve a heterogeneous mix of model types rather than just one framework.",
+    "id": 39
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is Ray, and why is it commonly used for ML infrastructure?",
+    "answer": "An open-source framework for scaling Python workloads (including but not limited to ML) across a cluster of machines, providing primitives for distributed computing (remote function calls, actors, distributed data processing) with libraries built on top for distributed training (Ray Train), hyperparameter tuning (Ray Tune), and model serving (Ray Serve) \u2014 popular for orchestrating large-scale ML pipelines without hand-rolling distributed coordination.",
+    "id": 40
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is NCCL, and why does it matter for multi-GPU training?",
+    "answer": "NVIDIA Collective Communications Library \u2014 a library providing optimized implementations of collective communication operations (like all-reduce, used to synchronize gradients across GPUs in data-parallel training) that are aware of the underlying GPU interconnect topology (NVLink, InfiniBand), making multi-GPU and multi-node communication dramatically faster than naive implementations, which is critical since communication overhead is often the main bottleneck in large-scale distributed training.",
+    "id": 41
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is model sharding, and why is it necessary for very large models?",
+    "answer": "Splitting a single model's parameters across multiple devices (GPUs, or even multiple machines) because the full model no longer fits in any single device's memory \u2014 implemented via approaches like tensor parallelism, pipeline parallelism, or fully-sharded data parallelism (FSDP), which additionally shards optimizer states and gradients, not just the model weights themselves.",
+    "id": 42
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is quantization, and what tradeoff does it make?",
+    "answer": "Reducing the numerical precision used to store a model's weights (and sometimes activations) \u2014 for example, from 16-bit or 32-bit floating point down to 8-bit or 4-bit integers \u2014 which shrinks memory footprint and speeds up inference, at the cost of some accuracy loss, though modern quantization techniques often keep that loss quite small for many practical purposes.",
+    "id": 43
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is the KV cache in transformer inference, and why does managing it well matter so much for serving efficiency?",
+    "answer": "During autoregressive generation, the key and value vectors computed for every previous token are cached and reused for each new token rather than recomputed from scratch, since attention needs access to all prior tokens' keys/values. This cache grows with sequence length and batch size and can consume a large fraction of available GPU memory, making efficient KV cache management (like vLLM's PagedAttention) one of the biggest levers for how many concurrent requests a GPU can actually serve.",
+    "id": 44
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is speculative decoding, and how does it speed up inference without changing the model's output?",
+    "answer": "A small, fast 'draft' model proposes several candidate next tokens, which the larger target model then verifies in a single parallel forward pass, accepting the draft tokens that match what the large model would have generated anyway and only falling back to normal generation where they diverge. Since verification is cheaper than sequential autoregressive generation, this speeds up inference while producing output statistically identical to running the large model alone.",
+    "id": 45
+  },
+  {
+    "category": "AI Infrastructure",
+    "question": "What is the difference between training infrastructure and inference infrastructure, and why are they often architected differently?",
+    "answer": "Training infrastructure is optimized for maximum throughput on a (relatively) fixed, large, long-running job \u2014 often tightly-coupled clusters of many GPUs communicating heavily (via NCCL) over high-speed interconnects, running for hours to weeks. Inference infrastructure is optimized for serving many independent, latency-sensitive, bursty requests, prioritizing low latency and elastic autoscaling over raw aggregate throughput of a single job, which typically leads to very different cluster topologies, scheduling strategies, and cost-optimization approaches between the two.",
+    "id": 46
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is Apache Kafka, and what makes it different from a traditional message queue?",
+    "answer": "A distributed event-streaming platform where messages (events) are appended to durable, ordered, partitioned logs called topics, and consumers track their own read position (offset) rather than the broker removing messages once consumed. This lets multiple independent consumer groups replay or re-read the same event history, unlike a traditional queue where a message is typically consumed once and gone.",
+    "id": 47
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is a Kafka partition, and why does a topic have multiple of them?",
+    "answer": "A topic is split into partitions, each an independently ordered, appended-to log; partitioning is how Kafka scales \u2014 different partitions can be hosted on different brokers and read/written in parallel, and a partition also bounds ordering guarantees (order is only guaranteed within a single partition, not across an entire topic).",
+    "id": 48
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is RabbitMQ, and how does its model differ from Kafka's?",
+    "answer": "A traditional message broker implementing the AMQP protocol, built around routing messages through exchanges to queues based on routing rules, where messages are typically removed once acknowledged as consumed. It's well suited to complex routing and traditional task-queue patterns, whereas Kafka is built around durable, replayable event logs better suited to high-throughput event streaming and multiple independent consumers of the same event history.",
+    "id": 49
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is Amazon SQS, and when would you reach for it over a self-managed queue like RabbitMQ?",
+    "answer": "A fully managed message queuing service from AWS, offering standard queues (at-least-once delivery, best-effort ordering) and FIFO queues (strict ordering, exactly-once processing within a message group). It's commonly chosen specifically to avoid operating queue infrastructure yourself, integrating tightly with other AWS services, at the cost of some flexibility compared to self-hosting Kafka/RabbitMQ.",
+    "id": 50
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is the difference between at-least-once, at-most-once, and exactly-once message delivery semantics?",
+    "answer": "At-most-once means a message might be lost but is never duplicated (fire-and-forget). At-least-once means a message is never lost but might be delivered/processed more than once (requiring idempotent consumers to handle safely). Exactly-once means each message is processed precisely one time \u2014 the strongest and hardest guarantee to provide in a distributed system, often achieved in practice via at-least-once delivery plus idempotency keys/deduplication on the consumer side rather than true end-to-end exactly-once transport.",
+    "id": 51
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is CQRS (Command Query Responsibility Segregation)?",
+    "answer": "An architectural pattern that separates the model used to write data (commands, which change state) from the model used to read data (queries), potentially using entirely different data stores optimized for each \u2014 writes go through a model optimized for validating and applying business logic, reads go through a separate, often denormalized model optimized for fast querying, at the cost of added complexity and eventual consistency between the two sides.",
+    "id": 52
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is event sourcing, and how does it relate to CQRS?",
+    "answer": "An approach where, instead of storing just the current state of an entity, you store the full sequence of events that led to that state (e.g., 'order created', 'item added', 'order shipped'), and current state is derived by replaying those events. It's commonly paired with CQRS since the event log naturally serves as the write-side source of truth, while one or more read-optimized projections are built from it for querying.",
+    "id": 53
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is the difference between a message queue and a pub/sub system?",
+    "answer": "In a classic message queue, each message is typically delivered to and consumed by exactly one consumer (competing consumers pattern, useful for distributing work). In pub/sub, a published message is delivered to every subscriber independently, useful for broadcasting an event to multiple interested services \u2014 though in practice many modern systems (Kafka, SNS+SQS) blend both patterns, offering pub/sub fan-out where each subscriber can itself be a competing-consumer group.",
+    "id": 54
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is backpressure in the context of message queues and streaming systems, and why is it important?",
+    "answer": "A mechanism for a slower downstream consumer to signal (or otherwise cause) an upstream producer/queue to slow down, rather than being overwhelmed by messages arriving faster than they can be processed. Without backpressure handling, a slow consumer can lead to unbounded queue growth, memory exhaustion, or dropped messages \u2014 durable queues provide natural backpressure by letting messages accumulate safely on disk rather than in the consumer's memory.",
+    "id": 55
+  },
+  {
+    "category": "Distributed Systems & Messaging",
+    "question": "What is a dead-letter queue, and why is it a standard part of production messaging systems?",
+    "answer": "A separate queue where messages that repeatedly fail processing (after retries are exhausted) are routed instead of being retried forever or silently dropped, letting operators inspect and manually handle poison messages (malformed or unprocessable messages) without them blocking the main queue's throughput or causing infinite retry loops.",
+    "id": 56
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is Redis, and what makes it different from a traditional relational database?",
+    "answer": "An in-memory data structure store, used as a cache, message broker, or lightweight database, supporting rich data types (strings, hashes, lists, sets, sorted sets) with very low latency since data lives in RAM rather than on disk. It trades the durability and complex-querying strengths of a relational database for speed, though it does support optional persistence (snapshotting or an append-only log) for durability.",
+    "id": 57
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is Memcached, and how does it compare to Redis?",
+    "answer": "A simpler in-memory key-value cache, historically focused purely on caching (no persistence, no rich data structures, no built-in replication). Redis has largely superseded it for new projects due to Redis's richer feature set (data structures, persistence, pub/sub, clustering), but Memcached's simpler multithreaded design can still have an edge for pure, very high-throughput key-value caching with large values.",
+    "id": 58
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is Cassandra, and what kind of workload is it designed for?",
+    "answer": "A distributed, wide-column NoSQL database designed for very high write throughput and horizontal scalability across many nodes with no single point of failure (masterless architecture, tunable consistency). It's commonly chosen for workloads with massive write volume and simple, known-in-advance query patterns (since Cassandra requires designing tables around specific queries rather than supporting arbitrary ad-hoc queries well).",
+    "id": 59
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is DynamoDB, and how does its consistency model work?",
+    "answer": "AWS's fully managed NoSQL key-value/document database, offering single-digit-millisecond latency at virtually any scale with automatic partitioning. It offers a choice per-read between eventually consistent reads (faster, cheaper, might return slightly stale data) and strongly consistent reads (guaranteed to reflect all prior successful writes, at higher latency/cost) \u2014 a classic explicit tradeoff exposed directly in the API rather than hidden.",
+    "id": 60
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is database replication, and what's the difference between synchronous and asynchronous replication?",
+    "answer": "Replication maintains copies of a database on multiple servers for durability and read scalability. Synchronous replication waits for a write to be confirmed on replica(s) before acknowledging it to the client, guaranteeing replicas are never behind but adding latency and potentially blocking writes if a replica is slow/down. Asynchronous replication acknowledges the write immediately and propagates to replicas in the background, keeping writes fast but risking data loss (recent writes on the primary that hadn't yet replicated) if the primary fails.",
+    "id": 61
+  },
+  {
+    "category": "Databases & Caching",
+    "question": "What is the difference between leader-follower (primary-replica) and leaderless (multi-master) replication?",
+    "answer": "In leader-follower replication, all writes go through a single primary, which propagates changes to read replicas \u2014 simple to reason about, but the primary is a single point of write bottleneck/failure. Leaderless (multi-master) replication allows writes to any replica, which then propagate to others, offering higher write availability but requiring conflict resolution when concurrent writes to the same data occur on different nodes.",
+    "id": 62
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is the difference between an L4 (transport layer) and an L7 (application layer) load balancer?",
+    "answer": "An L4 load balancer routes traffic based on network-level information (IP address, TCP/UDP port) without inspecting the actual request content, making it fast and protocol-agnostic. An L7 load balancer operates at the application layer (understanding HTTP), enabling routing decisions based on request content (URL path, headers, cookies) and features like SSL termination, request-level retries, and content-based routing \u2014 at the cost of more processing overhead per request.",
+    "id": 63
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is a reverse proxy, and how does it differ from a forward proxy?",
+    "answer": "A reverse proxy sits in front of one or more backend servers and forwards client requests to them, presenting a single entry point to clients while handling concerns like load balancing, SSL termination, and caching (e.g., Nginx, HAProxy in front of application servers). A forward proxy sits in front of clients, forwarding their requests out to the internet on their behalf (e.g., for corporate network filtering or anonymization) \u2014 the same technology, opposite direction of who it's protecting/representing.",
+    "id": 64
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is a service mesh, and what problem does it solve?",
+    "answer": "Infrastructure (like Istio or Linkerd) that handles service-to-service communication concerns \u2014 mutual TLS encryption, retries, timeouts, circuit breaking, observability, traffic shaping \u2014 typically via a lightweight proxy (sidecar) deployed alongside each service instance, so individual services don't need to implement this networking logic themselves in application code.",
+    "id": 65
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is DNS-based load balancing, and what's a key limitation of it?",
+    "answer": "Configuring a domain's DNS records (e.g., round-robin A records, or a managed DNS service with health checks like Route 53) to distribute traffic across multiple server IPs. A key limitation is DNS caching (by clients, resolvers, ISPs) \u2014 even if a server goes down and you update DNS, clients holding a cached (stale) DNS response will keep sending traffic to the dead server until their cache's TTL expires, making DNS-based failover slower than an actual load balancer's real-time health checks.",
+    "id": 66
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is TLS termination, and where does it typically happen in a load-balanced architecture?",
+    "answer": "Decrypting incoming HTTPS/TLS traffic, typically done at the load balancer or reverse proxy layer rather than at every individual backend server \u2014 centralizing certificate management and offloading the computational cost of encryption/decryption from application servers. Traffic between the load balancer and backend servers may then run over plain HTTP (if within a trusted private network) or be re-encrypted (TLS passthrough or re-encryption) if end-to-end encryption is required.",
+    "id": 67
+  },
+  {
+    "category": "Networking & Load Balancing",
+    "question": "What is a health check, in the context of load balancers and service discovery?",
+    "answer": "A periodic probe (e.g., an HTTP request to a /health endpoint, or a simple TCP connection check) that a load balancer or orchestrator uses to determine whether a backend instance is currently able to serve traffic, automatically removing unhealthy instances from rotation and adding them back once they pass health checks again \u2014 essential for automatically routing around failures without manual intervention.",
+    "id": 68
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is the difference between Amazon ECS and Amazon EKS?",
+    "answer": "ECS (Elastic Container Service) is AWS's own proprietary container orchestration service, simpler to set up and tightly integrated with other AWS services, but AWS-specific. EKS (Elastic Kubernetes Service) is AWS's managed Kubernetes offering, running the open-source Kubernetes API, offering more portability across cloud providers (since Kubernetes itself is a standard) and a larger ecosystem of tools, at the cost of Kubernetes's greater inherent complexity compared to ECS.",
+    "id": 69
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is the difference between vertical and horizontal scaling?",
+    "answer": "Vertical scaling (scaling up) means increasing the resources (CPU, memory) of an existing single instance/server. Horizontal scaling (scaling out) means adding more instances/servers running in parallel. Horizontal scaling is generally preferred for availability and elasticity in cloud architectures (no single point of failure, can scale far beyond what one machine could handle), though it requires the application to be designed to run as multiple stateless (or coordinated stateful) instances.",
+    "id": 70
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is an Availability Zone, and why do cloud architectures spread resources across multiple of them?",
+    "answer": "A physically separate data center (or cluster of data centers) within a cloud region, with independent power, cooling, and networking, but connected to other AZs in the same region via low-latency links. Spreading resources across multiple AZs protects against a single data-center-level failure (power outage, hardware failure, local network issue) taking down an entire application, since the other AZs keep serving traffic.",
+    "id": 71
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is a spot instance (or preemptible VM), and what workloads is it suited for?",
+    "answer": "Spare cloud compute capacity offered at a steep discount (often 60-90% off on-demand pricing) compared to regular instances, with the tradeoff that the cloud provider can reclaim it with little notice when it needs the capacity back. Well suited to fault-tolerant, interruptible workloads (batch processing, CI/CD runners, stateless workers that can be restarted elsewhere) but risky for stateful or latency-critical production services that can't tolerate sudden termination.",
+    "id": 72
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is the difference between scaling based on a fixed schedule versus reactive (metric-based) autoscaling?",
+    "answer": "Scheduled scaling adjusts capacity at predetermined times based on known traffic patterns (e.g., scale up before a predictable morning traffic spike), useful when load is predictable and you want capacity ready *before* the spike hits rather than reacting after the fact. Reactive autoscaling (like an HPA watching CPU) adjusts capacity based on real-time observed metrics, better for unpredictable load but inherently lags behind sudden spikes since it can only react after load has already increased.",
+    "id": 73
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What does a 'compute cluster' generally refer to in cloud infrastructure, and what problem does clustering solve?",
+    "answer": "A group of interconnected machines (physical or virtual) that work together and are managed as a single logical resource pool, allowing workloads to be scheduled across whichever machines have available capacity rather than being tied to one specific server. Clustering is the foundation that container orchestrators (Kubernetes, ECS) and distributed compute frameworks (Ray, Spark) build on top of to schedule and scale workloads across many machines.",
+    "id": 74
+  },
+  {
+    "category": "Cloud Architecture & Autoscaling",
+    "question": "What is a multi-region architecture, and what does it protect against that multi-AZ doesn't?",
+    "answer": "Running infrastructure across multiple separate geographic cloud regions (not just multiple AZs within one region), which protects against region-wide failures (a whole region going down, which is rarer but has happened) and can also reduce latency for geographically distributed users by serving them from a nearby region. It's significantly more complex than multi-AZ, often requiring careful handling of data replication/consistency across regions and is usually reserved for the highest-availability-requirement systems given the added cost and complexity.",
+    "id": 75
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is the difference between synchronous and asynchronous communication between services?",
+    "answer": "In synchronous communication, the caller sends a request and blocks/waits until it gets a response before proceeding (e.g., a typical REST API call). In asynchronous communication, the caller sends a request (often via a queue or event) and continues immediately without waiting for the result, with the response (if any) delivered later via a callback, polling, or another message \u2014 trading immediate confirmation for better resilience to slow downstream services and looser coupling between components.",
+    "id": 76
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is an event-driven architecture, at a high level?",
+    "answer": "A design where components communicate by producing and consuming events (facts about something that happened, e.g., 'order placed') rather than calling each other directly, typically via a message broker or event bus. This decouples producers from consumers (a producer doesn't need to know who's listening or how many consumers there are) and makes it easy to add new functionality by adding a new consumer of existing events without modifying the producer.",
+    "id": 77
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is the difference between orchestration and choreography in event-driven systems?",
+    "answer": "Orchestration uses a central coordinator (an orchestrator service or workflow engine) that explicitly directs each step of a multi-service process, calling each participant in sequence and handling errors/retries centrally \u2014 easier to understand and debug as a single source of truth. Choreography has no central coordinator; each service reacts to events from others and emits its own events in turn, with the overall process emerging from these independent reactions \u2014 more decoupled but harder to trace and reason about as a whole system.",
+    "id": 78
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is a saga, in the context of distributed transactions?",
+    "answer": "A pattern for managing a multi-step business transaction that spans multiple services (which can't share a single database transaction) by breaking it into a sequence of local transactions, each with a corresponding compensating action that can undo it if a later step fails \u2014 e.g., 'reserve inventory' with a compensating 'release inventory', chained together so the overall operation can be rolled back logically even without distributed ACID transactions.",
+    "id": 79
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is idempotency, and why is it especially important in asynchronous/event-driven systems?",
+    "answer": "An operation is idempotent if performing it multiple times has the same effect as performing it once. Asynchronous systems commonly provide at-least-once delivery (a message might be delivered/processed more than once due to retries), so consumers must be designed to handle duplicate messages safely \u2014 e.g., using an idempotency key to detect and skip a message that's already been processed, rather than double-charging a customer or double-shipping an order.",
+    "id": 80
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is the outbox pattern, and what problem does it solve?",
+    "answer": "A pattern for reliably publishing an event as part of the same transaction that changes application state, avoiding the classic 'dual write' problem where a database write succeeds but the subsequent event publish fails (or vice versa), leaving the system inconsistent. Instead of publishing directly, the event is written to an 'outbox' table in the same database transaction as the state change, and a separate process reliably reads from the outbox and publishes to the message broker, guaranteeing the event is eventually published if and only if the state change committed.",
+    "id": 81
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is a circuit breaker pattern, and when does it trigger?",
+    "answer": "A pattern that wraps calls to a potentially-failing downstream service and 'trips open' after detecting a threshold of failures, causing subsequent calls to fail fast (without even attempting the call) for a cooldown period, rather than letting every request hang waiting on a timeout against a service that's clearly down. This protects the calling service's own resources (threads, connections) from being exhausted waiting on a failing dependency, and gives the downstream service breathing room to recover instead of being hammered with retries.",
+    "id": 82
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is the difference between retries with fixed delay and exponential backoff?",
+    "answer": "Fixed-delay retries wait the same amount of time between each retry attempt. Exponential backoff increases the wait time between successive retries (e.g., doubling each time), which reduces the load a struggling downstream service faces from many simultaneous retrying clients and gives it more room to recover \u2014 often combined with jitter (adding randomness to the delay) to avoid many clients retrying in synchronized bursts (the 'thundering herd' problem).",
+    "id": 83
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is eventual consistency, and what class of systems tends to rely on it?",
+    "answer": "A consistency model where, after an update, all reads will *eventually* (not necessarily immediately) reflect that update, once the change has had time to propagate \u2014 as opposed to strong consistency, where a read is always guaranteed to reflect the most recent write. Distributed and asynchronous systems (many NoSQL databases, event-driven architectures, caches) commonly favor eventual consistency because requiring strong consistency across many distributed nodes/services usually costs significant latency and availability.",
+    "id": 84
+  },
+  {
+    "category": "Async & Event-Driven Systems",
+    "question": "What is a webhook, and how is it a form of event-driven communication?",
+    "answer": "An HTTP callback: instead of a client repeatedly polling a service for updates, the service itself makes an HTTP request to a URL the client registered in advance, whenever a relevant event occurs (e.g., a payment completing). It's a simple, widely-used form of event-driven, push-based communication between independent systems/organizations, as opposed to a full internal message broker used within one company's own architecture.",
+    "id": 85
+  }
+]

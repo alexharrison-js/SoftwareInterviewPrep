@@ -1,0 +1,230 @@
+[
+  {
+    "category": "Risk & Migration",
+    "question": "How do you de-risk a large migration (e.g., moving to a new database or rewriting a core service)?",
+    "answer": "Break it into small, independently reversible steps rather than a single big-bang cutover. Common techniques: run the new system in parallel/shadow mode against real traffic before relying on it, migrate a small slice of traffic or a low-risk subset of data first, keep the old system as a fallback until the new one has proven itself under real load, and instrument both systems so you can compare outputs and catch discrepancies before they reach users. The goal is that any single step, if wrong, is cheap and fast to undo.",
+    "id": 1
+  },
+  {
+    "category": "Risk & Migration",
+    "question": "What's the difference between a big-bang migration and an incremental (strangler fig) migration, and when would you choose each?",
+    "answer": "A big-bang migration cuts over all traffic/data to the new system at once \u2014 simpler to reason about but high-risk, since any bug affects everyone immediately and rollback means reverting everything. An incremental (strangler fig) migration routes an increasing slice of traffic to the new system over time while the old system still handles the rest, letting you validate in production with limited blast radius. Big-bang is sometimes unavoidable (e.g., a hard schema change with no easy dual-write path), but incremental is preferred whenever the system's boundaries allow it.",
+    "id": 2
+  },
+  {
+    "category": "Risk & Migration",
+    "question": "How do you decide whether a migration needs a dual-write (or dual-read) phase?",
+    "answer": "If the migration changes where data lives or how it's structured, and you need the two systems to stay consistent while gradually shifting traffic, a dual-write phase (writing to both the old and new system) or dual-read phase (reading from both and comparing) lets you validate the new system's correctness against real production data before fully cutting over, and gives you a safe rollback path if the new system has bugs, since the old system's data is still current.",
+    "id": 3
+  },
+  {
+    "category": "Risk & Migration",
+    "question": "What signals tell you a migration is ready to proceed to the next stage of rollout?",
+    "answer": "Concrete comparison metrics between old and new systems (error rates, latency, data-correctness diffs) staying within acceptable bounds over a meaningful traffic sample and time window \u2014 not just 'it seems fine.' Also worth checking: has the on-call/support team had time to get comfortable with the new system's failure modes, and is there a tested rollback path, not just a theoretical one.",
+    "id": 4
+  },
+  {
+    "category": "Risk & Migration",
+    "question": "How do you communicate a risky migration's status and rollback plan to stakeholders who aren't deep in the technical details?",
+    "answer": "Translate technical risk into business terms: what's the blast radius if something goes wrong (which users/features are affected), how quickly can it be reverted, and what's actively being monitored to catch problems early. Give a clear go/no-go checkpoint schedule rather than vague ongoing status, so stakeholders know exactly when a decision point is coming and what would trigger pausing or rolling back.",
+    "id": 5
+  },
+  {
+    "category": "Build vs Buy",
+    "question": "How do you decide whether to build a piece of infrastructure in-house or buy/adopt an existing solution?",
+    "answer": "Ask whether this is core to your competitive differentiation or just necessary supporting infrastructure \u2014 build what makes your product genuinely different, buy/adopt what's already been solved well by others (e.g., don't build your own message queue or auth system unless that's literally your product). Also weigh total cost of ownership honestly: buying isn't just license cost, and building isn't just initial dev time \u2014 ongoing maintenance, on-call burden, and opportunity cost of engineers not working on differentiating features matter heavily on both sides.",
+    "id": 6
+  },
+  {
+    "category": "Build vs Buy",
+    "question": "What are the hidden costs of 'build' that teams commonly underestimate?",
+    "answer": "Ongoing maintenance and on-call burden long after the initial build is 'done'; the opportunity cost of engineers spending time on undifferentiated infrastructure instead of product features; keeping up with security patches and evolving best practices that a vendor would otherwise handle; and the knowledge concentration risk of a system only a few people on the team deeply understand, which becomes a liability when those people leave.",
+    "id": 7
+  },
+  {
+    "category": "Build vs Buy",
+    "question": "What are the hidden costs of 'buy' that teams commonly underestimate?",
+    "answer": "Vendor lock-in and the migration cost if you need to leave later; integration and customization effort to fit the vendor's opinions into your existing architecture; ongoing per-seat or usage-based costs that can scale unfavorably as you grow; and the risk of being blocked by the vendor's roadmap/priorities when you need a feature or fix that isn't theirs to prioritize.",
+    "id": 8
+  },
+  {
+    "category": "Build vs Buy",
+    "question": "When does it make sense to build something in-house even if a good vendor solution exists?",
+    "answer": "When the vendor solution doesn't fit a requirement that's genuinely core to your product (not just inconvenient to work around), when the cost/scale math clearly favors building at your specific usage volume, when you need control/customization the vendor fundamentally can't offer, or when a regulatory/compliance requirement makes an external vendor untenable. It should be a deliberate, justified exception, not the default.",
+    "id": 9
+  },
+  {
+    "category": "Build vs Buy",
+    "question": "How do you revisit a build-vs-buy decision that was made years ago and may no longer be right?",
+    "answer": "Periodically (not just when something breaks) ask whether the original reasoning still holds: has your scale changed enough that the cost math flipped, has the vendor landscape matured with better options, has the in-house system become a maintenance burden disproportionate to the value it provides. Treat build-vs-buy as a decision with an expiration date to reassess, not a permanent commitment, especially for infrastructure that isn't actually differentiating.",
+    "id": 10
+  },
+  {
+    "category": "Consistency & Tradeoffs",
+    "question": "When should you use eventual consistency instead of strong consistency?",
+    "answer": "When the business impact of briefly stale data is genuinely low (a follower count being a few seconds out of date, a 'like' count lagging slightly) and the availability/latency/scalability benefits of relaxing consistency are worth it. Avoid it for anything involving money, inventory that must never be oversold, or any invariant where a user seeing stale data could cause real harm or a bad decision \u2014 those need strong consistency even at the cost of availability or latency.",
+    "id": 11
+  },
+  {
+    "category": "Consistency & Tradeoffs",
+    "question": "How do you explain the CAP theorem's practical implications to a team making a database choice, without getting lost in theory?",
+    "answer": "In practice, network partitions will happen, so the real question is: when part of your system can't talk to another part, do you want to stay available (keep serving requests, possibly with stale/inconsistent data) or stay consistent (refuse requests rather than risk serving wrong data)? Most systems aren't purely one or the other \u2014 they choose per-operation, favoring consistency for critical writes (like payments) and availability for less-critical reads (like a product catalog page).",
+    "id": 12
+  },
+  {
+    "category": "Consistency & Tradeoffs",
+    "question": "How do you decide where in a system to accept eventual consistency versus enforce strong consistency?",
+    "answer": "Draw the line around the specific invariant that must never be violated, not the whole system. E.g., an e-commerce system might require strong consistency for 'inventory count going negative' but be fine with eventual consistency for 'search index reflecting a newly added product a few seconds late.' Identify these boundaries explicitly rather than picking one consistency model for the entire system.",
+    "id": 13
+  },
+  {
+    "category": "Consistency & Tradeoffs",
+    "question": "What's a practical way to reason about tradeoffs when there's no clearly 'correct' engineering answer?",
+    "answer": "Make the tradeoff explicit rather than pretending it doesn't exist: state what you're optimizing for and what you're consciously giving up, who is impacted by the downside, and how reversible the decision is if it turns out wrong. A well-reasoned tradeoff that's documented and revisited later is far better than an implicit choice nobody consciously made or can later explain.",
+    "id": 14
+  },
+  {
+    "category": "Architecture & Design",
+    "question": "How do you split a monolith into services without turning it into a distributed mess?",
+    "answer": "Split along genuine business/domain boundaries (bounded contexts) where the pieces have naturally low coupling, not along arbitrary technical lines \u2014 a bad split creates chatty services that constantly call each other synchronously, which is often worse than the monolith it replaced. Start by identifying the seams where the codebase already has weak coupling (or where teams already work relatively independently), extract one piece at a time (strangler fig pattern) with real production validation between steps, and resist splitting further than your team's operational maturity (monitoring, deployment automation, on-call practices) can actually support.",
+    "id": 15
+  },
+  {
+    "category": "Architecture & Design",
+    "question": "What questions do you ask when reviewing someone else's architecture proposal?",
+    "answer": "What problem is this actually solving, and is that the right problem to solve right now? What are the failure modes, and what happens when a dependency is slow or down? How does this scale, and what breaks first under 10x load? What's the operational burden (on-call, debugging complexity) this adds? What did you consider and reject, and why? A good review probes the edges and the 'boring' failure scenarios, not just the happy path the proposal focuses on.",
+    "id": 16
+  },
+  {
+    "category": "Architecture & Design",
+    "question": "How do you evaluate whether a proposed architecture is over-engineered for the actual problem?",
+    "answer": "Check whether the complexity is justified by real, current requirements (not hypothetical future scale that may never materialize) \u2014 ask 'what specifically breaks if we did the simpler version, and how likely/soon is that.' A useful heuristic: prefer the simplest design that clearly solves today's problem and doesn't obviously paint you into a corner for the near-term roadmap, rather than the most 'scalable' design on paper, since premature complexity has real ongoing costs (harder to understand, more failure modes, slower to change) that are easy to underweight against speculative future benefits.",
+    "id": 17
+  },
+  {
+    "category": "Architecture & Design",
+    "question": "How do you approach designing a system when requirements are still unclear or likely to change significantly?",
+    "answer": "Identify which decisions are expensive to reverse later (data model choices, external API contracts, core architectural boundaries) versus cheap to change (internal implementation details, which library you use for something swappable) and invest your certainty-seeking effort in the expensive-to-reverse ones. For everything else, build the simplest thing that works now and explicitly design for the ability to change it later, rather than trying to predict and pre-build for every possible future requirement.",
+    "id": 18
+  },
+  {
+    "category": "Architecture & Design",
+    "question": "What's a practical framework for deciding between a synchronous (request/response) and asynchronous (event/queue-based) design for a new piece of functionality?",
+    "answer": "Ask whether the caller genuinely needs an immediate answer to proceed (synchronous) or is just triggering work that can complete later (asynchronous) \u2014 a checkout flow that needs to confirm 'yes your payment went through' before showing a confirmation page needs synchronous confirmation of at least the critical path, while sending a receipt email afterward doesn't. Also weigh: synchronous is simpler to reason about and debug but couples the caller's availability/latency to the callee's; asynchronous adds resilience and decoupling but adds complexity (eventual consistency, harder debugging, need for idempotency) that isn't worth paying for if the simpler synchronous approach is genuinely sufficient.",
+    "id": 19
+  },
+  {
+    "category": "Team & Mentorship",
+    "question": "How do you mentor a junior engineer effectively without just doing their work for them?",
+    "answer": "Ask guiding questions that lead them to the answer rather than handing it over ('what have you tried so far,' 'what do you think happens if...'), and give them problems slightly outside their current comfort zone with enough support that failure is a safe learning opportunity, not a crisis. Resist the urge to jump in and fix things quickly yourself when watching them struggle is uncomfortable \u2014 the short-term velocity cost of letting them work through it is usually worth the long-term growth, as long as they're not stuck to the point of genuine frustration.",
+    "id": 20
+  },
+  {
+    "category": "Team & Mentorship",
+    "question": "How do you give critical feedback on a junior engineer's code or design without discouraging them?",
+    "answer": "Separate the work from the person explicitly, be specific about what's wrong and why it matters (not just 'this is wrong'), and pair critical points with genuine acknowledgment of what they did well, so the overall message isn't just negative. Frame feedback around the reasoning/tradeoffs rather than as a verdict \u2014 'here's a case this doesn't handle, what do you think' invites a conversation, while 'this is broken' invites defensiveness.",
+    "id": 21
+  },
+  {
+    "category": "Team & Mentorship",
+    "question": "How do you calibrate how much autonomy to give an engineer on a new project?",
+    "answer": "Base it on demonstrated track record in similar-complexity work, not tenure or title alone \u2014 someone new to the company but experienced in the domain may need less oversight than someone senior but new to this specific problem space. Start with more check-ins than you think you need on unfamiliar territory (for either of you), and explicitly negotiate what level of independent decision-making is expected so neither of you is guessing, then loosen the check-in cadence as trust is established.",
+    "id": 22
+  },
+  {
+    "category": "Team & Mentorship",
+    "question": "How do you handle a disagreement with a peer or report about a technical decision when you're confident you're right?",
+    "answer": "Make sure you actually understand their reasoning fully before pushing back \u2014 restate their position and confirm you've got it right, since disagreements often dissolve once both sides are arguing about the same thing. If you still disagree after genuinely understanding their view, focus on the concrete tradeoffs and evidence rather than authority or seniority, and be explicit about what would change your mind, since a disagreement that can't be resolved by any possible evidence usually isn't really about the technical question anymore.",
+    "id": 23
+  },
+  {
+    "category": "Team & Mentorship",
+    "question": "What's the difference between mentoring and sponsoring, and why does the distinction matter for growing engineers on your team?",
+    "answer": "Mentoring is giving advice and guidance directly to someone, usually in private conversations. Sponsoring is using your own credibility and visibility to advocate for someone when they're not in the room \u2014 putting them forward for a high-visibility project, vouching for their promotion case, connecting them to opportunities. Both matter, but sponsoring is often the more scarce and career-impactful of the two, since it directly creates opportunities rather than just improving someone's skills, and it's easy for senior engineers to default to only mentoring while neglecting sponsorship.",
+    "id": 24
+  },
+  {
+    "category": "Technical Debt",
+    "question": "How do you decide when to pay down technical debt versus keep shipping features?",
+    "answer": "Tie the decision to concrete impact, not a vague sense that 'the code is messy' \u2014 is the debt actively slowing down feature velocity in a measurable way, causing repeated production incidents, or blocking a near-term roadmap item? Debt that isn't currently costing you anything real can often wait; debt that's visibly compounding (every new feature in this area takes longer than it should, or breaks something else) deserves prioritization even against feature pressure, since the cost only grows the longer it's deferred.",
+    "id": 25
+  },
+  {
+    "category": "Technical Debt",
+    "question": "How do you make the case for technical debt work to non-technical stakeholders who only see feature velocity?",
+    "answer": "Translate the debt into business terms they already care about: 'features in this area are taking 2x longer than similar features elsewhere because of X' or 'we've had three production incidents this quarter caused by Y, each costing Z hours of engineering time and customer trust.' Avoid framing it as 'the code is ugly' \u2014 frame it as a velocity or reliability cost with a number attached, and propose it as an investment with a payback period, the same way you'd justify any other resourcing ask.",
+    "id": 26
+  },
+  {
+    "category": "Technical Debt",
+    "question": "How do you prevent technical debt paydown work from being perpetually deprioritized?",
+    "answer": "Bake a standing allocation (e.g., a percentage of each sprint/cycle) into the team's regular planning rather than treating debt paydown as a separate initiative that has to win a prioritization fight against every new feature ask individually. Also track and surface the compounding cost of debt over time (e.g., increasing time-to-ship or incident frequency in a given area) so the tradeoff stays visible to decision-makers instead of being an abstract, easy-to-defer concern.",
+    "id": 27
+  },
+  {
+    "category": "Technical Debt",
+    "question": "Is all technical debt bad, or is some of it a reasonable engineering choice?",
+    "answer": "Some debt is a deliberate, reasonable tradeoff \u2014 shipping a simpler version now to learn from real usage before investing in the more robust version, when speed to market matters more than initial polish. The problem isn't debt itself, it's *unintentional* or *unmanaged* debt: shortcuts taken without anyone deciding to take them, or debt nobody tracks and revisits. Treating debt as a deliberate decision (with a note about what was skipped and why) rather than an accident is the key distinction between healthy pragmatism and a system slowly rotting.",
+    "id": 28
+  },
+  {
+    "category": "Operations & Debugging",
+    "question": "How do you approach debugging a production issue when you don't yet know where the problem is?",
+    "answer": "Start by establishing what actually changed and when (a deploy, a config change, a traffic pattern shift) since most incidents correlate with a recent change, and narrow scope using whatever observability you have (logs, metrics, traces) before guessing at causes. Form a specific, falsifiable hypothesis and test it rather than randomly trying fixes \u2014 'I think X is happening because of Y, here's how I'll confirm it' \u2014 since undirected trial-and-error on a production system risks making things worse and wastes time you don't have during an incident.",
+    "id": 29
+  },
+  {
+    "category": "Operations & Debugging",
+    "question": "What's your first priority when a production incident is actively impacting users \u2014 root-causing it, or mitigating it?",
+    "answer": "Mitigate first, understand fully second. Stop the bleeding (rollback a bad deploy, fail over to a healthy region, disable a broken feature flag) as fast as possible to limit user impact, even if you don't yet fully understand the root cause \u2014 you can always investigate deeply once the immediate impact is contained. Chasing a full root-cause explanation while users are actively affected is usually the wrong tradeoff unless the mitigation itself is unclear or risky.",
+    "id": 30
+  },
+  {
+    "category": "Operations & Debugging",
+    "question": "What makes a good postmortem/incident retrospective, versus a bad one?",
+    "answer": "A good postmortem is blameless (focused on what about the system/process allowed the failure, not who made a mistake), identifies concrete, actionable follow-ups with owners and deadlines rather than vague 'we should be more careful' takeaways, and honestly examines why existing safeguards (monitoring, tests, review process) didn't catch the issue earlier. A bad postmortem either assigns blame (which teaches people to hide problems rather than surface them) or produces a long list of action items that never get done because none of them have a real owner.",
+    "id": 31
+  },
+  {
+    "category": "Operations & Debugging",
+    "question": "How do you decide what to monitor/alert on for a new service before it launches?",
+    "answer": "Alert on symptoms that directly indicate user-facing impact (error rate, latency, availability) rather than every possible internal metric, since alert fatigue from too many low-signal alerts trains people to ignore them, including the important ones. Pair user-facing alerts with enough internal diagnostic metrics/logging to actually debug the cause once an alert fires, and make sure every alert that can page someone has a clear, documented reason it matters and what action to take.",
+    "id": 32
+  },
+  {
+    "category": "Operations & Debugging",
+    "question": "How do you build confidence in a system's reliability before it takes significant production traffic?",
+    "answer": "Load test against realistic traffic patterns (not just raw volume, but the actual shape/burstiness of real usage), deliberately inject failure scenarios (a dependency timing out, a node dying) to see how the system actually behaves rather than assuming it degrades gracefully, and run it in shadow/parallel against real traffic if possible before it's actually responsible for anything. Confidence should come from evidence you've generated, not from the design looking reasonable on a whiteboard.",
+    "id": 33
+  },
+  {
+    "category": "Prioritization & Metrics",
+    "question": "How do you prioritize engineering work when there are more good ideas than the team has capacity for?",
+    "answer": "Anchor prioritization to a shared understanding of what matters most right now (a specific business goal, a reliability threshold, a strategic bet) rather than treating every request as equally urgent, and be willing to explicitly say no or 'not now' to good ideas that don't serve the current priority \u2014 saying yes to everything is really just saying no to focus. Make the tradeoffs visible to stakeholders (if we do A, B waits until next quarter) rather than silently deprioritizing things, so the cost of adding new work is felt at decision time, not discovered later as a surprise.",
+    "id": 34
+  },
+  {
+    "category": "Prioritization & Metrics",
+    "question": "What metrics should determine whether an engineering project was successful?",
+    "answer": "Metrics tied to the actual goal the project was meant to achieve, defined before the project started, not chosen after the fact to justify whatever happened. For a reliability project, that might be reduced incident rate or improved uptime; for a performance project, latency percentiles; for a feature, adoption/usage or a specific business metric it was meant to move. Avoid vanity metrics that are easy to measure but disconnected from real impact (lines of code, number of commits, velocity points) as the definition of success.",
+    "id": 35
+  },
+  {
+    "category": "Prioritization & Metrics",
+    "question": "How do you weigh urgent, short-term requests against important, long-term strategic work?",
+    "answer": "Protect a portion of capacity explicitly for strategic work rather than letting it be perpetually squeezed out by whatever's loudest this week, since urgent-but-not-important work will always feel more pressing in the moment and will consume 100% of capacity if allowed to. That said, distinguish genuinely urgent (a production issue, a customer-blocking bug) from merely loud (an internal request with no real deadline) \u2014 the former should interrupt planned work, the latter usually shouldn't.",
+    "id": 36
+  },
+  {
+    "category": "Prioritization & Metrics",
+    "question": "How do you handle a stakeholder who keeps changing priorities every few weeks, disrupting the team's ability to finish anything?",
+    "answer": "Make the cost of context-switching visible and concrete (e.g., 'that pivot cost us roughly two weeks of partially-done work that we'll now have to either finish, discard, or come back to later') rather than silently absorbing the churn, since stakeholders often don't see the hidden cost of switching, only the value of the new thing they want. Push for a defined cadence for re-prioritization (e.g., committed sprint/cycle boundaries) so there's a legitimate outlet for new priorities without constant mid-flight disruption.",
+    "id": 37
+  },
+  {
+    "category": "Prioritization & Metrics",
+    "question": "How do you decide between optimizing for engineering velocity now versus investing in things (tooling, architecture, hiring) that pay off later?",
+    "answer": "Treat it explicitly as a portfolio allocation decision rather than an all-or-nothing choice \u2014 dedicate a deliberate, sustained fraction of capacity to longer-term investment even when short-term pressure is high, since teams that spend 100% of capacity on immediate asks tend to see compounding velocity loss over time as debt and gaps accumulate. The right split depends on context (an early-stage startup racing to find product-market fit reasonably weighs more toward now; a scaling company with a proven product reasonably invests more in later), but the split should be a conscious choice, not a default of always picking the short-term ask because it's more concrete.",
+    "id": 38
+  }
+]
