@@ -351,32 +351,77 @@
 
   const copyCodeBtn = document.getElementById('copyCodeBtn');
   let copyResetTimer = null;
+
+  function selectCodeTextForManualCopy() {
+    const codeEl = document.getElementById('solutionCode');
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(codeEl);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   copyCodeBtn.addEventListener('click', async () => {
     const code = document.getElementById('solutionCode').textContent;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+    let success = false;
+
+    // Preferred path: the async Clipboard API. This requires a secure
+    // context (https, or localhost) — it's silently unavailable on plain
+    // http, which is a common reason this can appear to "do nothing".
+    if (window.isSecureContext && navigator.clipboard && navigator.clipboard.writeText) {
+      try {
         await navigator.clipboard.writeText(code);
-      } else {
-        // Fallback for browsers/contexts without the async Clipboard API
+        success = true;
+      } catch (err) {
+        console.warn('Clipboard API write failed, falling back:', err);
+      }
+    }
+
+    // Fallback: legacy execCommand via a hidden, focused, selected textarea.
+    // Its return value must be checked explicitly — it fails by returning
+    // false, not by throwing, so skipping that check was the original bug
+    // (the UI would claim success even when nothing was actually copied).
+    if (!success) {
+      try {
         const textarea = document.createElement('textarea');
         textarea.value = code;
+        textarea.setAttribute('readonly', '');
         textarea.style.position = 'fixed';
+        textarea.style.top = '0';
+        textarea.style.left = '0';
         textarea.style.opacity = '0';
         document.body.appendChild(textarea);
+        textarea.focus();
         textarea.select();
-        document.execCommand('copy');
+        textarea.setSelectionRange(0, textarea.value.length); // needed on iOS Safari
+        success = document.execCommand('copy');
         document.body.removeChild(textarea);
+      } catch (err) {
+        console.warn('execCommand copy fallback failed:', err);
       }
+    }
+
+    if (success) {
       copyCodeBtn.textContent = 'Copied!';
       copyCodeBtn.classList.add('copied');
-    } catch {
-      copyCodeBtn.textContent = "Couldn't copy";
+    } else {
+      // Last resort: both programmatic methods were blocked (some browsers
+      // restrict clipboard access entirely outside a very narrow set of
+      // conditions). Select the code instead so a manual Ctrl/Cmd+C still works.
+      selectCodeTextForManualCopy();
+      copyCodeBtn.textContent = 'Selected — press ⌘/Ctrl+C';
     }
+
     clearTimeout(copyResetTimer);
     copyResetTimer = setTimeout(() => {
       copyCodeBtn.textContent = 'Copy';
       copyCodeBtn.classList.remove('copied');
-    }, 1500);
+    }, success ? 1500 : 3000);
   });
 
   // ============================================================

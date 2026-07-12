@@ -1,7 +1,5 @@
 # Drillset — Senior Engineer Interview Prep
 
-Live Demo: https://alexharrison-js.github.io/SoftwareInterviewPrep/
-
 A single-page flashcard app for drilling five interview tracks:
 
 1. **DSA** — LeetCode-style problems → pick the right pattern/data-structure → view a reference solution in Python, Java, TypeScript, JavaScript, C++, or Go.
@@ -11,6 +9,8 @@ A single-page flashcard app for drilling five interview tracks:
 5. **Engineering Leadership** — the senior/staff-level judgment questions almost nobody studies: de-risking migrations, build vs buy, mentorship, tradeoffs, prioritization.
 
 All five share the same "retry later" mechanic: mark a card to review again and it resurfaces after 5 other cards, persisted in the browser's `localStorage` (so it survives reloads on the same device).
+
+The DSA reference solution has a **Copy** button next to the language label — copies the exact code shown (in whichever language is currently selected) to the clipboard, so it's easy to paste into a search engine, an LLM, or your own editor for a deeper explanation.
 
 No build step — plain HTML/CSS/JS + JSON data files.
 
@@ -54,7 +54,7 @@ This ships with a **curated, hand-verified set** rather than an exhaustive scrap
 
 - `data/dsa.json` — **214 problems** across **21 patterns** — the original 19 (hash map, two pointers, sliding window, stack, binary search, linked list, tree BFS/DFS, heap, backtracking, graph BFS/DFS, dynamic programming, greedy/intervals, trie, bit manipulation, union find, prefix sum, matrix/grid, math, string manipulation) plus two added in this round: **Sorting** (merge sort, quickselect-style problems, in-place merge) and **Design** (Twitter-style feeds, hit counters, circular queues, time-based key-value stores — the "build a small system" interview category). Every pattern now has double-digit representation except Trie, Design, and Sorting (5, 5, 4 respectively — still solid coverage for less-frequently-asked categories). Spans Easy/Medium/Hard (**20 Hard problems**), each with solutions in all 6 languages, all syntax-validated.
 - `data/system_design.json` — **30 prompts** spanning classic infrastructure (URL shortener, image storage, rate limiter, chat, news feed, distributed cache, web crawler, ride-sharing, CDN, distributed locks) and more advanced/senior topics (distributed ID generation, config management, multiplayer game backends, recommendation systems, ad billing & fraud, service discovery, cache invalidation at fleet scale, 2FA, job deduplication), each with 3 staged follow-ups and a Mermaid diagram.
-- `data/ml.json` — **186 cards** across 10 categories: History, Core ML, LLMs, NLP, Computer Vision, MLOps, Statistics & Math, Applied AI, AI Safety & Ethics, and Reinforcement Learning.
+- `data/ml.json` — **226 cards** across 13 categories: History, Core ML, LLMs, NLP, Computer Vision, MLOps, Statistics & Math, Applied AI, AI Safety & Ethics, Reinforcement Learning, **ML Algorithms** (clustering, logistic regression, decision trees, collaborative filtering, k-NN, SVM, naive Bayes), **Neural Architectures** (feedforward, Transformer encoder/decoder variants, LSTM, residual connections), and **AI Engineering Practice** (prompt engineering, context construction, dataset engineering, inference optimization, compute/data management, serving, monitoring, GPU/cluster fundamentals, and the training vs. pre-training vs. fine-tuning vs. post-training distinctions).
 - `data/cloud.json` — **85 cards** across 9 categories: Containers, Kubernetes, GPUs, AI Infrastructure (vLLM, Triton, Ray, NCCL, quantization, KV cache, speculative decoding), Distributed Systems & Messaging (Kafka, RabbitMQ, SQS, CQRS, event sourcing), Databases & Caching (Redis, Cassandra, DynamoDB, replication), Networking & Load Balancing, Cloud Architecture & Autoscaling (ECS vs EKS, spot instances, multi-region), and Async & Event-Driven Systems (sagas, idempotency, circuit breakers, outbox pattern).
 - `data/leadership.json` — **38 cards** across 8 categories: Risk & Migration, Build vs Buy, Consistency & Tradeoffs, Architecture & Design, Team & Mentorship, Technical Debt, Operations & Debugging, and Prioritization & Metrics. These are open-ended judgment questions with a model answer laying out a reasoning framework, not a single "correct" answer — the point is practicing how to structure a thoughtful response, not memorizing one.
 
@@ -73,7 +73,6 @@ Because nothing is seeded, a fresh browser session with `localStorage` cleared g
 Each file is plain JSON — add new entries following the existing shape and they'll show up automatically (the retry-queue engine works off however many IDs exist).
 
 **`dsa.json`** — top-level `{ patternPool: [...], problems: [...] }`. Each problem:
-
 ```json
 {
   "id": 17,
@@ -83,21 +82,12 @@ Each file is plain JSON — add new entries following the existing shape and the
   "correctPattern": "Binary Search",
   "options": ["Binary Search", "Two Pointers", "Hash Map", "Sliding Window"],
   "description": "...",
-  "solutions": {
-    "python": "...",
-    "java": "...",
-    "typescript": "...",
-    "javascript": "...",
-    "cpp": "...",
-    "go": "..."
-  }
+  "solutions": { "python": "...", "java": "...", "typescript": "...", "javascript": "...", "cpp": "...", "go": "..." }
 }
 ```
-
 `options` should include `correctPattern` plus a few plausible distractors (ideally drawn from `patternPool`). `id` must be unique; `next id = max existing id + 1`.
 
 **`system_design.json`** — an array of:
-
 ```json
 {
   "id": 9,
@@ -109,7 +99,6 @@ Each file is plain JSON — add new entries following the existing shape and the
   "diagram": "flowchart LR\n    A --> B"
 }
 ```
-
 `diagram` is [Mermaid](https://mermaid.js.org/) syntax (flowchart is used throughout, but any Mermaid diagram type works). The last stage's answer is shown together with the diagram.
 
 **`ml.json`** — a flat array of `{ "id": 59, "category": "LLMs", "question": "...", "answer": "..." }`.
