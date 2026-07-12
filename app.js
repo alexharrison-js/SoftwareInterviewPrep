@@ -349,6 +349,36 @@
     renderDsaCard(state.decks.dsa.next());
   });
 
+  const copyCodeBtn = document.getElementById('copyCodeBtn');
+  let copyResetTimer = null;
+  copyCodeBtn.addEventListener('click', async () => {
+    const code = document.getElementById('solutionCode').textContent;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(code);
+      } else {
+        // Fallback for browsers/contexts without the async Clipboard API
+        const textarea = document.createElement('textarea');
+        textarea.value = code;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      copyCodeBtn.textContent = 'Copied!';
+      copyCodeBtn.classList.add('copied');
+    } catch {
+      copyCodeBtn.textContent = "Couldn't copy";
+    }
+    clearTimeout(copyResetTimer);
+    copyResetTimer = setTimeout(() => {
+      copyCodeBtn.textContent = 'Copy';
+      copyCodeBtn.classList.remove('copied');
+    }, 1500);
+  });
+
   // ============================================================
   // SYSTEM DESIGN VIEW
   // ============================================================

@@ -467,6 +467,34 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--text-faint);
 }
 
+.solution-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.copy-btn {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+}
+
+.copy-btn:hover {
+  border-color: var(--accent-violet);
+  color: var(--text);
+}
+
+.copy-btn.copied {
+  border-color: var(--accent-correct);
+  color: var(--accent-correct);
+}
+
 .code-block {
   background:#120E1F;
   border: 1px solid var(--border);

@@ -1114,5 +1114,245 @@
     "question": "What is dependency parsing?",
     "answer": "An NLP technique that analyzes the grammatical structure of a sentence by identifying dependency relationships between words (e.g., which word is the subject of which verb), representing the sentence as a tree of these head-dependent relationships, useful for deeper syntactic and semantic understanding tasks.",
     "id": 186
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is k-means clustering, and how does the algorithm work?",
+    "answer": "An unsupervised algorithm that partitions data into k clusters by iterating two steps: assign each point to its nearest cluster centroid, then recompute each centroid as the mean of the points assigned to it, repeating until assignments stop changing (or a max iteration count is hit). It requires choosing k in advance and can converge to a local optimum depending on initial centroid placement, so it's often run multiple times with different initializations.",
+    "id": 187
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is hierarchical clustering, and how does it differ from k-means?",
+    "answer": "A clustering approach that builds a tree (dendrogram) of nested clusters, either bottom-up (agglomerative: start with every point as its own cluster and repeatedly merge the closest pair) or top-down (divisive: start with one cluster and repeatedly split). Unlike k-means, it doesn't require choosing the number of clusters upfront \u2014 you cut the resulting dendrogram at whatever level gives the desired number of clusters after the fact.",
+    "id": 188
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is the elbow method, and what is it used for?",
+    "answer": "A heuristic for choosing k in k-means clustering: run k-means for a range of k values, plot the within-cluster sum of squared distances (inertia) against k, and look for the point where increasing k stops producing a meaningfully steeper drop in inertia (the 'elbow' of the curve) \u2014 beyond that point, additional clusters mostly overfit noise rather than capturing real structure.",
+    "id": 189
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is logistic regression, and how does it differ from linear regression?",
+    "answer": "A classification algorithm (despite the name) that models the probability of a binary outcome by applying the sigmoid function to a linear combination of input features, squashing the output into the range [0, 1] and interpreting it as a probability. Linear regression predicts a continuous, unbounded value directly; logistic regression predicts a bounded probability used for classification, and is trained with a different loss function (log loss / cross-entropy) rather than mean squared error.",
+    "id": 190
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is a decision tree, and how does it decide where to split at each node?",
+    "answer": "A model that makes predictions by asking a sequence of if/else questions about feature values, forming a tree where each internal node is a decision on one feature and each leaf is a prediction. At each node, the algorithm chooses the feature and threshold that best separates the data according to a splitting criterion (like Gini impurity or information gain for classification, variance reduction for regression), greedily picking the split that most improves purity/prediction quality at that step.",
+    "id": 191
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is collaborative filtering, and what are its two main approaches?",
+    "answer": "A recommendation technique that predicts a user's preferences based on the preferences of other users, without needing explicit item features. User-based collaborative filtering recommends items liked by users similar to the target user; item-based collaborative filtering recommends items similar to ones the target user already liked, where similarity is derived from patterns in the user-item interaction data itself (e.g., via matrix factorization) rather than from any hand-engineered item attributes.",
+    "id": 192
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is content-based filtering, and how does it differ from collaborative filtering?",
+    "answer": "A recommendation technique that recommends items similar to what a user has liked before, based on the *attributes* of the items themselves (genre, keywords, category) rather than on other users' behavior. It doesn't suffer from collaborative filtering's cold-start problem for new items (an item with attributes can be recommended immediately, even with zero interaction history), but it tends to over-recommend very similar items and can't leverage patterns discovered purely from collective user behavior.",
+    "id": 193
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is k-nearest neighbors (k-NN), and how does it make predictions?",
+    "answer": "A simple, non-parametric algorithm that predicts a new point's label (or value) by finding the k closest points to it in the training data (by some distance metric, commonly Euclidean) and taking a majority vote (classification) or average (regression) among their labels. It has no explicit training phase \u2014 'training' is just storing the data \u2014 which makes prediction relatively slow (it must compare against many/all stored points) but the model trivially simple to understand.",
+    "id": 194
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is a support vector machine (SVM)?",
+    "answer": "A classification algorithm that finds the hyperplane separating two classes with the maximum margin (the largest possible distance to the nearest points of either class, called support vectors), which tends to generalize well. For data that isn't linearly separable, SVMs use the 'kernel trick' to implicitly project data into a higher-dimensional space where a separating hyperplane does exist, without ever explicitly computing that high-dimensional representation.",
+    "id": 195
+  },
+  {
+    "category": "ML Algorithms",
+    "question": "What is naive Bayes, and why is it called 'naive'?",
+    "answer": "A classification algorithm based on Bayes' theorem that predicts the class with the highest posterior probability given the input features. It's called 'naive' because it assumes all features are conditionally independent of each other given the class \u2014 an assumption that's almost always technically false in real data, but the algorithm often still performs surprisingly well in practice (notably for text classification/spam filtering) despite the oversimplification.",
+    "id": 196
+  },
+  {
+    "category": "Neural Architectures",
+    "question": "What is a feedforward neural network, and how does it differ from architectures like RNNs?",
+    "answer": "The simplest neural network architecture: information flows in one direction only, from input layer through one or more hidden layers to the output, with no cycles or memory of previous inputs. This makes it well suited to problems where each prediction is independent (like classifying a single fixed-size input), unlike recurrent architectures, which maintain state across a sequence of inputs specifically to model dependencies between them.",
+    "id": 197
+  },
+  {
+    "category": "Neural Architectures",
+    "question": "At a high level, what is the Transformer architecture built from, and what makes it different from RNN-based sequence models?",
+    "answer": "A Transformer processes an entire sequence in parallel using stacked layers of self-attention (letting every token directly attend to every other token, regardless of distance) and feedforward sublayers, plus positional encodings to inject order information since attention itself has no inherent sense of sequence order. Unlike RNNs, which process tokens one at a time and must propagate information step-by-step through the sequence, the Transformer's parallelism makes it dramatically faster to train on modern hardware and better at capturing long-range dependencies.",
+    "id": 198
+  },
+  {
+    "category": "Neural Architectures",
+    "question": "What is the difference between an encoder-only, decoder-only, and encoder-decoder Transformer?",
+    "answer": "Encoder-only models (like BERT) process the full input bidirectionally and are suited to understanding tasks (classification, embeddings) rather than generation. Decoder-only models (like GPT) generate text autoregressively, attending only to previous tokens, and are the dominant architecture for modern general-purpose LLMs. Encoder-decoder models (like the original Transformer, or T5) use an encoder to process an input sequence and a decoder that generates an output sequence while attending back to the encoder's output, well suited to sequence-to-sequence tasks like translation or summarization.",
+    "id": 199
+  },
+  {
+    "category": "Neural Architectures",
+    "question": "What is an LSTM (Long Short-Term Memory network), and what problem does it solve relative to a plain RNN?",
+    "answer": "A type of recurrent neural network with a more elaborate internal structure (input, forget, and output gates controlling a persistent 'cell state') specifically designed to address the vanishing gradient problem that plagues plain RNNs on long sequences \u2014 the gating mechanism lets the network learn to preserve or discard information over long time spans, allowing it to capture much longer-range dependencies than a plain RNN can reliably learn.",
+    "id": 200
+  },
+  {
+    "category": "Neural Architectures",
+    "question": "What is a residual (skip) connection, and why do modern deep architectures rely on them so heavily?",
+    "answer": "A connection that adds a layer's input directly to its output (output = F(x) + x), bypassing the layer's transformation. This gives gradients a direct path backward through the network during backpropagation, substantially mitigating the vanishing gradient problem in very deep networks, and lets a layer default to an identity mapping if it has nothing useful to add \u2014 a key architectural idea (introduced in ResNets for CNNs) that Transformers also rely on around every attention and feedforward sublayer.",
+    "id": 201
+  },
+  {
+    "category": "Core ML",
+    "question": "What is a loss function, and how does it differ from an evaluation metric?",
+    "answer": "A loss function is a differentiable measure of how wrong a model's prediction is on a given example, used *during training* because its gradient tells the optimizer which direction to adjust weights in (e.g., mean squared error, cross-entropy). An evaluation metric (like accuracy or F1) measures performance in a way that's meaningful to humans/business needs but often isn't differentiable or isn't the exact thing being optimized \u2014 a model is trained to minimize its loss function but ultimately judged by separate evaluation metrics.",
+    "id": 202
+  },
+  {
+    "category": "Core ML",
+    "question": "What are model weights, concretely, and what does training actually update?",
+    "answer": "Weights are the numerical parameters of a model (e.g., the entries of the weight matrices in each neural network layer) that determine how input values are combined and transformed to produce a prediction. Training is the process of adjusting these weight values \u2014 starting from some initialization \u2014 so that the model's outputs get progressively closer to correct, guided by the gradient of the loss function with respect to each weight.",
+    "id": 203
+  },
+  {
+    "category": "Core ML",
+    "question": "Concretely, how does changing the value of a single weight affect a neural network's output?",
+    "answer": "Each weight scales the contribution of one input (or one neuron's activation) to the next layer's computation \u2014 increasing a weight makes that particular connection's signal count for more in downstream calculations, decreasing it (or pushing it toward zero) makes that connection count for less. Because layers compose, a single weight's effect on the final output is filtered through every subsequent layer's transformations, which is exactly why gradients (computed via backpropagation, using the chain rule through all those layers) are needed to know how a small change in one specific weight, buried deep in the network, ultimately affects the final loss.",
+    "id": 204
+  },
+  {
+    "category": "Core ML",
+    "question": "What happens to a model's weights during backpropagation, step by step?",
+    "answer": "Backpropagation computes the gradient of the loss with respect to every weight in the network by applying the chain rule backward from the output layer to the input layer, reusing intermediate results layer-by-layer rather than recomputing everything from scratch for each weight (which would be far more expensive). Once every weight's gradient is known, an optimizer (like SGD or Adam) uses those gradients to actually update the weight values \u2014 backpropagation computes the gradients, it's the optimizer step afterward that changes the weights.",
+    "id": 205
+  },
+  {
+    "category": "Core ML",
+    "question": "What does it mean, in terms of weights, for a model to overfit?",
+    "answer": "An overfit model's weights have been tuned so precisely to the training data's specific examples (including their noise and idiosyncrasies) that the resulting function no longer generalizes well to new data \u2014 the weights encode memorization of training-set particulars rather than the broader underlying pattern. This is why regularization techniques work by directly constraining weight values (e.g., penalizing large weights, or randomly zeroing them via dropout) \u2014 they push the model toward smoother, less extreme weight configurations that tend to generalize better.",
+    "id": 206
+  },
+  {
+    "category": "Core ML",
+    "question": "What is weight decay, and how does it relate to L2 regularization?",
+    "answer": "A training technique that shrinks weights slightly toward zero at every update step, independent of the loss gradient. In the simplest formulation, weight decay is mathematically equivalent to adding an L2 penalty (proportional to the sum of squared weights) to the loss function \u2014 though some modern optimizers (like AdamW) implement 'decoupled' weight decay that isn't exactly equivalent to L2 regularization in combination with adaptive learning rates, which was shown to work better in practice.",
+    "id": 207
+  },
+  {
+    "category": "Core ML",
+    "question": "What is the difference between a model's parameters and its hyperparameters?",
+    "answer": "Parameters (like weights and biases) are values the model learns automatically from data during training via gradient descent. Hyperparameters (like learning rate, number of layers, batch size, regularization strength) are settings chosen by the practitioner *before* training begins and aren't learned by gradient descent \u2014 they're typically selected via experimentation or hyperparameter tuning (grid search, random search, Bayesian optimization) using held-out validation performance as the guide.",
+    "id": 208
+  },
+  {
+    "category": "History",
+    "question": "What is the Hugging Face transformers library, and why was it significant for the broader ML community?",
+    "answer": "An open-source Python library providing a unified interface to load, fine-tune, and run thousands of pretrained models (particularly Transformer-based ones) across NLP, vision, and audio, along with the Hugging Face Hub for sharing models and datasets. It significantly lowered the barrier to using state-of-the-art pretrained models \u2014 before it, using a newly published model often meant reimplementing a research paper from scratch; the library made loading and fine-tuning a cutting-edge model a few lines of code, dramatically accelerating both research reproducibility and practical adoption.",
+    "id": 209
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is prompt engineering, and why does it matter even though it doesn't change the model itself?",
+    "answer": "The practice of crafting the instructions, examples, and structure given to a model to reliably elicit the desired behavior \u2014 including things like being explicit about format, providing few-shot examples, and breaking complex tasks into steps. It matters because the same underlying model can perform dramatically differently depending on how a task is framed; good prompt engineering is often the highest-leverage, lowest-cost way to improve an AI application's output quality before reaching for more expensive interventions like fine-tuning.",
+    "id": 210
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is context construction, and how is it different from prompt engineering?",
+    "answer": "Prompt engineering is about how you phrase instructions; context construction is about *what information* you assemble and include in the model's input in the first place \u2014 retrieving the right documents (as in RAG), selecting relevant conversation history, formatting structured data cleanly, and deciding what to leave out to avoid diluting the model's attention with noise. In a production AI application, context construction is often the harder and more impactful engineering problem, since even perfect prompt phrasing can't compensate for the model being given the wrong or incomplete information to work with.",
+    "id": 211
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does 'the AI interface' mean as a design concern in application development, beyond just the chat window?",
+    "answer": "The overall way a user interacts with an AI system's capabilities \u2014 which might be a chat interface, but could also be inline suggestions, a structured form that gets filled by AI, an API that other software calls, or an agentic workflow the user barely sees directly. Designing this well means matching the interaction pattern to the task (a multi-turn conversation isn't always right; sometimes a single structured request/response, or a background process with a notification, serves the user far better) and being deliberate about what the user needs to see, control, or approve versus what can happen invisibly.",
+    "id": 212
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does 'evaluation' mean as an ongoing engineering practice for an AI application, not just a one-time model benchmark?",
+    "answer": "A continuous process of measuring whether the system is actually doing its job well in the specific ways that matter for that application \u2014 often via a curated set of test cases (an eval set) with either automated checks, an LLM-as-judge, or human review, run repeatedly as prompts, retrieval logic, or the underlying model change. Unlike a one-time academic benchmark, production evaluation needs to reflect your actual use cases and failure modes, and needs to be cheap and fast enough to run frequently, since it's what lets you tell whether a change actually made things better or quietly made them worse.",
+    "id": 213
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is dataset engineering, and why is it often described as the highest-leverage part of model development?",
+    "answer": "The work of sourcing, cleaning, filtering, labeling, deduplicating, and curating the data a model is trained or fine-tuned on. It's frequently the highest-leverage part of the whole model development process because model quality is bounded by data quality \u2014 a better architecture or more compute applied to noisy, biased, or poorly-curated data usually underperforms a simpler setup trained on a smaller, carefully engineered dataset, which is why leading labs invest so heavily in data pipelines and curation rather than only in architecture research.",
+    "id": 214
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does 'modeling and training' cover as a phase, distinct from dataset engineering and evaluation?",
+    "answer": "The phase where you choose or design a model architecture, set up the training objective and hyperparameters, and actually run the training/fine-tuning process \u2014 including decisions like model size, which base model to start from, what training technique to use (full fine-tuning vs. parameter-efficient methods like LoRA), and how to monitor training runs (loss curves, gradient health) to catch problems like divergence or instability early rather than discovering a wasted training run only at the end.",
+    "id": 215
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is inference optimization, and what are some common techniques it encompasses?",
+    "answer": "The set of techniques for making a trained model run faster and cheaper at prediction time without materially harming output quality \u2014 including quantization (lower-precision weights), KV-cache management, continuous batching, speculative decoding, model distillation into a smaller model, and choosing the right hardware/serving engine for the workload. It's a distinct engineering discipline from training optimization, since the priorities shift from maximizing throughput on one big job to minimizing latency and cost across many concurrent, often smaller and more variable requests.",
+    "id": 216
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "Beyond a single eval score, what does the 'evaluation' phase of model development typically need to cover?",
+    "answer": "Performance across relevant subgroups/slices (not just an aggregate average, which can hide the model doing poorly for a specific important segment), robustness to adversarial or edge-case inputs, calibration (does the model's confidence match its actual accuracy), and comparison against the previous production model or a baseline, not evaluation in a vacuum \u2014 the real question is usually 'is this better than what we already have,' which requires a consistent, versioned evaluation setup you can rerun against every candidate.",
+    "id": 217
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does 'compute management' involve as an AI infrastructure concern?",
+    "answer": "Provisioning, scheduling, and allocating compute resources (CPUs, GPUs, accelerators) across training jobs, experiments, and serving workloads \u2014 including job queuing/scheduling (so multiple teams' jobs share a cluster fairly), autoscaling serving capacity to match demand, and cost management (since GPU compute is expensive and often the largest line-item cost for an AI-heavy organization), balancing utilization against having enough headroom for spikes.",
+    "id": 218
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does 'data management' involve as an AI infrastructure concern, distinct from dataset engineering?",
+    "answer": "The infrastructure and processes for storing, versioning, tracking lineage of, and providing reliable access to the data used across training and evaluation \u2014 including dataset versioning (so an experiment is reproducible and you know exactly which data version produced which model), access control, and pipelines that keep training data fresh and correctly labeled at scale. Dataset engineering is the craft of curating good data; data management is the infrastructure that makes that data reliably storable, discoverable, and reproducible at scale.",
+    "id": 219
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What does model serving infrastructure need to handle, beyond just running the model?",
+    "answer": "Request routing and load balancing across model replicas, autoscaling to match traffic, batching requests for GPU efficiency, versioning so multiple model versions can be served simultaneously (for gradual rollouts or A/B tests), graceful handling of overload (queuing or shedding load rather than crashing), and low-latency access to any supporting context (like a vector database for RAG) the model needs at inference time.",
+    "id": 220
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What should monitoring for a deployed AI system cover, beyond standard software metrics like uptime and latency?",
+    "answer": "Output quality signals specific to AI systems: distribution drift in inputs (are users asking different kinds of questions than the system was tuned for), degradation in eval-set performance over time, hallucination or safety-relevant failure rates, and user feedback signals (thumbs up/down, regeneration rate) that hint at quality problems standard software metrics wouldn't catch, since a model can be fast and 'up' while quietly producing worse answers than before.",
+    "id": 221
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What core GPU and compute-cluster concepts does an AI engineer typically need working knowledge of, even without being an infrastructure specialist?",
+    "answer": "How to read GPU utilization and memory usage to diagnose whether a job is compute-bound, memory-bound, or waiting on data loading; the basics of batch size and how it trades off memory usage against throughput; how multi-GPU training is distributed (data vs. model parallelism) enough to reason about scaling behavior; and how job scheduling on a shared cluster works (queueing, resource requests, preemption) so you can debug why a job is pending or was killed rather than treating the cluster as an opaque black box.",
+    "id": 222
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is a job scheduler (like Slurm or a Kubernetes-based equivalent) used for in an AI compute cluster, and why does an AI engineer need to understand it even if they don't manage it?",
+    "answer": "A job scheduler allocates shared cluster resources (GPUs, CPUs, memory) among competing jobs submitted by different users/teams, queueing jobs when resources aren't immediately available and enforcing fairness/priority policies. An AI engineer needs enough understanding of it to write correct resource requests (asking for the right GPU count/type), interpret why a job is stuck pending (resource contention vs. a configuration error), and understand preemption behavior (a lower-priority job losing its GPU allocation to a higher-priority one) so a training run's failure gets correctly diagnosed rather than mistaken for a bug in the training code itself.",
+    "id": 223
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What is the difference between training, pre-training, fine-tuning, and post-training?",
+    "answer": "'Training' is the general umbrella term for the process of updating a model's weights via gradient descent on data, and applies to all the more specific stages below. Pre-training is the initial, large-scale training phase on broad data (e.g., next-token prediction over a huge text corpus) that produces a general-purpose base model from scratch (or near-scratch). Fine-tuning takes that pretrained model and further trains it on a smaller, more specific dataset to adapt it to a narrower task or domain. Post-training is a broader umbrella for everything done to a base model after pretraining to make it more useful/aligned as a product \u2014 which includes fine-tuning but also techniques like RLHF, safety tuning, and other alignment steps.",
+    "id": 224
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "Is 'pretraining' just a fancy word for 'training from scratch'? What's the distinction?",
+    "answer": "They're closely related but not identical in emphasis: 'training from scratch' just means starting from randomly initialized weights rather than an existing checkpoint. 'Pretraining' specifically refers to that from-scratch training being done on broad, general-purpose data with the explicit intent of producing a reusable foundation model that others will subsequently adapt (via fine-tuning or post-training) \u2014 the term carries the implication of 'this is step one of a longer pipeline,' not just 'we didn't start from an existing model.'",
+    "id": 225
+  },
+  {
+    "category": "AI Engineering Practice",
+    "question": "What specifically falls under 'post-training,' and why is it usually described as multiple distinct steps rather than one?",
+    "answer": "Post-training typically includes supervised fine-tuning (SFT) on curated instruction-response examples to teach the desired response format/style, followed by preference-based alignment (like RLHF or DPO) that further shapes behavior using human (or AI) preference judgments between candidate outputs, and often additional safety/red-teaming-driven tuning passes. These are usually treated as distinct steps because each uses a different kind of data and training signal (demonstrations vs. preference comparisons vs. safety-specific adversarial examples), and separating them lets teams iterate on and debug each concern independently rather than conflating them into one undifferentiated 'fine-tuning' step.",
+    "id": 226
   }
 ]
