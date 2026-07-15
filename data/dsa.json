@@ -48,18 +48,8 @@
       "id": 1,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(2^n)",
-        "O(n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(log n)", "O(2^n)", "O(n)", "O(1)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(1)", "O(n)"]
     },
     {
       "number": 49,
@@ -86,18 +76,8 @@
       "id": 2,
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(m * n)", "O(V + E)", "O(n log n)", "O(1)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(n)", "O(n^2)"]
     },
     {
       "number": 125,
@@ -124,18 +104,8 @@
       "id": 3,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(1)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(1)",
-        "O(log n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(1)", "O(n^3)"],
+      "spaceOptions": ["O(V + E)", "O(1)", "O(log n)", "O(n^2)"]
     },
     {
       "number": 11,
@@ -162,18 +132,8 @@
       "id": 4,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(log n)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(log n)", "O(1)"]
     },
     {
       "number": 3,
@@ -200,18 +160,8 @@
       "id": 5,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(n!)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n)", "O(n!)", "O(n^3)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 20,
@@ -238,18 +188,8 @@
       "id": 6,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 33,
@@ -276,18 +216,8 @@
       "id": 7,
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n^3)",
-        "O(log n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n^3)", "O(log n)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 206,
@@ -314,18 +244,8 @@
       "id": 8,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(n^2)",
-        "O(1)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n!)", "O(n^2)", "O(1)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(1)", "O(log n)"]
     },
     {
       "number": 102,
@@ -352,18 +272,8 @@
       "id": 9,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(log n)",
-        "O(n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(log n)", "O(n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 215,
@@ -390,18 +300,8 @@
       "id": 10,
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n^2)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n^2)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(log n)", "O(1)"]
     },
     {
       "number": 78,
@@ -428,18 +328,8 @@
       "id": 11,
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(log n)",
-        "O(n!)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(log n)", "O(n!)", "O(n log n)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(1)", "O(n)"]
     },
     {
       "number": 200,
@@ -466,18 +356,8 @@
       "id": 12,
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^3)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^3)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(n^2)", "O(m * n)", "O(n)", "O(1)"]
     },
     {
       "number": 322,
@@ -504,18 +384,8 @@
       "id": 13,
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(log n)",
-        "O(n^2)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(log n)", "O(n^2)", "O(n log n)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(log n)", "O(n)"]
     },
     {
       "number": 56,
@@ -542,18 +412,8 @@
       "id": 14,
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(n log n)",
-        "O(n^2)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(n log n)", "O(n^2)", "O(n^3)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(1)"]
     },
     {
       "number": 208,
@@ -580,18 +440,8 @@
       "id": 15,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n log n)",
-        "O(n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n log n)", "O(n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 136,
@@ -618,18 +468,8 @@
       "id": 16,
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(log n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^2)", "O(V + E)", "O(log n)", "O(n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 217,
@@ -656,18 +496,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(1)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(V + E)", "O(1)", "O(n)"],
+      "spaceOptions": ["O(V + E)", "O(log n)", "O(n)", "O(m * n)"]
     },
     {
       "number": 128,
@@ -694,18 +524,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(n!)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(1)", "O(n^2)"]
     },
     {
       "number": 238,
@@ -732,18 +552,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(V + E)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(1)", "O(m * n)"]
     },
     {
       "number": 15,
@@ -770,18 +580,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n log n)",
-        "O(n^2)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n log n)", "O(n^2)", "O(n^3)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(n)", "O(log n)"]
     },
     {
       "number": 121,
@@ -808,18 +608,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(1)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(V + E)", "O(log n)", "O(1)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 424,
@@ -846,18 +636,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n log n)",
-        "O(1)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n log n)", "O(1)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(1)", "O(n)"]
     },
     {
       "number": 155,
@@ -884,18 +664,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^3)",
-        "O(n^2)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^3)", "O(n^2)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 150,
@@ -922,18 +692,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(log n)",
-        "O(n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n!)", "O(log n)", "O(n)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 34,
@@ -960,18 +720,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(log n)",
-        "O(n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(log n)", "O(n)", "O(n!)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(m * n)"]
     },
     {
       "number": 875,
@@ -998,18 +748,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(m * n)",
-        "O(n!)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(2^n)", "O(m * n)", "O(n!)", "O(n log n)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 21,
@@ -1036,18 +776,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 141,
@@ -1074,18 +804,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(V + E)",
-        "O(2^n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(V + E)", "O(2^n)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 226,
@@ -1112,18 +832,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 98,
@@ -1150,18 +860,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(m * n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(m * n)", "O(n^2)"]
     },
     {
       "number": 235,
@@ -1188,18 +888,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(log n)",
-        "O(V + E)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(2^n)", "O(log n)", "O(V + E)", "O(n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 23,
@@ -1226,18 +916,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(1)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(1)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 46,
@@ -1264,18 +944,8 @@
       ],
       "timeComplexity": "O(n!)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(V + E)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(2^n)", "O(n log n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(V + E)", "O(log n)"]
     },
     {
       "number": 79,
@@ -1302,18 +972,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(m * n)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(m * n)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(n)", "O(m * n)"]
     },
     {
       "number": 39,
@@ -1340,18 +1000,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(2^n)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(2^n)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(V + E)", "O(m * n)"]
     },
     {
       "number": 133,
@@ -1378,18 +1028,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n)", "O(log n)", "O(1)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(1)", "O(n)"]
     },
     {
       "number": 207,
@@ -1416,18 +1056,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(1)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(V + E)", "O(n log n)", "O(2^n)"],
+      "spaceOptions": ["O(V + E)", "O(1)", "O(n)", "O(n^2)"]
     },
     {
       "number": 300,
@@ -1454,18 +1084,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n^3)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(n^3)", "O(2^n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 198,
@@ -1492,18 +1112,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(V + E)", "O(n^2)", "O(n)", "O(1)"]
     },
     {
       "number": 139,
@@ -1530,18 +1140,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(n log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(log n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n^2)", "O(m * n)", "O(n log n)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(log n)", "O(n^2)"]
     },
     {
       "number": 62,
@@ -1568,18 +1168,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n!)",
-        "O(m * n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(n!)", "O(m * n)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(log n)", "O(n)", "O(n^2)"]
     },
     {
       "number": 435,
@@ -1606,18 +1196,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n^3)", "O(m * n)", "O(n^2)", "O(n log n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 57,
@@ -1644,18 +1224,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n^2)",
-        "O(2^n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n^2)", "O(2^n)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(n)", "O(n^2)"]
     },
     {
       "number": 55,
@@ -1682,18 +1252,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(log n)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 191,
@@ -1720,18 +1280,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(n!)",
-        "O(n^3)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(1)", "O(n!)", "O(n^3)", "O(m * n)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n^2)", "O(V + E)"]
     },
     {
       "number": 323,
@@ -1758,18 +1308,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(log n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(m * n)", "O(log n)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(V + E)", "O(m * n)"]
     },
     {
       "number": 42,
@@ -1796,18 +1336,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(n log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(n log n)", "O(1)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(1)"]
     },
     {
       "number": 75,
@@ -1834,18 +1364,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(n)",
-        "O(n!)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(1)", "O(n)", "O(n!)", "O(V + E)"],
+      "spaceOptions": ["O(n^2)", "O(1)", "O(V + E)", "O(n)"]
     },
     {
       "number": 76,
@@ -1872,18 +1392,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(n log n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(V + E)"]
     },
     {
       "number": 567,
@@ -1910,18 +1420,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n^3)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n^3)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(m * n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 239,
@@ -1948,18 +1448,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(n log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(n log n)", "O(n^3)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 84,
@@ -1986,18 +1476,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(2^n)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(2^n)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(1)"]
     },
     {
       "number": 739,
@@ -2024,18 +1504,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(V + E)", "O(log n)"]
     },
     {
       "number": 4,
@@ -2062,18 +1532,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(m * n)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 74,
@@ -2100,18 +1560,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(n^3)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(n^3)", "O(log n)"],
+      "spaceOptions": ["O(V + E)", "O(n^2)", "O(1)", "O(m * n)"]
     },
     {
       "number": 162,
@@ -2138,18 +1588,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(1)",
-        "O(log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n!)", "O(1)", "O(log n)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 2,
@@ -2176,18 +1616,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(V + E)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(V + E)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(n)", "O(V + E)"]
     },
     {
       "number": 146,
@@ -2214,18 +1644,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(m * n)", "O(n^2)", "O(n!)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(n)", "O(1)"]
     },
     {
       "number": 19,
@@ -2252,18 +1672,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(n^2)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(n^2)", "O(2^n)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 124,
@@ -2290,18 +1700,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(log n)", "O(n)"]
     },
     {
       "number": 230,
@@ -2328,18 +1728,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(m * n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(2^n)", "O(n^2)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(m * n)", "O(n^2)"]
     },
     {
       "number": 105,
@@ -2366,18 +1756,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(1)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(n)", "O(n^3)"],
+      "spaceOptions": ["O(V + E)", "O(1)", "O(n)", "O(n^2)"]
     },
     {
       "number": 101,
@@ -2404,18 +1784,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(2^n)",
-        "O(n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(m * n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(m * n)", "O(2^n)", "O(n)", "O(n^3)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(m * n)", "O(n^2)"]
     },
     {
       "number": 110,
@@ -2442,18 +1812,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(m * n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(log n)", "O(m * n)", "O(n)"]
     },
     {
       "number": 199,
@@ -2480,18 +1840,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n^2)", "O(n)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n^2)", "O(n)"]
     },
     {
       "number": 347,
@@ -2518,18 +1868,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(1)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(1)", "O(log n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 621,
@@ -2556,18 +1896,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(V + E)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(V + E)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(V + E)", "O(n^2)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(V + E)", "O(1)"]
     },
     {
       "number": 973,
@@ -2594,18 +1924,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(log n)",
-        "O(n log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(m * n)", "O(log n)", "O(n log n)", "O(n^3)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 51,
@@ -2632,18 +1952,8 @@
       ],
       "timeComplexity": "O(n!)",
       "spaceComplexity": "O(n^2)",
-      "timeOptions": [
-        "O(n!)",
-        "O(n^2)",
-        "O(log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(n^2)", "O(log n)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(n)", "O(m * n)"]
     },
     {
       "number": 131,
@@ -2670,18 +1980,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(2^n)",
-        "O(log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(2^n)", "O(log n)", "O(n!)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(1)", "O(n)"]
     },
     {
       "number": 17,
@@ -2708,18 +2008,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n^2)",
-        "O(m * n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n^2)", "O(m * n)", "O(1)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(V + E)"]
     },
     {
       "number": 22,
@@ -2746,18 +2036,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(1)",
-        "O(n^3)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(1)", "O(n^3)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(n)"]
     },
     {
       "number": 90,
@@ -2784,18 +2064,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(n^2)"]
     },
     {
       "number": 994,
@@ -2822,18 +2092,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(m * n)",
-        "O(n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^3)", "O(m * n)", "O(n)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 130,
@@ -2860,18 +2120,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(1)",
-        "O(V + E)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(1)", "O(V + E)", "O(m * n)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(1)", "O(m * n)"]
     },
     {
       "number": 261,
@@ -2898,18 +2148,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(2^n)",
-        "O(log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(V + E)", "O(2^n)", "O(log n)", "O(1)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(m * n)", "O(1)"]
     },
     {
       "number": 743,
@@ -2936,18 +2176,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n!)",
-        "O(V + E)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n!)", "O(V + E)", "O(n^3)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(n)", "O(m * n)"]
     },
     {
       "number": 72,
@@ -2974,18 +2204,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(1)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(1)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 53,
@@ -3012,18 +2232,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(n!)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(m * n)"]
     },
     {
       "number": 152,
@@ -3050,18 +2260,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n!)",
-        "O(n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n!)", "O(n)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 91,
@@ -3088,18 +2288,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(2^n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(2^n)", "O(n^3)"],
+      "spaceOptions": ["O(V + E)", "O(log n)", "O(n)", "O(n^2)"]
     },
     {
       "number": 5,
@@ -3126,18 +2316,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(2^n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^2)", "O(1)", "O(2^n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(V + E)", "O(1)"]
     },
     {
       "number": 647,
@@ -3164,18 +2344,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(log n)", "O(m * n)", "O(n^2)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 416,
@@ -3202,18 +2372,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n!)",
-        "O(V + E)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n!)", "O(V + E)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(m * n)", "O(n)"]
     },
     {
       "number": 494,
@@ -3240,18 +2400,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(log n)",
-        "O(n log n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(log n)", "O(n log n)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(n)", "O(m * n)"]
     },
     {
       "number": 309,
@@ -3278,18 +2428,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 96,
@@ -3316,18 +2456,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(V + E)", "O(1)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(log n)", "O(1)"]
     },
     {
       "number": 64,
@@ -3354,18 +2484,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n^2)",
-        "O(n!)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(log n)",
-        "O(V + E)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n^2)", "O(n!)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(log n)", "O(V + E)", "O(1)"]
     },
     {
       "number": 253,
@@ -3392,18 +2512,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n!)",
-        "O(n log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n!)", "O(n log n)", "O(n^3)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 134,
@@ -3430,18 +2540,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(n^3)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n)", "O(n^3)", "O(1)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 763,
@@ -3468,18 +2568,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(2^n)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(n)", "O(1)"]
     },
     {
       "number": 371,
@@ -3506,18 +2596,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(m * n)",
-        "O(1)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(log n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(2^n)", "O(m * n)", "O(1)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(log n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 268,
@@ -3544,18 +2624,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(n!)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(V + E)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(n!)", "O(V + E)"],
+      "spaceOptions": ["O(n^2)", "O(V + E)", "O(1)", "O(log n)"]
     },
     {
       "number": 190,
@@ -3582,18 +2652,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n^2)", "O(1)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(log n)", "O(1)"]
     },
     {
       "number": 721,
@@ -3620,18 +2680,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(m * n)",
-        "O(n log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^3)", "O(m * n)", "O(n log n)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 48,
@@ -3658,18 +2708,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(2^n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^2)", "O(log n)", "O(2^n)", "O(m * n)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(log n)", "O(1)"]
     },
     {
       "number": 54,
@@ -3696,18 +2736,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n!)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(m * n)", "O(V + E)", "O(n!)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 73,
@@ -3734,18 +2764,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(2^n)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(n)"]
     },
     {
       "number": 50,
@@ -3772,18 +2792,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(1)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(log n)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(V + E)", "O(1)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 69,
@@ -3810,18 +2820,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(log n)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(log n)"]
     },
     {
       "number": 242,
@@ -3848,18 +2848,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(V + E)", "O(n)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 8,
@@ -3886,18 +2876,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n^3)",
-        "O(n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(log n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n^3)", "O(n)", "O(n^2)"],
+      "spaceOptions": ["O(n^2)", "O(1)", "O(log n)", "O(m * n)"]
     },
     {
       "number": 212,
@@ -3924,18 +2904,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(2^n)",
-        "O(n log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(log n)", "O(2^n)", "O(n log n)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(m * n)", "O(log n)", "O(n)"]
     },
     {
       "number": 211,
@@ -3962,18 +2932,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n)", "O(n^2)"]
     },
     {
       "number": 684,
@@ -4000,18 +2960,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(1)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(1)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(n)", "O(log n)"]
     },
     {
       "number": 547,
@@ -4038,18 +2988,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(n^2)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 560,
@@ -4076,18 +3016,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n)",
-        "O(2^n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n)", "O(2^n)", "O(n!)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(V + E)", "O(n)"]
     },
     {
       "number": 523,
@@ -4114,18 +3044,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(n)",
-        "O(2^n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n!)", "O(n)", "O(2^n)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(V + E)", "O(n)"]
     },
     {
       "number": 289,
@@ -4152,18 +3072,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(m * n)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(1)", "O(log n)"]
     },
     {
       "number": 36,
@@ -4190,18 +3100,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(1)",
-        "O(log n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(1)", "O(log n)", "O(V + E)"],
+      "spaceOptions": ["O(m * n)", "O(n^2)", "O(1)", "O(log n)"]
     },
     {
       "number": 43,
@@ -4228,18 +3128,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 13,
@@ -4266,18 +3156,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(log n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 12,
@@ -4304,18 +3184,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(n log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(log n)", "O(n)", "O(n log n)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n^2)", "O(V + E)"]
     },
     {
       "number": 10,
@@ -4342,18 +3212,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(2^n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(2^n)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n)", "O(n^2)"]
     },
     {
       "number": 44,
@@ -4380,18 +3240,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(1)",
-        "O(n log n)",
-        "O(n!)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(1)", "O(n log n)", "O(n!)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n)", "O(log n)"]
     },
     {
       "number": 115,
@@ -4418,18 +3268,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(m * n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(log n)", "O(1)", "O(m * n)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 97,
@@ -4456,18 +3296,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(1)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(1)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n^2)", "O(n)"]
     },
     {
       "number": 269,
@@ -4494,18 +3324,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n log n)",
-        "O(n^2)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(n log n)", "O(n^2)", "O(V + E)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 127,
@@ -4532,18 +3352,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(n log n)", "O(m * n)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(n)", "O(n^2)"]
     },
     {
       "number": 787,
@@ -4570,18 +3380,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(log n)", "O(V + E)"],
+      "spaceOptions": ["O(n^2)", "O(m * n)", "O(V + E)", "O(n)"]
     },
     {
       "number": 261,
@@ -4608,18 +3408,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(log n)", "O(V + E)", "O(n^2)", "O(n)"],
+      "spaceOptions": ["O(V + E)", "O(log n)", "O(1)", "O(n)"]
     },
     {
       "number": 103,
@@ -4646,18 +3436,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(2^n)",
-        "O(n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(m * n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(2^n)", "O(n)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(m * n)", "O(n)"]
     },
     {
       "number": 114,
@@ -4684,18 +3464,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n^3)",
-        "O(n^2)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n^3)", "O(n^2)", "O(n)"],
+      "spaceOptions": ["O(V + E)", "O(n^2)", "O(log n)", "O(1)"]
     },
     {
       "number": 116,
@@ -4722,18 +3492,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n^2)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(n^2)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(1)", "O(log n)"]
     },
     {
       "number": 1448,
@@ -4760,18 +3520,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 450,
@@ -4798,18 +3548,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(log n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n!)", "O(2^n)", "O(log n)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(1)", "O(V + E)"]
     },
     {
       "number": 129,
@@ -4836,18 +3576,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(log n)",
-        "O(m * n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(n^2)", "O(log n)", "O(m * n)", "O(n)"]
     },
     {
       "number": 328,
@@ -4874,18 +3604,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(2^n)",
-        "O(n log n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(V + E)", "O(2^n)", "O(n log n)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 234,
@@ -4912,18 +3632,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(2^n)",
-        "O(n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^2)", "O(2^n)", "O(n)", "O(n!)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 160,
@@ -4950,18 +3660,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n log n)",
-        "O(n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n log n)", "O(n)", "O(n^3)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 430,
@@ -4988,18 +3688,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(m * n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(m * n)", "O(n^2)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(1)", "O(m * n)"]
     },
     {
       "number": 295,
@@ -5026,18 +3716,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n!)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(log n)", "O(n!)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 502,
@@ -5064,18 +3744,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n^3)",
-        "O(2^n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n^3)", "O(2^n)", "O(n log n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 40,
@@ -5102,18 +3772,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(2^n)",
-        "O(n!)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(log n)", "O(2^n)", "O(n!)", "O(m * n)"],
+      "spaceOptions": ["O(log n)", "O(m * n)", "O(n)", "O(1)"]
     },
     {
       "number": 93,
@@ -5140,18 +3800,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(V + E)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(V + E)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(log n)", "O(n^2)", "O(n)"]
     },
     {
       "number": 71,
@@ -5178,18 +3828,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n log n)", "O(m * n)", "O(n^2)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(n)", "O(1)"]
     },
     {
       "number": 394,
@@ -5216,18 +3856,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n^2)",
-        "O(1)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n^2)", "O(1)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(n)"]
     },
     {
       "number": 438,
@@ -5254,18 +3884,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(2^n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(2^n)", "O(V + E)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(1)", "O(V + E)"]
     },
     {
       "number": 904,
@@ -5292,18 +3912,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(2^n)",
-        "O(V + E)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(1)", "O(2^n)", "O(V + E)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(n)", "O(m * n)"]
     },
     {
       "number": 18,
@@ -5330,18 +3940,8 @@
       ],
       "timeComplexity": "O(n^3)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(V + E)", "O(n)"]
     },
     {
       "number": 881,
@@ -5368,18 +3968,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(m * n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(m * n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 1011,
@@ -5406,18 +3996,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(n!)",
-        "O(n log n)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(1)", "O(n!)", "O(n log n)", "O(n^2)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n^2)", "O(V + E)"]
     },
     {
       "number": 703,
@@ -5444,18 +4024,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n^2)",
-        "O(n^3)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n^2)", "O(n^3)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 137,
@@ -5482,18 +4052,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n!)",
-        "O(2^n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n!)", "O(2^n)", "O(log n)"],
+      "spaceOptions": ["O(V + E)", "O(n^2)", "O(1)", "O(log n)"]
     },
     {
       "number": 338,
@@ -5520,18 +4080,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n log n)",
-        "O(V + E)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n log n)", "O(V + E)", "O(n)"],
+      "spaceOptions": ["O(V + E)", "O(n^2)", "O(n)", "O(log n)"]
     },
     {
       "number": 45,
@@ -5558,18 +4108,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(1)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(1)", "O(m * n)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 205,
@@ -5596,18 +4136,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(n log n)",
-        "O(n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(1)", "O(n log n)", "O(n)", "O(n!)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(log n)", "O(n)"]
     },
     {
       "number": 290,
@@ -5634,18 +4164,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(1)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(1)", "O(2^n)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(m * n)"]
     },
     {
       "number": 383,
@@ -5672,18 +4192,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(m * n)",
-        "O(n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(m * n)", "O(n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(n)", "O(m * n)"]
     },
     {
       "number": 249,
@@ -5710,18 +4220,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n^3)",
-        "O(n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n^3)", "O(n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(1)", "O(n)", "O(m * n)"]
     },
     {
       "number": 380,
@@ -5748,18 +4248,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(n log n)",
-        "O(log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(n log n)", "O(log n)", "O(m * n)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 705,
@@ -5786,18 +4276,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(m * n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(1)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(m * n)", "O(1)"]
     },
     {
       "number": 167,
@@ -5824,18 +4304,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(V + E)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(log n)", "O(V + E)", "O(n log n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(1)"]
     },
     {
       "number": 26,
@@ -5862,18 +4332,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 977,
@@ -5900,18 +4360,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n)",
-        "O(log n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n)", "O(log n)", "O(n log n)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(n)", "O(V + E)"]
     },
     {
       "number": 340,
@@ -5938,18 +4388,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(m * n)",
-        "O(n^3)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(m * n)", "O(n^3)", "O(n)"],
+      "spaceOptions": ["O(V + E)", "O(n)", "O(1)", "O(log n)"]
     },
     {
       "number": 1004,
@@ -5976,18 +4416,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(n)",
-        "O(V + E)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(1)", "O(n)", "O(V + E)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(m * n)", "O(V + E)", "O(1)"]
     },
     {
       "number": 496,
@@ -6014,18 +4444,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(n^3)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(m * n)", "O(n^3)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(1)", "O(m * n)"]
     },
     {
       "number": 735,
@@ -6052,18 +4472,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(n log n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(n log n)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(1)", "O(m * n)"]
     },
     {
       "number": 402,
@@ -6090,18 +4500,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n^2)",
-        "O(2^n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n^2)", "O(2^n)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(log n)", "O(n)"]
     },
     {
       "number": 35,
@@ -6128,18 +4528,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(log n)", "O(n^2)", "O(V + E)", "O(n!)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(n)", "O(m * n)"]
     },
     {
       "number": 378,
@@ -6166,18 +4556,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(m * n)", "O(1)", "O(V + E)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(V + E)"]
     },
     {
       "number": 410,
@@ -6204,18 +4584,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n log n)",
-        "O(n^3)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(V + E)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n log n)", "O(n^3)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(log n)", "O(V + E)", "O(m * n)"]
     },
     {
       "number": 92,
@@ -6242,18 +4612,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(2^n)",
-        "O(n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n!)", "O(2^n)", "O(n)", "O(1)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(V + E)", "O(log n)"]
     },
     {
       "number": 61,
@@ -6280,18 +4640,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n^3)",
-        "O(n!)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n^3)", "O(n!)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 104,
@@ -6318,18 +4668,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n!)",
-        "O(n^3)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n!)", "O(n^3)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(n)", "O(V + E)"]
     },
     {
       "number": 543,
@@ -6356,18 +4696,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(2^n)",
-        "O(V + E)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(2^n)", "O(V + E)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 112,
@@ -6394,18 +4724,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n)", "O(n log n)", "O(1)"],
+      "spaceOptions": ["O(V + E)", "O(m * n)", "O(n^2)", "O(n)"]
     },
     {
       "number": 94,
@@ -6432,18 +4752,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n^3)",
-        "O(n^2)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n^3)", "O(n^2)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n)", "O(log n)"]
     },
     {
       "number": 108,
@@ -6470,18 +4780,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n)", "O(n^2)", "O(1)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 767,
@@ -6508,18 +4808,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n)",
-        "O(n^3)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n)", "O(n^3)", "O(n^2)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 264,
@@ -6546,18 +4836,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(log n)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(m * n)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(log n)", "O(n)", "O(V + E)"]
     },
     {
       "number": 77,
@@ -6584,18 +4864,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n log n)",
-        "O(n^2)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n log n)", "O(n^2)", "O(n^3)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(V + E)", "O(n)"]
     },
     {
       "number": 37,
@@ -6622,18 +4892,8 @@
       ],
       "timeComplexity": "O(2^n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(2^n)",
-        "O(V + E)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(log n)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^3)", "O(2^n)", "O(V + E)", "O(n!)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(log n)", "O(n)"]
     },
     {
       "number": 417,
@@ -6660,18 +4920,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n!)",
-        "O(log n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n!)", "O(log n)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 286,
@@ -6698,18 +4948,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n log n)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n log n)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(V + E)"]
     },
     {
       "number": 785,
@@ -6736,18 +4976,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(log n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(log n)", "O(V + E)"]
     },
     {
       "number": 399,
@@ -6774,18 +5004,8 @@
       ],
       "timeComplexity": "O(V + E)",
       "spaceComplexity": "O(V + E)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(1)", "O(V + E)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(1)", "O(V + E)", "O(m * n)"]
     },
     {
       "number": 70,
@@ -6812,18 +5032,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n log n)",
-        "O(n^3)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(n log n)", "O(n^3)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(1)", "O(n)"]
     },
     {
       "number": 213,
@@ -6850,18 +5060,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n)",
-        "O(2^n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n)", "O(2^n)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(1)", "O(log n)"]
     },
     {
       "number": 279,
@@ -6888,18 +5088,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(n^2)",
-        "O(2^n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n!)", "O(n^2)", "O(2^n)", "O(1)"],
+      "spaceOptions": ["O(log n)", "O(m * n)", "O(n)", "O(V + E)"]
     },
     {
       "number": 518,
@@ -6926,18 +5116,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n!)",
-        "O(n^3)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n!)", "O(n^3)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(log n)", "O(1)"]
     },
     {
       "number": 452,
@@ -6964,18 +5144,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n^2)", "O(1)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n^2)", "O(1)"]
     },
     {
       "number": 135,
@@ -7002,18 +5172,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 720,
@@ -7040,18 +5200,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n^2)", "O(log n)", "O(n^3)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(V + E)", "O(1)"]
     },
     {
       "number": 648,
@@ -7078,18 +5228,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(2^n)",
-        "O(n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n log n)", "O(2^n)", "O(n)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(1)"]
     },
     {
       "number": 201,
@@ -7116,18 +5256,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n log n)",
-        "O(n!)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n log n)", "O(n!)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(1)", "O(log n)"]
     },
     {
       "number": 231,
@@ -7154,18 +5284,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n^2)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(n^2)", "O(log n)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(1)", "O(m * n)"]
     },
     {
       "number": 990,
@@ -7192,18 +5312,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(n log n)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n^2)", "O(n)"]
     },
     {
       "number": 947,
@@ -7230,18 +5340,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(2^n)",
-        "O(n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(V + E)", "O(2^n)", "O(n)", "O(n log n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(V + E)"]
     },
     {
       "number": 1202,
@@ -7268,18 +5368,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(1)", "O(V + E)", "O(n)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 303,
@@ -7306,18 +5396,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^3)",
-        "O(n log n)",
-        "O(n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n^3)", "O(n log n)", "O(n)", "O(1)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n)", "O(V + E)"]
     },
     {
       "number": 525,
@@ -7344,18 +5424,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n^3)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(1)", "O(m * n)", "O(n^3)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(n)", "O(m * n)"]
     },
     {
       "number": 325,
@@ -7382,18 +5452,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(log n)", "O(n^3)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(log n)"]
     },
     {
       "number": 498,
@@ -7420,18 +5480,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(1)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(log n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(V + E)", "O(1)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(V + E)", "O(log n)", "O(m * n)"]
     },
     {
       "number": 240,
@@ -7458,18 +5508,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n)",
-        "O(V + E)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(m * n)",
-        "O(1)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n)", "O(V + E)", "O(m * n)"],
+      "spaceOptions": ["O(n^2)", "O(m * n)", "O(1)", "O(log n)"]
     },
     {
       "number": 733,
@@ -7496,18 +5536,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(m * n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(m * n)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 202,
@@ -7534,18 +5564,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(log n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(n^2)",
-        "O(log n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(2^n)", "O(n^2)", "O(log n)", "O(n)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(n)", "O(log n)"]
     },
     {
       "number": 171,
@@ -7572,18 +5592,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(m * n)", "O(V + E)"],
+      "spaceOptions": ["O(V + E)", "O(log n)", "O(n)", "O(1)"]
     },
     {
       "number": 172,
@@ -7610,18 +5620,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(V + E)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(log n)", "O(m * n)", "O(V + E)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 326,
@@ -7648,18 +5648,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(2^n)",
-        "O(m * n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n^2)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(2^n)", "O(m * n)", "O(log n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n^2)", "O(n)"]
     },
     {
       "number": 14,
@@ -7686,18 +5676,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n^2)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^2)", "O(1)", "O(n log n)"],
+      "spaceOptions": ["O(log n)", "O(n^2)", "O(1)", "O(n)"]
     },
     {
       "number": 151,
@@ -7724,18 +5704,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(n^2)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(n^2)", "O(m * n)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n)", "O(V + E)"]
     },
     {
       "number": 165,
@@ -7762,18 +5732,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(log n)",
-        "O(m * n)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(log n)", "O(m * n)", "O(n)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(1)", "O(m * n)"]
     },
     {
       "number": 227,
@@ -7800,18 +5760,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(1)",
-        "O(n log n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n)", "O(1)", "O(n log n)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(n^2)", "O(1)", "O(V + E)"]
     },
     {
       "number": 912,
@@ -7838,18 +5788,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(1)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(1)", "O(V + E)", "O(n log n)", "O(n^3)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(n)", "O(n^2)"]
     },
     {
       "number": 88,
@@ -7876,18 +5816,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(1)",
-        "O(V + E)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+      "spaceOptions": ["O(n)", "O(1)", "O(V + E)", "O(n^2)"]
     },
     {
       "number": 324,
@@ -7914,18 +5844,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n log n)",
-        "O(n!)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n log n)", "O(n!)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(V + E)", "O(n)"]
     },
     {
       "number": 148,
@@ -7952,18 +5872,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(log n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(1)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n!)", "O(V + E)", "O(n log n)", "O(n^3)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(1)", "O(V + E)"]
     },
     {
       "number": 355,
@@ -7990,18 +5900,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(V + E)",
-        "O(1)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n log n)", "O(V + E)", "O(1)", "O(log n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(1)"]
     },
     {
       "number": 362,
@@ -8028,18 +5928,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(log n)",
-        "O(1)",
-        "O(2^n)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(log n)", "O(1)", "O(2^n)", "O(n log n)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(1)", "O(m * n)"]
     },
     {
       "number": 622,
@@ -8066,18 +5956,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(2^n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(1)",
-        "O(V + E)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(1)", "O(2^n)", "O(n!)"],
+      "spaceOptions": ["O(n^2)", "O(1)", "O(V + E)", "O(n)"]
     },
     {
       "number": 1396,
@@ -8104,18 +5984,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(2^n)",
-        "O(1)",
-        "O(n)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(m * n)",
-        "O(log n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(2^n)", "O(1)", "O(n)", "O(n^3)"],
+      "spaceOptions": ["O(n)", "O(m * n)", "O(log n)", "O(n^2)"]
     },
     {
       "number": 981,
@@ -8142,18 +6012,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(n!)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(log n)",
-        "O(n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n log n)", "O(n!)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(log n)", "O(n)", "O(1)"]
     },
     {
       "number": 451,
@@ -8180,18 +6040,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n log n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(n)",
-        "O(1)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(n log n)", "O(n!)"],
+      "spaceOptions": ["O(log n)", "O(n)", "O(1)", "O(n^2)"]
     },
     {
       "number": 179,
@@ -8218,18 +6068,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(log n)",
-        "O(n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(n log n)", "O(log n)", "O(n)", "O(m * n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(V + E)"]
     },
     {
       "number": 274,
@@ -8256,18 +6096,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(1)",
-        "O(2^n)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(1)", "O(2^n)", "O(n!)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(n)", "O(log n)"]
     },
     {
       "number": 252,
@@ -8294,18 +6124,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(log n)",
-        "O(n)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(m * n)", "O(n)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(log n)", "O(n)", "O(m * n)"]
     },
     {
       "number": 421,
@@ -8332,18 +6152,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(m * n)",
-        "O(n^3)",
-        "O(n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(n^2)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n!)", "O(m * n)", "O(n^3)", "O(n)"],
+      "spaceOptions": ["O(m * n)", "O(n)", "O(n^2)", "O(log n)"]
     },
     {
       "number": 677,
@@ -8370,18 +6180,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(n^3)",
-        "O(n log n)",
-        "O(1)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n)", "O(n^3)", "O(n log n)", "O(1)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 1268,
@@ -8408,18 +6208,8 @@
       ],
       "timeComplexity": "O(n log n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n log n)",
-        "O(2^n)",
-        "O(V + E)",
-        "O(n^3)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(V + E)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n log n)", "O(2^n)", "O(V + E)", "O(n^3)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(V + E)", "O(m * n)"]
     },
     {
       "number": 1472,
@@ -8446,18 +6236,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(log n)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(n)", "O(V + E)", "O(n^2)", "O(2^n)"],
+      "spaceOptions": ["O(n^2)", "O(n)", "O(log n)", "O(1)"]
     },
     {
       "number": 348,
@@ -8484,18 +6264,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)",
-        "O(n^2)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n)", "O(V + E)", "O(n^2)"],
+      "spaceOptions": ["O(1)", "O(m * n)", "O(n)", "O(V + E)"]
     },
     {
       "number": 1166,
@@ -8522,18 +6292,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(n log n)",
-        "O(n)",
-        "O(m * n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(V + E)",
-        "O(m * n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(n!)", "O(n log n)", "O(n)", "O(m * n)"],
+      "spaceOptions": ["O(n)", "O(V + E)", "O(m * n)", "O(n^2)"]
     },
     {
       "number": 304,
@@ -8560,18 +6320,8 @@
       ],
       "timeComplexity": "O(1)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(1)",
-        "O(n!)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(1)", "O(n!)", "O(log n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(log n)"]
     },
     {
       "number": 724,
@@ -8598,18 +6348,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(n!)",
-        "O(2^n)",
-        "O(n)",
-        "O(V + E)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n^2)",
-        "O(V + E)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(n!)", "O(2^n)", "O(n)", "O(V + E)"],
+      "spaceOptions": ["O(1)", "O(n^2)", "O(V + E)", "O(log n)"]
     },
     {
       "number": 974,
@@ -8636,18 +6376,8 @@
       ],
       "timeComplexity": "O(n)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(n)",
-        "O(V + E)",
-        "O(n!)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n)",
-        "O(log n)"
-      ]
+      "timeOptions": ["O(m * n)", "O(n)", "O(V + E)", "O(n!)"],
+      "spaceOptions": ["O(m * n)", "O(1)", "O(n)", "O(log n)"]
     },
     {
       "number": 16,
@@ -8674,18 +6404,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(V + E)",
-        "O(n^2)",
-        "O(n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(m * n)",
-        "O(V + E)",
-        "O(1)",
-        "O(n)"
-      ]
+      "timeOptions": ["O(V + E)", "O(n^2)", "O(n)", "O(2^n)"],
+      "spaceOptions": ["O(m * n)", "O(V + E)", "O(1)", "O(n)"]
     },
     {
       "number": 153,
@@ -8712,18 +6432,8 @@
       ],
       "timeComplexity": "O(log n)",
       "spaceComplexity": "O(1)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(log n)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(m * n)",
-        "O(n^2)",
-        "O(1)"
-      ]
+      "timeOptions": ["O(m * n)", "O(1)", "O(log n)", "O(2^n)"],
+      "spaceOptions": ["O(log n)", "O(m * n)", "O(n^2)", "O(1)"]
     },
     {
       "number": 1091,
@@ -8750,18 +6460,8 @@
       ],
       "timeComplexity": "O(n^2)",
       "spaceComplexity": "O(n^2)",
-      "timeOptions": [
-        "O(n^2)",
-        "O(n)",
-        "O(n^3)",
-        "O(n log n)"
-      ],
-      "spaceOptions": [
-        "O(log n)",
-        "O(V + E)",
-        "O(n^2)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n^2)", "O(n)", "O(n^3)", "O(n log n)"],
+      "spaceOptions": ["O(log n)", "O(V + E)", "O(n^2)", "O(m * n)"]
     },
     {
       "number": 1143,
@@ -8788,18 +6488,8 @@
       ],
       "timeComplexity": "O(m * n)",
       "spaceComplexity": "O(m * n)",
-      "timeOptions": [
-        "O(m * n)",
-        "O(1)",
-        "O(n^3)",
-        "O(2^n)"
-      ],
-      "spaceOptions": [
-        "O(1)",
-        "O(n)",
-        "O(m * n)",
-        "O(n^2)"
-      ]
+      "timeOptions": ["O(m * n)", "O(1)", "O(n^3)", "O(2^n)"],
+      "spaceOptions": ["O(1)", "O(n)", "O(m * n)", "O(n^2)"]
     },
     {
       "number": 47,
@@ -8826,18 +6516,8 @@
       ],
       "timeComplexity": "O(n!)",
       "spaceComplexity": "O(n)",
-      "timeOptions": [
-        "O(n!)",
-        "O(V + E)",
-        "O(2^n)",
-        "O(log n)"
-      ],
-      "spaceOptions": [
-        "O(n)",
-        "O(log n)",
-        "O(1)",
-        "O(m * n)"
-      ]
+      "timeOptions": ["O(n!)", "O(V + E)", "O(2^n)", "O(log n)"],
+      "spaceOptions": ["O(n)", "O(log n)", "O(1)", "O(m * n)"]
     }
   ]
 }

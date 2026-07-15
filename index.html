@@ -1,384 +1,529 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<script>
-  // Mobile browsers (especially iOS Safari) report `100vh` as taller than the
-  // actually-visible viewport, since it includes space that's currently
-  // covered by the address bar/toolbar. That extra height is exactly what
-  // was causing the app shell to be scrollable when it shouldn't be. This
-  // measures the real visible height via window.innerHeight and exposes it
-  // as a CSS custom property that the layout uses instead of a bare vh unit,
-  // updating on resize/orientation change (e.g. when the address bar
-  // collapses on scroll or the keyboard opens).
-  (function () {
-    function setAppVH() {
-      document.documentElement.style.setProperty('--app-vh', window.innerHeight + 'px');
-    }
-    setAppVH();
-    window.addEventListener('resize', setAppVH);
-    window.addEventListener('orientationchange', setAppVH);
-  })();
-</script>
-<title>Drillset · Senior Engineer Interview Prep</title>
-<meta name="description" content="Flashcard drills for DSA patterns, system design, AI/ML, distributed systems &amp; cloud architecture, and engineering leadership interview prep.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%230F1115%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%234FD1C5%22 font-family=%22monospace%22>▸</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <script>
+      // Mobile browsers (especially iOS Safari) report `100vh` as taller than the
+      // actually-visible viewport, since it includes space that's currently
+      // covered by the address bar/toolbar. That extra height is exactly what
+      // was causing the app shell to be scrollable when it shouldn't be. This
+      // measures the real visible height via window.innerHeight and exposes it
+      // as a CSS custom property that the layout uses instead of a bare vh unit,
+      // updating on resize/orientation change (e.g. when the address bar
+      // collapses on scroll or the keyboard opens).
+      (function () {
+        function setAppVH() {
+          document.documentElement.style.setProperty(
+            "--app-vh",
+            window.innerHeight + "px",
+          );
+        }
+        setAppVH();
+        window.addEventListener("resize", setAppVH);
+        window.addEventListener("orientationchange", setAppVH);
+      })();
+    </script>
+    <title>Drillset · Senior Engineer Interview Prep</title>
+    <meta
+      name="description"
+      content="Flashcard drills for DSA patterns, system design, AI/ML, distributed systems &amp; cloud architecture, and engineering leadership interview prep."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2218%22 fill=%22%230F1115%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 text-anchor=%22middle%22 fill=%22%234FD1C5%22 font-family=%22monospace%22>▸</text></svg>"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- ============ TOP BAR ============ -->
+      <header class="topbar">
+        <button class="brand" id="homeBtn" aria-label="Go home">
+          <span class="brand-mark">▸</span
+          ><span class="brand-name">Drillset</span>
+        </button>
+        <div class="topbar-stats" id="topbarStats"></div>
+      </header>
 
-<div id="app">
+      <!-- ============ HOME VIEW ============ -->
+      <section class="view" id="view-home">
+        <div class="home-intro">
+          <p class="eyebrow">Interview drills · senior engineering track</p>
+          <h1>Pick a deck.</h1>
+          <p class="home-sub">
+            Five drills, one goal: pattern recognition under pressure.
+          </p>
+        </div>
 
-  <!-- ============ TOP BAR ============ -->
-  <header class="topbar">
-    <button class="brand" id="homeBtn" aria-label="Go home">
-      <span class="brand-mark">▸</span><span class="brand-name">Drillset</span>
-    </button>
-    <div class="topbar-stats" id="topbarStats"></div>
-  </header>
+        <nav class="deck-grid">
+          <button class="deck-card" data-target="dsa">
+            <span class="deck-tab">01</span>
+            <span class="deck-title">Data Structures &amp; Algorithms</span>
+            <span class="deck-desc"
+              >Spot the right pattern for a LeetCode-style problem, then compare
+              it against a reference solution in your language of choice.</span
+            >
+            <span class="deck-meta" id="stat-dsa"></span>
+          </button>
 
-  <!-- ============ HOME VIEW ============ -->
-  <section class="view" id="view-home">
-    <div class="home-intro">
-      <p class="eyebrow">Interview drills · senior engineering track</p>
-      <h1>Pick a deck.</h1>
-      <p class="home-sub">Five drills, one goal: pattern recognition under pressure.</p>
-    </div>
+          <button class="deck-card" data-target="sysdesign">
+            <span class="deck-tab">02</span>
+            <span class="deck-title">System Design</span>
+            <span class="deck-desc"
+              >Work through open-ended design prompts with staged follow-ups,
+              model answers, and an architecture diagram.</span
+            >
+            <span class="deck-meta" id="stat-sysdesign"></span>
+          </button>
 
-    <nav class="deck-grid">
-      <button class="deck-card" data-target="dsa">
-        <span class="deck-tab">01</span>
-        <span class="deck-title">Data Structures &amp; Algorithms</span>
-        <span class="deck-desc">Spot the right pattern for a LeetCode-style problem, then compare it against a reference solution in your language of choice.</span>
-        <span class="deck-meta" id="stat-dsa"></span>
-      </button>
+          <button class="deck-card" data-target="ml">
+            <span class="deck-tab">03</span>
+            <span class="deck-title">AI &amp; ML Concepts</span>
+            <span class="deck-desc"
+              >Core ML theory, LLM internals, applied AI-engineering practice,
+              and the milestones that shaped the field.</span
+            >
+            <span class="deck-meta" id="stat-ml"></span>
+          </button>
 
-      <button class="deck-card" data-target="sysdesign">
-        <span class="deck-tab">02</span>
-        <span class="deck-title">System Design</span>
-        <span class="deck-desc">Work through open-ended design prompts with staged follow-ups, model answers, and an architecture diagram.</span>
-        <span class="deck-meta" id="stat-sysdesign"></span>
-      </button>
+          <button class="deck-card" data-target="cloud">
+            <span class="deck-tab">04</span>
+            <span class="deck-title">Distributed Systems &amp; Cloud</span>
+            <span class="deck-desc"
+              >Containers, Kubernetes, GPUs and AI infra, messaging, databases,
+              networking, and autoscaling — the infrastructure layer senior
+              interviews probe.</span
+            >
+            <span class="deck-meta" id="stat-cloud"></span>
+          </button>
 
-      <button class="deck-card" data-target="ml">
-        <span class="deck-tab">03</span>
-        <span class="deck-title">AI &amp; ML Concepts</span>
-        <span class="deck-desc">Core ML theory, LLM internals, applied AI-engineering practice, and the milestones that shaped the field.</span>
-        <span class="deck-meta" id="stat-ml"></span>
-      </button>
+          <button class="deck-card" data-target="leadership">
+            <span class="deck-tab">05</span>
+            <span class="deck-title">Engineering Leadership</span>
+            <span class="deck-desc"
+              >The category almost nobody studies: de-risking migrations, build
+              vs buy, mentorship, tradeoffs, and the judgment calls that
+              separate senior from staff.</span
+            >
+            <span class="deck-meta" id="stat-leadership"></span>
+          </button>
 
-      <button class="deck-card" data-target="cloud">
-        <span class="deck-tab">04</span>
-        <span class="deck-title">Distributed Systems &amp; Cloud</span>
-        <span class="deck-desc">Containers, Kubernetes, GPUs and AI infra, messaging, databases, networking, and autoscaling — the infrastructure layer senior interviews probe.</span>
-        <span class="deck-meta" id="stat-cloud"></span>
-      </button>
+          <button class="deck-card" data-target="estimation">
+            <span class="deck-tab">06</span>
+            <span class="deck-title">Back-of-Envelope Estimation</span>
+            <span class="deck-desc"
+              >Traffic, storage, bandwidth, cost, and latency math — the
+              numeric-reasoning skill system design interviews test explicitly
+              and separately from architecture knowledge.</span
+            >
+            <span class="deck-meta" id="stat-estimation"></span>
+          </button>
 
-      <button class="deck-card" data-target="leadership">
-        <span class="deck-tab">05</span>
-        <span class="deck-title">Engineering Leadership</span>
-        <span class="deck-desc">The category almost nobody studies: de-risking migrations, build vs buy, mentorship, tradeoffs, and the judgment calls that separate senior from staff.</span>
-        <span class="deck-meta" id="stat-leadership"></span>
-      </button>
+          <button class="deck-card" data-target="debugging">
+            <span class="deck-tab">07</span>
+            <span class="deck-title">Production Debugging</span>
+            <span class="deck-desc"
+              >Multi-step diagnostic scenarios for real ML/cloud production
+              incidents — GPU OOMs, K8s crash loops, drift, Kafka lag. Pick what
+              to check first, then follow the trail.</span
+            >
+            <span class="deck-meta" id="stat-debugging"></span>
+          </button>
+        </nav>
 
-      <button class="deck-card" data-target="estimation">
-        <span class="deck-tab">06</span>
-        <span class="deck-title">Back-of-Envelope Estimation</span>
-        <span class="deck-desc">Traffic, storage, bandwidth, cost, and latency math — the numeric-reasoning skill system design interviews test explicitly and separately from architecture knowledge.</span>
-        <span class="deck-meta" id="stat-estimation"></span>
-      </button>
+        <p class="home-footnote">
+          Progress and “retry later” queues are saved on this device.
+        </p>
+      </section>
 
-      <button class="deck-card" data-target="debugging">
-        <span class="deck-tab">07</span>
-        <span class="deck-title">Production Debugging</span>
-        <span class="deck-desc">Multi-step diagnostic scenarios for real ML/cloud production incidents — GPU OOMs, K8s crash loops, drift, Kafka lag. Pick what to check first, then follow the trail.</span>
-        <span class="deck-meta" id="stat-debugging"></span>
-      </button>
-    </nav>
+      <!-- ============ DSA VIEW ============ -->
+      <section class="view view-drill" id="view-dsa" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">DSA Pattern Drill</div>
+          <label class="lang-select">
+            <span>Lang</span>
+            <select id="langSelect">
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="typescript">TypeScript</option>
+              <option value="javascript">JavaScript</option>
+              <option value="cpp">C++</option>
+              <option value="go">Go</option>
+            </select>
+          </label>
+        </div>
 
-    <p class="home-footnote">Progress and “retry later” queues are saved on this device.</p>
-  </section>
+        <div class="card-stack" id="dsaStack">
+          <article class="card" id="dsaCard">
+            <div class="card-tab" id="dsaTab">DSA</div>
+            <div class="card-scroll">
+              <div class="card-top">
+                <span class="q-number" id="dsaNumber">#1</span>
+                <span class="q-diff" id="dsaDiff">Easy</span>
+              </div>
+              <h2 class="q-title" id="dsaTitle">Title</h2>
+              <p class="q-desc" id="dsaDesc">Description</p>
 
-  <!-- ============ DSA VIEW ============ -->
-  <section class="view view-drill" id="view-dsa" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">DSA Pattern Drill</div>
-      <label class="lang-select">
-        <span>Lang</span>
-        <select id="langSelect">
-          <option value="python">Python</option>
-          <option value="java">Java</option>
-          <option value="typescript">TypeScript</option>
-          <option value="javascript">JavaScript</option>
-          <option value="cpp">C++</option>
-          <option value="go">Go</option>
-        </select>
-      </label>
-    </div>
+              <div class="pattern-zone">
+                <p class="pattern-label">Which pattern solves this?</p>
+                <div class="pattern-buttons" id="patternButtons"></div>
+                <p class="feedback-msg" id="feedbackMsg"></p>
 
-    <div class="card-stack" id="dsaStack">
-      <article class="card" id="dsaCard">
-        <div class="card-tab" id="dsaTab">DSA</div>
-        <div class="card-scroll">
-          <div class="card-top">
-            <span class="q-number" id="dsaNumber">#1</span>
-            <span class="q-diff" id="dsaDiff">Easy</span>
-          </div>
-          <h2 class="q-title" id="dsaTitle">Title</h2>
-          <p class="q-desc" id="dsaDesc">Description</p>
+                <div class="solution-zone" id="solutionZone" hidden>
+                  <div class="solution-head">
+                    <span class="solution-label">Reference solution</span>
+                    <div class="solution-head-right">
+                      <span class="solution-lang" id="solutionLang"
+                        >python</span
+                      >
+                      <button
+                        class="copy-btn"
+                        id="copyCodeBtn"
+                        type="button"
+                        aria-label="Copy code to clipboard"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                  <pre class="code-block"><code id="solutionCode"></code></pre>
+                </div>
 
-          <div class="pattern-zone">
-            <p class="pattern-label">Which pattern solves this?</p>
-            <div class="pattern-buttons" id="patternButtons"></div>
-            <p class="feedback-msg" id="feedbackMsg"></p>
+                <div class="complexity-zone" id="complexityZone" hidden>
+                  <div class="solution-head">
+                    <span class="solution-label"
+                      >Quiz yourself: complexity</span
+                    >
+                  </div>
+                  <p class="pattern-label">Time complexity?</p>
+                  <div class="pattern-buttons" id="timeComplexityButtons"></div>
+                  <p class="feedback-msg" id="timeComplexityFeedback"></p>
 
-            <div class="solution-zone" id="solutionZone" hidden>
-              <div class="solution-head">
-                <span class="solution-label">Reference solution</span>
-                <div class="solution-head-right">
-                  <span class="solution-lang" id="solutionLang">python</span>
-                  <button class="copy-btn" id="copyCodeBtn" type="button" aria-label="Copy code to clipboard">Copy</button>
+                  <p class="pattern-label" style="margin-top: 16px">
+                    Space complexity?
+                  </p>
+                  <div
+                    class="pattern-buttons"
+                    id="spaceComplexityButtons"
+                  ></div>
+                  <p class="feedback-msg" id="spaceComplexityFeedback"></p>
+                </div>
+
+                <div class="talkthrough-zone" id="talkthroughZone" hidden>
+                  <div class="solution-head">
+                    <span class="solution-label"
+                      >Talk it through like this</span
+                    >
+                  </div>
+                  <ol class="talkthrough-list">
+                    <li>
+                      <strong>Clarify</strong> — constraints, input size, edge
+                      cases (empty, one element, duplicates, negatives).
+                    </li>
+                    <li>
+                      <strong>Brute force</strong> — state the naive approach
+                      and its complexity out loud first.
+                    </li>
+                    <li>
+                      <strong>Bottleneck</strong> — name exactly what makes the
+                      brute force slow.
+                    </li>
+                    <li>
+                      <strong>Optimize</strong> — apply the pattern above to
+                      remove that bottleneck.
+                    </li>
+                    <li>
+                      <strong>Test</strong> — trace through an edge case before
+                      declaring done.
+                    </li>
+                  </ol>
                 </div>
               </div>
-              <pre class="code-block"><code id="solutionCode"></code></pre>
             </div>
+          </article>
+        </div>
 
-            <div class="complexity-zone" id="complexityZone" hidden>
-              <div class="solution-head"><span class="solution-label">Quiz yourself: complexity</span></div>
-              <p class="pattern-label">Time complexity?</p>
-              <div class="pattern-buttons" id="timeComplexityButtons"></div>
-              <p class="feedback-msg" id="timeComplexityFeedback"></p>
+        <div class="action-bar">
+          <button class="btn btn-ghost" id="dsaRetryBtn" hidden>
+            Retry later
+          </button>
+          <button class="btn btn-primary" id="dsaNextBtn" hidden>
+            Next problem →
+          </button>
+        </div>
+      </section>
 
-              <p class="pattern-label" style="margin-top:16px;">Space complexity?</p>
-              <div class="pattern-buttons" id="spaceComplexityButtons"></div>
-              <p class="feedback-msg" id="spaceComplexityFeedback"></p>
+      <!-- ============ SYSTEM DESIGN VIEW ============ -->
+      <section class="view view-drill" id="view-sysdesign" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">System Design Drill</div>
+          <span class="stage-pill" id="sdStagePill">Stage 1</span>
+        </div>
+
+        <div class="card-stack" id="sdStack">
+          <article class="card" id="sdCard">
+            <div class="card-tab">SYS</div>
+            <div class="card-scroll">
+              <h2 class="q-title" id="sdTitle">Design a URL Shortener</h2>
+              <p class="q-desc" id="sdPrompt">Prompt text</p>
+
+              <div class="solution-zone" id="sdAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">Model answer</span>
+                </div>
+                <p class="answer-text" id="sdAnswer"></p>
+              </div>
+
+              <div class="diagram-zone" id="sdDiagramZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">Example architecture</span>
+                </div>
+                <div class="mermaid" id="sdDiagram"></div>
+              </div>
             </div>
+          </article>
+        </div>
 
-            <div class="talkthrough-zone" id="talkthroughZone" hidden>
-              <div class="solution-head"><span class="solution-label">Talk it through like this</span></div>
-              <ol class="talkthrough-list">
-                <li><strong>Clarify</strong> — constraints, input size, edge cases (empty, one element, duplicates, negatives).</li>
-                <li><strong>Brute force</strong> — state the naive approach and its complexity out loud first.</li>
-                <li><strong>Bottleneck</strong> — name exactly what makes the brute force slow.</li>
-                <li><strong>Optimize</strong> — apply the pattern above to remove that bottleneck.</li>
-                <li><strong>Test</strong> — trace through an edge case before declaring done.</li>
-              </ol>
+        <div class="action-bar" id="sdActionBar">
+          <button class="btn btn-secondary" id="sdShowAnswerBtn">
+            Show solution
+          </button>
+          <button class="btn btn-primary" id="sdFollowUpBtn" hidden>
+            Follow-up →
+          </button>
+        </div>
+        <div class="action-bar" id="sdEndBar" hidden>
+          <button class="btn btn-ghost" id="sdRetryBtn">Retry later</button>
+          <button class="btn btn-primary" id="sdNextBtn">
+            Next question →
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ML VIEW ============ -->
+      <section class="view view-drill" id="view-ml" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">AI &amp; ML Drill</div>
+          <span class="stage-pill" id="mlCategoryPill">History</span>
+        </div>
+
+        <div class="card-stack" id="mlStack">
+          <article class="card" id="mlCard">
+            <div class="card-tab">AI/ML</div>
+            <div class="card-scroll">
+              <p class="q-desc q-desc-large" id="mlQuestion">Question</p>
+              <div class="solution-zone" id="mlAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">Answer</span>
+                </div>
+                <p class="answer-text" id="mlAnswer"></p>
+              </div>
             </div>
-          </div>
+          </article>
         </div>
-      </article>
-    </div>
 
-    <div class="action-bar">
-      <button class="btn btn-ghost" id="dsaRetryBtn" hidden>Retry later</button>
-      <button class="btn btn-primary" id="dsaNextBtn" hidden>Next problem →</button>
-    </div>
-  </section>
-
-  <!-- ============ SYSTEM DESIGN VIEW ============ -->
-  <section class="view view-drill" id="view-sysdesign" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">System Design Drill</div>
-      <span class="stage-pill" id="sdStagePill">Stage 1</span>
-    </div>
-
-    <div class="card-stack" id="sdStack">
-      <article class="card" id="sdCard">
-        <div class="card-tab">SYS</div>
-        <div class="card-scroll">
-          <h2 class="q-title" id="sdTitle">Design a URL Shortener</h2>
-          <p class="q-desc" id="sdPrompt">Prompt text</p>
-
-          <div class="solution-zone" id="sdAnswerZone" hidden>
-            <div class="solution-head"><span class="solution-label">Model answer</span></div>
-            <p class="answer-text" id="sdAnswer"></p>
-          </div>
-
-          <div class="diagram-zone" id="sdDiagramZone" hidden>
-            <div class="solution-head"><span class="solution-label">Example architecture</span></div>
-            <div class="mermaid" id="sdDiagram"></div>
-          </div>
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="mlShowAnswerBtn">
+            Show answer
+          </button>
+          <button class="btn btn-ghost" id="mlRetryBtn" hidden>
+            Retry later
+          </button>
+          <button class="btn btn-primary" id="mlNextBtn" hidden>
+            Next card →
+          </button>
         </div>
-      </article>
-    </div>
+      </section>
 
-    <div class="action-bar" id="sdActionBar">
-      <button class="btn btn-secondary" id="sdShowAnswerBtn">Show solution</button>
-      <button class="btn btn-primary" id="sdFollowUpBtn" hidden>Follow-up →</button>
-    </div>
-    <div class="action-bar" id="sdEndBar" hidden>
-      <button class="btn btn-ghost" id="sdRetryBtn">Retry later</button>
-      <button class="btn btn-primary" id="sdNextBtn">Next question →</button>
-    </div>
-  </section>
-
-  <!-- ============ ML VIEW ============ -->
-  <section class="view view-drill" id="view-ml" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">AI &amp; ML Drill</div>
-      <span class="stage-pill" id="mlCategoryPill">History</span>
-    </div>
-
-    <div class="card-stack" id="mlStack">
-      <article class="card" id="mlCard">
-        <div class="card-tab">AI/ML</div>
-        <div class="card-scroll">
-          <p class="q-desc q-desc-large" id="mlQuestion">Question</p>
-          <div class="solution-zone" id="mlAnswerZone" hidden>
-            <div class="solution-head"><span class="solution-label">Answer</span></div>
-            <p class="answer-text" id="mlAnswer"></p>
+      <!-- ============ CLOUD / DISTRIBUTED SYSTEMS VIEW ============ -->
+      <section class="view view-drill" id="view-cloud" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">
+            Distributed Systems &amp; Cloud Drill
           </div>
+          <span class="stage-pill" id="cloudCategoryPill">Containers</span>
         </div>
-      </article>
-    </div>
 
-    <div class="action-bar">
-      <button class="btn btn-secondary" id="mlShowAnswerBtn">Show answer</button>
-      <button class="btn btn-ghost" id="mlRetryBtn" hidden>Retry later</button>
-      <button class="btn btn-primary" id="mlNextBtn" hidden>Next card →</button>
-    </div>
-  </section>
-
-  <!-- ============ CLOUD / DISTRIBUTED SYSTEMS VIEW ============ -->
-  <section class="view view-drill" id="view-cloud" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">Distributed Systems &amp; Cloud Drill</div>
-      <span class="stage-pill" id="cloudCategoryPill">Containers</span>
-    </div>
-
-    <div class="card-stack" id="cloudStack">
-      <article class="card" id="cloudCard">
-        <div class="card-tab">CLOUD</div>
-        <div class="card-scroll">
-          <p class="q-desc q-desc-large" id="cloudQuestion">Question</p>
-          <div class="solution-zone" id="cloudAnswerZone" hidden>
-            <div class="solution-head"><span class="solution-label">Answer</span></div>
-            <p class="answer-text" id="cloudAnswer"></p>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div class="action-bar">
-      <button class="btn btn-secondary" id="cloudShowAnswerBtn">Show answer</button>
-      <button class="btn btn-ghost" id="cloudRetryBtn" hidden>Retry later</button>
-      <button class="btn btn-primary" id="cloudNextBtn" hidden>Next card →</button>
-    </div>
-  </section>
-
-  <!-- ============ ENGINEERING LEADERSHIP VIEW ============ -->
-  <section class="view view-drill" id="view-leadership" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">Engineering Leadership Drill</div>
-      <span class="stage-pill" id="leadershipCategoryPill">Risk &amp; Migration</span>
-    </div>
-
-    <div class="card-stack" id="leadershipStack">
-      <article class="card" id="leadershipCard">
-        <div class="card-tab">LEAD</div>
-        <div class="card-scroll">
-          <p class="q-desc q-desc-large" id="leadershipQuestion">Question</p>
-          <div class="solution-zone" id="leadershipAnswerZone" hidden>
-            <div class="solution-head"><span class="solution-label">A senior-level answer</span></div>
-            <p class="answer-text" id="leadershipAnswer"></p>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div class="action-bar">
-      <button class="btn btn-secondary" id="leadershipShowAnswerBtn">Show answer</button>
-      <button class="btn btn-ghost" id="leadershipRetryBtn" hidden>Retry later</button>
-      <button class="btn btn-primary" id="leadershipNextBtn" hidden>Next card →</button>
-    </div>
-  </section>
-
-  <!-- ============ ESTIMATION VIEW ============ -->
-  <section class="view view-drill" id="view-estimation" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">Estimation Drill</div>
-      <span class="stage-pill" id="estimationCategoryPill">Traffic &amp; Throughput</span>
-    </div>
-
-    <div class="card-stack" id="estimationStack">
-      <article class="card" id="estimationCard">
-        <div class="card-tab">MATH</div>
-        <div class="card-scroll">
-          <p class="q-desc q-desc-large" id="estimationQuestion">Question</p>
-          <div class="solution-zone" id="estimationAnswerZone" hidden>
-            <div class="solution-head"><span class="solution-label">Worked estimate</span></div>
-            <p class="answer-text" id="estimationAnswer"></p>
-          </div>
-        </div>
-      </article>
-    </div>
-
-    <div class="action-bar">
-      <button class="btn btn-secondary" id="estimationShowAnswerBtn">Work through it, then show</button>
-      <button class="btn btn-ghost" id="estimationRetryBtn" hidden>Retry later</button>
-      <button class="btn btn-primary" id="estimationNextBtn" hidden>Next card →</button>
-    </div>
-  </section>
-
-  <!-- ============ PRODUCTION DEBUGGING VIEW ============ -->
-  <section class="view view-drill" id="view-debugging" hidden>
-    <div class="deck-header">
-      <button class="back-btn" data-back>← Decks</button>
-      <div class="deck-header-title">Production Debugging Drill</div>
-      <span class="stage-pill" id="debugStagePill">Stage 1</span>
-    </div>
-
-    <div class="card-stack" id="debugStack">
-      <article class="card" id="debugCard">
-        <div class="card-tab" id="debugTab">CLOUD</div>
-        <div class="card-scroll">
-          <div class="card-top">
-            <span class="q-diff" id="debugCategory">ML Infrastructure</span>
-          </div>
-          <h2 class="q-title" id="debugTitle">Scenario title</h2>
-          <p class="q-desc" id="debugContext">Context</p>
-
-          <div class="pattern-zone">
-            <p class="pattern-label" id="debugStagePrompt">What do you check first?</p>
-            <div class="pattern-buttons" id="debugOptionButtons"></div>
-            <p class="feedback-msg" id="debugFeedback"></p>
-
-            <div class="solution-zone" id="debugExplanationZone" hidden>
-              <div class="solution-head"><span class="solution-label">Why</span></div>
-              <p class="answer-text" id="debugExplanation"></p>
+        <div class="card-stack" id="cloudStack">
+          <article class="card" id="cloudCard">
+            <div class="card-tab">CLOUD</div>
+            <div class="card-scroll">
+              <p class="q-desc q-desc-large" id="cloudQuestion">Question</p>
+              <div class="solution-zone" id="cloudAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">Answer</span>
+                </div>
+                <p class="answer-text" id="cloudAnswer"></p>
+              </div>
             </div>
-
-            <div class="solution-zone" id="debugResolutionZone" hidden>
-              <div class="solution-head"><span class="solution-label">Root cause &amp; fix</span></div>
-              <p class="answer-text" id="debugResolution"></p>
-            </div>
-          </div>
+          </article>
         </div>
-      </article>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="cloudShowAnswerBtn">
+            Show answer
+          </button>
+          <button class="btn btn-ghost" id="cloudRetryBtn" hidden>
+            Retry later
+          </button>
+          <button class="btn btn-primary" id="cloudNextBtn" hidden>
+            Next card →
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ENGINEERING LEADERSHIP VIEW ============ -->
+      <section class="view view-drill" id="view-leadership" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">Engineering Leadership Drill</div>
+          <span class="stage-pill" id="leadershipCategoryPill"
+            >Risk &amp; Migration</span
+          >
+        </div>
+
+        <div class="card-stack" id="leadershipStack">
+          <article class="card" id="leadershipCard">
+            <div class="card-tab">LEAD</div>
+            <div class="card-scroll">
+              <p class="q-desc q-desc-large" id="leadershipQuestion">
+                Question
+              </p>
+              <div class="solution-zone" id="leadershipAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">A senior-level answer</span>
+                </div>
+                <p class="answer-text" id="leadershipAnswer"></p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="leadershipShowAnswerBtn">
+            Show answer
+          </button>
+          <button class="btn btn-ghost" id="leadershipRetryBtn" hidden>
+            Retry later
+          </button>
+          <button class="btn btn-primary" id="leadershipNextBtn" hidden>
+            Next card →
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ ESTIMATION VIEW ============ -->
+      <section class="view view-drill" id="view-estimation" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">Estimation Drill</div>
+          <span class="stage-pill" id="estimationCategoryPill"
+            >Traffic &amp; Throughput</span
+          >
+        </div>
+
+        <div class="card-stack" id="estimationStack">
+          <article class="card" id="estimationCard">
+            <div class="card-tab">MATH</div>
+            <div class="card-scroll">
+              <p class="q-desc q-desc-large" id="estimationQuestion">
+                Question
+              </p>
+              <div class="solution-zone" id="estimationAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label">Worked estimate</span>
+                </div>
+                <p class="answer-text" id="estimationAnswer"></p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="estimationShowAnswerBtn">
+            Work through it, then show
+          </button>
+          <button class="btn btn-ghost" id="estimationRetryBtn" hidden>
+            Retry later
+          </button>
+          <button class="btn btn-primary" id="estimationNextBtn" hidden>
+            Next card →
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ PRODUCTION DEBUGGING VIEW ============ -->
+      <section class="view view-drill" id="view-debugging" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">Production Debugging Drill</div>
+          <span class="stage-pill" id="debugStagePill">Stage 1</span>
+        </div>
+
+        <div class="card-stack" id="debugStack">
+          <article class="card" id="debugCard">
+            <div class="card-tab" id="debugTab">CLOUD</div>
+            <div class="card-scroll">
+              <div class="card-top">
+                <span class="q-diff" id="debugCategory">ML Infrastructure</span>
+              </div>
+              <h2 class="q-title" id="debugTitle">Scenario title</h2>
+              <p class="q-desc" id="debugContext">Context</p>
+
+              <div class="pattern-zone">
+                <p class="pattern-label" id="debugStagePrompt">
+                  What do you check first?
+                </p>
+                <div class="pattern-buttons" id="debugOptionButtons"></div>
+                <p class="feedback-msg" id="debugFeedback"></p>
+
+                <div class="solution-zone" id="debugExplanationZone" hidden>
+                  <div class="solution-head">
+                    <span class="solution-label">Why</span>
+                  </div>
+                  <p class="answer-text" id="debugExplanation"></p>
+                </div>
+
+                <div class="solution-zone" id="debugResolutionZone" hidden>
+                  <div class="solution-head">
+                    <span class="solution-label">Root cause &amp; fix</span>
+                  </div>
+                  <p class="answer-text" id="debugResolution"></p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="action-bar" id="debugActionBar">
+          <button class="btn btn-primary" id="debugNextStageBtn" hidden>
+            Next step →
+          </button>
+        </div>
+        <div class="action-bar" id="debugEndBar" hidden>
+          <button class="btn btn-ghost" id="debugRetryBtn">Retry later</button>
+          <button class="btn btn-primary" id="debugNextScenarioBtn">
+            Next scenario →
+          </button>
+        </div>
+      </section>
     </div>
 
-    <div class="action-bar" id="debugActionBar">
-      <button class="btn btn-primary" id="debugNextStageBtn" hidden>Next step →</button>
-    </div>
-    <div class="action-bar" id="debugEndBar" hidden>
-      <button class="btn btn-ghost" id="debugRetryBtn">Retry later</button>
-      <button class="btn btn-primary" id="debugNextScenarioBtn">Next scenario →</button>
-    </div>
-  </section>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-<script src="app.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
