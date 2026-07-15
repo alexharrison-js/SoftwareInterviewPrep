@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "category": "Traffic & Throughput",
+    "question": "A service has 500 million daily active users, each making an average of 20 requests per day. Estimate the average requests per second (QPS), and the likely peak QPS.",
+    "answer": "Average QPS: 500M users \u00d7 20 requests = 10B requests/day. Divide by seconds in a day (~86,400, round to 100,000 for easy math): 10,000,000,000 / 100,000 = 100,000 QPS average. Peak traffic is rarely uniform \u2014 a common rule of thumb is peak is 2-3x average for services with daily usage patterns (more if there's a strong regional/time-zone concentration), so estimate peak around 200,000-300,000 QPS. State your assumption about the peak multiplier explicitly rather than presenting one number as certain."
+  },
+  {
+    "id": 2,
+    "category": "Traffic & Throughput",
+    "question": "An API endpoint needs to handle 50,000 requests per second. If each server can handle 2,000 requests per second, roughly how many servers do you need, and what would you actually provision?",
+    "answer": "Bare minimum: 50,000 / 2,000 = 25 servers. But you never provision exactly at capacity \u2014 add headroom for traffic spikes and for N-1 redundancy (losing one server/AZ shouldn't cause an outage), commonly 30-50% extra capacity, landing around 35-40 servers. The exact buffer is a judgment call to state explicitly, not a fixed formula \u2014 the point of the estimate is showing you know capacity planning needs headroom, not just dividing two numbers."
+  },
+  {
+    "id": 3,
+    "category": "Traffic & Throughput",
+    "question": "A chat application has 10 million concurrent WebSocket connections at peak. Each connection consumes roughly 10KB of server memory for connection state. Estimate the total memory needed across the fleet, and roughly how many servers if each has 64GB usable RAM.",
+    "answer": "Total memory: 10,000,000 connections \u00d7 10KB = 100,000,000 KB = 100,000 MB \u2248 100 GB total for connection state alone (before accounting for the application's own memory usage, buffers, etc. \u2014 call it 150-200GB with overhead). At 64GB usable RAM per server, that's roughly 150GB / 64GB \u2248 3 servers purely for connection state capacity \u2014 though in practice you'd provision more for CPU/network capacity and redundancy, not just to fit the memory."
+  },
+  {
+    "id": 4,
+    "category": "Traffic & Throughput",
+    "question": "How would you estimate the read:write ratio for a typical social media feed system, and why does that ratio matter for architecture decisions?",
+    "answer": "A reasonable starting assumption for most social platforms is a heavily read-skewed ratio, often cited around 100:1 or higher (users scroll feeds far more often than they post) \u2014 state this as an assumption to validate with real data if available, not a universal law. This ratio matters because it directly informs caching strategy: a 100:1 read:write ratio means aggressive caching of read paths (CDN, application cache) can absorb the overwhelming majority of traffic, while the write path can be optimized separately for correctness/durability without needing to scale to the same raw throughput as reads."
+  },
+  {
+    "id": 5,
+    "category": "Storage & Bandwidth",
+    "question": "A photo-sharing app has 500 million users, each uploading an average of 2 photos per day, each photo averaging 3MB. Estimate the storage needed per year.",
+    "answer": "Daily uploads: 500M \u00d7 2 = 1B photos/day. Daily storage: 1B \u00d7 3MB = 3,000,000,000 MB = 3,000 TB = 3 PB/day. Yearly: 3 PB \u00d7 365 \u2248 1,095 PB, round to ~1.1 exabytes/year. This is a huge number, which itself is the point of the estimate \u2014 it tells you object storage with lifecycle policies (moving older, less-accessed photos to cheaper cold storage tiers) isn't optional, it's a hard requirement at this scale."
+  },
+  {
+    "id": 6,
+    "category": "Storage & Bandwidth",
+    "question": "A video streaming service serves 100 million hours of video per day, with an average bitrate of 3 Mbps (megabits per second) across all quality levels. Estimate the total daily bandwidth (data transferred).",
+    "answer": "100 million hours = 100,000,000 \u00d7 3,600 seconds = 360,000,000,000 seconds of video-seconds served per day. At 3 Mbps, total bits transferred \u2248 360,000,000,000 \u00d7 3,000,000 bits = 1.08 \u00d7 10^18 bits \u2248 1.08 exabits, divide by 8 for bytes \u2248 135 petabytes/day. The key takeaway from an estimate like this isn't the exact figure \u2014 it's recognizing that bandwidth at this scale absolutely requires a CDN with edge caching; serving this from origin servers directly would be both technically and financially untenable."
+  },
+  {
+    "id": 7,
+    "category": "Storage & Bandwidth",
+    "question": "How would you estimate the storage cost difference between storing data in a database versus object storage (like S3) at large scale, without knowing exact current pricing?",
+    "answer": "You don't need exact current prices to make the directional point in an interview \u2014 the key fact to state is that object storage is typically an order of magnitude (roughly 5-20x) cheaper per GB than provisioned database storage, because databases pay for compute/IOPS capacity bundled with storage while object storage is a pure, massively-scaled storage service with much simpler access patterns. This is why large binary data (images, videos, logs, backups) is almost always kept in object storage with only metadata/references stored in the database, rather than storing the blobs directly in the database."
+  },
+  {
+    "id": 8,
+    "category": "Storage & Bandwidth",
+    "question": "A logging system ingests 50,000 log events per second, each event averaging 500 bytes. Estimate daily ingestion volume, and what that implies about retention strategy.",
+    "answer": "50,000 events/sec \u00d7 500 bytes = 25,000,000 bytes/sec = 25 MB/sec. Per day: 25 MB \u00d7 86,400 seconds \u2248 2,160,000 MB \u2248 2.1 TB/day. Over a month that's roughly 60+ TB, which makes clear that indefinite retention of raw logs at full fidelity isn't realistic \u2014 this points directly toward tiered retention (recent logs hot/queryable, older logs compressed/archived to cold storage or discarded, or pre-aggregated into rollups) rather than a single-tier 'keep everything forever' approach."
+  },
+  {
+    "id": 9,
+    "category": "Compute & Cost",
+    "question": "How would you estimate whether a workload should run on CPUs or GPUs, from a cost-efficiency standpoint, without precise benchmarks in hand?",
+    "answer": "The estimate hinges on whether the workload is dominated by highly parallel numeric computation (matrix multiplications, as in neural network training/inference) versus more sequential/branching logic \u2014 GPUs offer massive throughput advantages (often 10-100x) specifically for the former, but that advantage shrinks or disappears for workloads that don't parallelize well, while GPU instances typically cost several times more per hour than comparable CPU instances. State the reasoning explicitly: 'if this is matrix-multiplication-bound like neural net inference, GPU cost-per-inference is usually lower despite the higher hourly rate, because the throughput gain outweighs the price premium' \u2014 that qualitative reasoning matters more in an interview than a specific benchmark number."
+  },
+  {
+    "id": 10,
+    "category": "Compute & Cost",
+    "question": "You need to serve an ML model at 1,000 inferences/second, and a single GPU can handle 100 inferences/second for this model. Estimate the number of GPUs needed and the monthly cost if each GPU instance costs $3/hour.",
+    "answer": "Baseline: 1,000 / 100 = 10 GPUs to meet raw throughput, plus headroom for spikes and redundancy (add 20-30%, so provision ~13 GPUs). Monthly cost: 13 GPUs \u00d7 $3/hour \u00d7 24 hours \u00d7 30 days = 13 \u00d7 $2,160 \u2248 $28,000/month. Following up on a number like this in an interview, the natural next question is 'how would you reduce this' \u2014 batching requests, quantization, or a cheaper/smaller model for less-critical traffic are the standard levers, and naming them shows you're not just doing arithmetic but thinking about the actual cost-reduction problem."
+  },
+  {
+    "id": 11,
+    "category": "Compute & Cost",
+    "question": "How do you estimate the cost tradeoff between using spot/preemptible instances versus on-demand instances for a batch training job?",
+    "answer": "Spot instances are typically 60-90% cheaper than on-demand, but can be reclaimed with little notice, so the real cost comparison needs to include expected re-run/checkpoint overhead: if a job frequently gets interrupted and has to restart significant work, the effective cost savings shrink. A reasonable estimate: if interruptions are rare relative to job length and checkpointing is cheap and frequent (so an interruption only loses a small amount of progress), spot instances are almost always the better economic choice for training workloads; the calculus shifts toward on-demand mainly for short, latency-sensitive, or hard-to-checkpoint jobs where an interruption is costly to recover from."
+  },
+  {
+    "id": 12,
+    "category": "Compute & Cost",
+    "question": "How would you roughly estimate the monthly cost of running a moderately-trafficked web service, breaking it into major cost categories?",
+    "answer": "Break it into categories and estimate each roughly rather than trying to compute one precise total: compute (application servers, sized to peak QPS with headroom), data storage (database + object storage, scaled to data volume), data transfer/bandwidth (often underestimated \u2014 egress costs add up at scale), and managed service overhead (load balancer, CDN, monitoring/logging services). For a mid-size service, compute and data transfer are typically the largest line items; naming this breakdown structure, even without precise numbers, demonstrates the kind of systematic cost-thinking interviewers are actually looking for."
+  },
+  {
+    "id": 13,
+    "category": "Latency & Capacity",
+    "question": "How would you estimate an acceptable latency budget for a web page that needs to feel 'instant' to users, and how would you allocate it across the request path?",
+    "answer": "A widely cited human-perception threshold is that responses under ~100ms feel instantaneous, and under ~1 second feels like an uninterrupted flow (beyond that, users perceive a wait). If your total budget is ~200ms end-to-end, you'd allocate it across the path: network/DNS/TLS handshake (~20-50ms, often unavoidable overhead), load balancer/routing (~5-10ms), application logic + any downstream calls (the bulk of your controllable budget), and client-side rendering (~20-30ms). The specific split matters less than demonstrating you think about latency as a budget to allocate across a request's full path, not a single number to hit at the end."
+  },
+  {
+    "id": 14,
+    "category": "Latency & Capacity",
+    "question": "A database query currently takes 200ms and is the main contributor to a 300ms API response time. If you add a cache with a 95% hit rate and a 2ms cache lookup time, estimate the new average response time.",
+    "answer": "Average latency = (hit rate \u00d7 cache latency) + (miss rate \u00d7 full query latency) = (0.95 \u00d7 2ms) + (0.05 \u00d7 200ms) = 1.9ms + 10ms = 11.9ms for the data-fetch portion, down from 200ms. Assuming the rest of the request (~100ms, from the original 300ms minus the 200ms query) stays the same, new total \u2248 100ms + 11.9ms \u2248 112ms \u2014 roughly a 2.7x improvement. This is the standard way to reason about cache impact: compute a weighted average based on hit rate, not just 'caching makes it fast.'"
+  },
+  {
+    "id": 15,
+    "category": "Latency & Capacity",
+    "question": "How would you estimate the number of concurrent users a single database connection pool needs to support, given average query time and target throughput?",
+    "answer": "Using Little's Law (concurrency = throughput \u00d7 average time in system): if you need to support 1,000 queries/second and each query takes an average of 20ms (0.02 seconds) to execute, required concurrent connections \u2248 1,000 \u00d7 0.02 = 20 connections actively in use at any moment. In practice you'd provision a connection pool somewhat larger than this bare minimum to handle variance in query time and brief bursts, but this calculation is the right starting point rather than guessing a pool size."
+  },
+  {
+    "id": 16,
+    "category": "Latency & Capacity",
+    "question": "How would you estimate whether a proposed synchronous multi-service call chain will meet a 500ms latency SLA?",
+    "answer": "Sum the expected latency of every service in the chain (including network round-trip time between each hop, commonly estimated at 1-5ms within the same data center, more across regions), and compare against the SLA with margin for tail latency, not just averages \u2014 a chain of 5 services each averaging 60ms sounds like it fits in 500ms, but if each service's p99 latency is 3x its average, the chain's combined p99 can blow past the SLA even though the average looks fine. This is exactly the reasoning that leads architects toward parallelizing independent calls (rather than a strictly sequential chain) or setting per-hop timeouts with fallback behavior, rather than hoping every service in a long sequential chain stays fast simultaneously."
+  }
+]

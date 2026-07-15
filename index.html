@@ -84,6 +84,20 @@
         <span class="deck-desc">The category almost nobody studies: de-risking migrations, build vs buy, mentorship, tradeoffs, and the judgment calls that separate senior from staff.</span>
         <span class="deck-meta" id="stat-leadership"></span>
       </button>
+
+      <button class="deck-card" data-target="estimation">
+        <span class="deck-tab">06</span>
+        <span class="deck-title">Back-of-Envelope Estimation</span>
+        <span class="deck-desc">Traffic, storage, bandwidth, cost, and latency math — the numeric-reasoning skill system design interviews test explicitly and separately from architecture knowledge.</span>
+        <span class="deck-meta" id="stat-estimation"></span>
+      </button>
+
+      <button class="deck-card" data-target="debugging">
+        <span class="deck-tab">07</span>
+        <span class="deck-title">Production Debugging</span>
+        <span class="deck-desc">Multi-step diagnostic scenarios for real ML/cloud production incidents — GPU OOMs, K8s crash loops, drift, Kafka lag. Pick what to check first, then follow the trail.</span>
+        <span class="deck-meta" id="stat-debugging"></span>
+      </button>
     </nav>
 
     <p class="home-footnote">Progress and “retry later” queues are saved on this device.</p>
@@ -132,6 +146,28 @@
                 </div>
               </div>
               <pre class="code-block"><code id="solutionCode"></code></pre>
+            </div>
+
+            <div class="complexity-zone" id="complexityZone" hidden>
+              <div class="solution-head"><span class="solution-label">Quiz yourself: complexity</span></div>
+              <p class="pattern-label">Time complexity?</p>
+              <div class="pattern-buttons" id="timeComplexityButtons"></div>
+              <p class="feedback-msg" id="timeComplexityFeedback"></p>
+
+              <p class="pattern-label" style="margin-top:16px;">Space complexity?</p>
+              <div class="pattern-buttons" id="spaceComplexityButtons"></div>
+              <p class="feedback-msg" id="spaceComplexityFeedback"></p>
+            </div>
+
+            <div class="talkthrough-zone" id="talkthroughZone" hidden>
+              <div class="solution-head"><span class="solution-label">Talk it through like this</span></div>
+              <ol class="talkthrough-list">
+                <li><strong>Clarify</strong> — constraints, input size, edge cases (empty, one element, duplicates, negatives).</li>
+                <li><strong>Brute force</strong> — state the naive approach and its complexity out loud first.</li>
+                <li><strong>Bottleneck</strong> — name exactly what makes the brute force slow.</li>
+                <li><strong>Optimize</strong> — apply the pattern above to remove that bottleneck.</li>
+                <li><strong>Test</strong> — trace through an edge case before declaring done.</li>
+              </ol>
             </div>
           </div>
         </div>
@@ -263,6 +299,80 @@
       <button class="btn btn-secondary" id="leadershipShowAnswerBtn">Show answer</button>
       <button class="btn btn-ghost" id="leadershipRetryBtn" hidden>Retry later</button>
       <button class="btn btn-primary" id="leadershipNextBtn" hidden>Next card →</button>
+    </div>
+  </section>
+
+  <!-- ============ ESTIMATION VIEW ============ -->
+  <section class="view view-drill" id="view-estimation" hidden>
+    <div class="deck-header">
+      <button class="back-btn" data-back>← Decks</button>
+      <div class="deck-header-title">Estimation Drill</div>
+      <span class="stage-pill" id="estimationCategoryPill">Traffic &amp; Throughput</span>
+    </div>
+
+    <div class="card-stack" id="estimationStack">
+      <article class="card" id="estimationCard">
+        <div class="card-tab">MATH</div>
+        <div class="card-scroll">
+          <p class="q-desc q-desc-large" id="estimationQuestion">Question</p>
+          <div class="solution-zone" id="estimationAnswerZone" hidden>
+            <div class="solution-head"><span class="solution-label">Worked estimate</span></div>
+            <p class="answer-text" id="estimationAnswer"></p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-secondary" id="estimationShowAnswerBtn">Work through it, then show</button>
+      <button class="btn btn-ghost" id="estimationRetryBtn" hidden>Retry later</button>
+      <button class="btn btn-primary" id="estimationNextBtn" hidden>Next card →</button>
+    </div>
+  </section>
+
+  <!-- ============ PRODUCTION DEBUGGING VIEW ============ -->
+  <section class="view view-drill" id="view-debugging" hidden>
+    <div class="deck-header">
+      <button class="back-btn" data-back>← Decks</button>
+      <div class="deck-header-title">Production Debugging Drill</div>
+      <span class="stage-pill" id="debugStagePill">Stage 1</span>
+    </div>
+
+    <div class="card-stack" id="debugStack">
+      <article class="card" id="debugCard">
+        <div class="card-tab" id="debugTab">CLOUD</div>
+        <div class="card-scroll">
+          <div class="card-top">
+            <span class="q-diff" id="debugCategory">ML Infrastructure</span>
+          </div>
+          <h2 class="q-title" id="debugTitle">Scenario title</h2>
+          <p class="q-desc" id="debugContext">Context</p>
+
+          <div class="pattern-zone">
+            <p class="pattern-label" id="debugStagePrompt">What do you check first?</p>
+            <div class="pattern-buttons" id="debugOptionButtons"></div>
+            <p class="feedback-msg" id="debugFeedback"></p>
+
+            <div class="solution-zone" id="debugExplanationZone" hidden>
+              <div class="solution-head"><span class="solution-label">Why</span></div>
+              <p class="answer-text" id="debugExplanation"></p>
+            </div>
+
+            <div class="solution-zone" id="debugResolutionZone" hidden>
+              <div class="solution-head"><span class="solution-label">Root cause &amp; fix</span></div>
+              <p class="answer-text" id="debugResolution"></p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="action-bar" id="debugActionBar">
+      <button class="btn btn-primary" id="debugNextStageBtn" hidden>Next step →</button>
+    </div>
+    <div class="action-bar" id="debugEndBar" hidden>
+      <button class="btn btn-ghost" id="debugRetryBtn">Retry later</button>
+      <button class="btn btn-primary" id="debugNextScenarioBtn">Next scenario →</button>
     </div>
   </section>
 

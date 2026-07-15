@@ -1,0 +1,312 @@
+[
+  {
+    "id": 1,
+    "category": "ML Infrastructure",
+    "title": "GPU inference server suddenly returning 500s",
+    "context": "You run a real-time recommendation service on Kubernetes. Model inference is served via Triton Inference Server on GPU nodes. Over the last 10 minutes, error rates have spiked and users are seeing failed requests.",
+    "stages": [
+      {
+        "prompt": "You check the Triton container logs and see: 'CUDA error: out of memory'. What do you check first?",
+        "options": [
+          "Run nvidia-smi on the host to see current GPU memory usage and what's holding it",
+          "Immediately restart the Kubernetes deployment",
+          "Scale up the replica count",
+          "Check the load balancer's health check configuration"
+        ],
+        "correctIndex": 0,
+        "explanation": "An OOM error needs diagnosis before action. Restarting or scaling blind might temporarily mask the problem, but if something is leaking or holding memory it shouldn't, you'll hit the same wall again shortly. nvidia-smi shows exactly what's consuming VRAM right now, which tells you whether this is a real leak, a genuine capacity problem, or something abnormal."
+      },
+      {
+        "prompt": "nvidia-smi shows 3 zombie python processes still holding 8GB of VRAM each, even though the batch job that spawned them is no longer listed as running. What's your next move?",
+        "options": [
+          "Kill the zombie processes to free the VRAM immediately, then investigate why they weren't cleaned up",
+          "Wait for them to release memory automatically",
+          "Add more GPU nodes to the cluster",
+          "Increase the CUDA memory fraction limit in Triton's config"
+        ],
+        "correctIndex": 0,
+        "explanation": "Zombie processes holding GPU memory generally won't release it on their own \u2014 this typically happens when a process is killed abruptly (e.g., OOM-killed or SIGKILLed) without its CUDA context getting a chance to clean up. Kill them to restore capacity immediately, then dig into why the previous job wasn't cleaned up properly so it doesn't recur."
+      }
+    ],
+    "resolution": "Root cause: a previous batch inference job crashed without releasing its CUDA context, leaving zombie processes holding GPU memory that Kubernetes had no visibility into (the pod itself still looked 'running' at the OS level even though the workload inside had failed). Fix: kill the zombie processes to restore capacity, add a liveness probe that validates actual GPU memory health rather than just process-alive status, and set explicit per-pod GPU memory limits so one runaway job can't exhaust a shared node's VRAM."
+  },
+  {
+    "id": 2,
+    "category": "Cloud Infrastructure",
+    "title": "Model server pods stuck in CrashLoopBackOff",
+    "context": "You deployed a new version of a PyTorch model-serving service to your Kubernetes cluster. Minutes after rollout, `kubectl get pods` shows several replicas cycling through CrashLoopBackOff, and traffic is being served entirely by the remaining old-version pods.",
+    "stages": [
+      {
+        "prompt": "What's your first command to understand why the new pods are crashing?",
+        "options": [
+          "kubectl logs <pod-name> --previous, to see the logs from the crashed container instance",
+          "kubectl delete pod <pod-name> to force a fresh restart",
+          "kubectl scale deployment --replicas=0 to stop the crash loop",
+          "SSH into the node directly to check disk space"
+        ],
+        "correctIndex": 0,
+        "explanation": "CrashLoopBackOff means the container starts, crashes, and Kubernetes keeps restarting it \u2014 the current container instance may already be gone or about to restart, so `--previous` gets you the logs from the last crashed attempt, which almost always contains the actual error. Deleting the pod just triggers another identical crash without telling you why."
+      },
+      {
+        "prompt": "The previous logs show: 'RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False'. What do you check next?",
+        "options": [
+          "Confirm this node/pod actually has a GPU scheduled and the NVIDIA device plugin is working, rather than assuming the model-loading code is at fault",
+          "Rewrite the model to run purely on CPU",
+          "Increase the pod's CPU resource request",
+          "Roll back immediately without further investigation"
+        ],
+        "correctIndex": 0,
+        "explanation": "This specific error means the code expects a GPU but none is visible to PyTorch inside the container \u2014 before touching application code, confirm the infrastructure side: is this pod actually scheduled onto a GPU node, does it have the correct resource request (nvidia.com/gpu: 1) in its spec, and is the NVIDIA device plugin healthy on that node. A code change would be premature if the real issue is a missing GPU resource request in the new deployment manifest."
+      }
+    ],
+    "resolution": "Root cause: the new deployment manifest's YAML was missing the `nvidia.com/gpu: 1` resource request that the previous version's manifest had (dropped during a refactor of the Helm chart), so the scheduler placed the new pods on CPU-only nodes where no GPU was visible to the container. Fix: restore the GPU resource request in the manifest, and add a CI check that diffs resource requests between deployment versions to catch this class of regression before it reaches production."
+  },
+  {
+    "id": 3,
+    "category": "ML Infrastructure",
+    "title": "Inference latency suddenly tripled with no code changes",
+    "context": "Your LLM serving endpoint (vLLM behind an internal load balancer) has been running fine for weeks. This morning, p99 latency jumped from ~800ms to ~2.4s with no deploys in the last 48 hours. Request volume looks normal on your dashboards.",
+    "stages": [
+      {
+        "prompt": "What do you check first to narrow down where the extra latency is coming from?",
+        "options": [
+          "Compare GPU utilization and queue depth on the serving nodes against historical baselines for the same time of day",
+          "Immediately double the number of replicas",
+          "Assume it's a network issue and contact the cloud provider's support",
+          "Roll back to a deployment from a week ago even though nothing changed recently"
+        ],
+        "correctIndex": 0,
+        "explanation": "Since nothing was deployed, the most likely categories are: traffic pattern shift, resource contention, or a dependency slowing down. Comparing GPU utilization and request queue depth against the same time of day historically is the fastest way to see if the serving layer itself is saturated (queue backing up) versus the slowdown being somewhere else entirely (like a downstream call)."
+      },
+      {
+        "prompt": "GPU utilization is at 98% (vs. a typical 70%) and queue depth is climbing steadily. Digging into request logs, you notice the average prompt length submitted today is roughly 4x longer than the weekly average. What's your next move?",
+        "options": [
+          "Confirm this with your product/upstream team \u2014 a client change may be sending much larger prompts, and if so, evaluate whether batching/context limits need adjusting rather than just adding more GPUs",
+          "Immediately restart all the serving pods",
+          "Switch to a smaller, faster model without further investigation",
+          "Increase the request timeout so slow requests don't get cut off"
+        ],
+        "correctIndex": 0,
+        "explanation": "Longer prompts mean more tokens to process per request and a larger KV cache footprint per request, both of which directly reduce how many concurrent requests the GPU can batch effectively \u2014 this fully explains both the GPU saturation and the queueing. Confirming the cause with the team that owns the client sending requests is the right next step before reaching for infrastructure-only fixes (more GPUs, a smaller model) that treat the symptom rather than the actual driver."
+      }
+    ],
+    "resolution": "Root cause: an upstream client team shipped a change that quadrupled average prompt length (adding more conversation history/context per request) without coordinating on capacity impact. Longer prompts increased per-request KV cache memory and compute, saturating the GPUs and causing requests to queue. Fix (short-term): scale out GPU replica count to absorb the new load while a longer-term fix is designed; (longer-term): set explicit prompt/context length budgets in coordination with client teams, and add capacity-planning alerts tied to average prompt length trends, not just raw request count, since request count alone didn't reveal this."
+  },
+  {
+    "id": 4,
+    "category": "Cloud Infrastructure",
+    "title": "Feature store returning stale data intermittently",
+    "context": "You run a real-time fraud-detection service that reads user features from a Redis-backed feature store, updated by a streaming pipeline. Support tickets report the model occasionally scoring transactions using data that's clearly minutes old, even though the pipeline dashboard shows it's healthy and up to date.",
+    "stages": [
+      {
+        "prompt": "The pipeline dashboard shows healthy, current writes. What do you check first, given the discrepancy between 'pipeline looks fine' and 'reads look stale'?",
+        "options": [
+          "Check whether reads are being served from a read replica that might be lagging behind the primary, rather than assuming the write path is the problem",
+          "Restart the streaming pipeline",
+          "Increase the Redis instance size",
+          "Assume the model itself has a bug in how it uses the features"
+        ],
+        "correctIndex": 0,
+        "explanation": "If writes are confirmed healthy but *some* reads are stale, the mismatch is a strong signal to look at the read path, not the write path. A common cause is reads being load-balanced across a primary and one or more asynchronously-replicated read replicas \u2014 if those replicas lag behind the primary even briefly, requests routed to a lagging replica see stale data despite the primary being fully up to date."
+      },
+      {
+        "prompt": "You confirm reads are split across a primary and two read replicas, and replica lag briefly spikes to 30-90 seconds during traffic bursts. What's the right fix, given this is a fraud-detection use case where staleness has real cost?",
+        "options": [
+          "Route this specific read path to the primary only (or add explicit lag monitoring with automatic replica removal from rotation when lag exceeds a threshold), since a few minutes of stale fraud-relevant features has outsized risk compared to typical read-scaling use cases",
+          "Just add more read replicas to spread load further",
+          "Tell users the scores might occasionally be based on old data",
+          "Switch the entire system to a different database with no further analysis"
+        ],
+        "correctIndex": 0,
+        "explanation": "Not every read path should default to 'scale reads with more replicas' \u2014 the right fix depends on the cost of staleness for that specific use case. For fraud detection, stale features materially increase risk (missed fraud, or false positives on legitimate transactions), so it's worth accepting the extra load on the primary (or adding lag-aware replica health checks) for this read path specifically, rather than applying a generic read-scaling pattern that doesn't account for this data's freshness requirements."
+      }
+    ],
+    "resolution": "Root cause: reads were load-balanced across a Redis primary and asynchronous read replicas without accounting for replication lag, and lag spiked during traffic bursts specifically when the streaming pipeline had the most writes to propagate \u2014 exactly when fraud-relevant features were most likely to be changing. Fix: route latency/freshness-sensitive read paths to the primary directly, or implement lag-aware routing that excludes a replica from serving reads once its lag crosses an acceptable threshold, and add replication-lag alerting as a first-class metric rather than only monitoring the write pipeline's health."
+  },
+  {
+    "id": 5,
+    "category": "ML Infrastructure",
+    "title": "Distributed training job hangs with no error",
+    "context": "You're training a large model across 32 GPUs spread over 4 nodes using PyTorch's DistributedDataParallel with NCCL as the backend. The job runs fine for the first several hours, then simply stops progressing \u2014 no crash, no error in the logs, GPU utilization drops to near zero, and the process is still technically 'running'.",
+    "stages": [
+      {
+        "prompt": "With no error message and the process still alive but making no progress, what do you check first?",
+        "options": [
+          "Check whether all ranks/processes are actually still alive and attempt to determine if one specific rank has stalled or died silently, since a hang in distributed training is often caused by one process failing to reach a collective communication point (like an all-reduce) that the others are waiting on",
+          "Assume it's a data loading issue and restart with more data-loader workers",
+          "Reduce the learning rate and restart training from scratch",
+          "Increase the batch size to speed things up"
+        ],
+        "correctIndex": 0,
+        "explanation": "In synchronous distributed training, every process must reach the same collective communication points (like gradient all-reduce) together. If a single rank dies, hangs on a slow disk read, or hits an unhandled exception in an isolated try/except that silently swallowed it, every *other* rank will sit blocked forever waiting at the next synchronization point \u2014 with no explicit crash anywhere, since technically nothing errored on the ranks that are still alive and waiting."
+      },
+      {
+        "prompt": "You find that rank 17 (on node 3) has zero GPU utilization and its process log shows nothing new for 3 hours, while all other ranks show 0% utilization but are 'waiting'. Checking that specific node, you find its local disk is at 100% capacity. What's your next move?",
+        "options": [
+          "Free up disk space on that node (likely from accumulated checkpoints or logs) and investigate why rank 17 got stuck rather than erroring cleanly when the disk filled",
+          "Kill and restart the entire 32-GPU job from scratch immediately without further investigation",
+          "Reduce the number of GPUs to avoid using that node",
+          "Ignore it since the other 31 ranks are technically fine"
+        ],
+        "correctIndex": 0,
+        "explanation": "A full disk on rank 17's node explains the hang precisely: a checkpoint-write or log-write operation on that rank likely blocked indefinitely (or failed in a way that wasn't properly surfaced) when it couldn't write to a full disk, and every other rank has been waiting at the next synchronization barrier ever since. Free the disk to let training resume from the last checkpoint if possible, rather than restarting the whole multi-hour job from scratch, and add disk-space monitoring/alerting per training node plus more defensive error handling so a full disk causes a clear failure rather than a silent hang."
+      }
+    ],
+    "resolution": "Root cause: one node's local disk filled up (from accumulated intermediate checkpoints that weren't being cleaned up or offloaded to object storage), causing that rank's checkpoint-write operation to hang rather than fail cleanly, which in turn caused every other rank in the distributed job to block indefinitely waiting at the next NCCL synchronization point \u2014 with no visible error anywhere except on the one affected node. Fix: free disk space and resume from the last good checkpoint, add automated checkpoint cleanup/offload to object storage, add per-node disk monitoring and alerting, and add explicit timeouts to NCCL collective operations so a stuck rank causes a clear, actionable failure instead of a silent multi-hour hang."
+  },
+  {
+    "id": 6,
+    "category": "Cloud Infrastructure",
+    "title": "Autoscaler not scaling up despite high load",
+    "context": "Your API service runs on Kubernetes with a Horizontal Pod Autoscaler configured to scale on CPU utilization. During a traffic spike, response times are degrading badly and error rates are climbing, but `kubectl get hpa` shows the replica count hasn't increased at all.",
+    "stages": [
+      {
+        "prompt": "What's the first thing to check about the HPA itself?",
+        "options": [
+          "Run kubectl describe hpa to see the HPA's current metrics reading and whether it's hitting a maxReplicas ceiling or failing to read metrics at all",
+          "Manually scale the deployment and investigate later",
+          "Assume the HPA is broken and delete/recreate it",
+          "Check the ingress controller's configuration"
+        ],
+        "correctIndex": 0,
+        "explanation": "`kubectl describe hpa` surfaces exactly what the HPA thinks the current metric value is and why it isn't acting \u2014 common causes include the metrics pipeline (metrics-server) failing to report data, the deployment already being at its configured maxReplicas ceiling, or the observed metric genuinely not crossing the configured threshold. You need this information before deciding whether the fix is a config change or something else entirely."
+      },
+      {
+        "prompt": "The describe output shows CPU utilization is at 45% \u2014 below the 70% threshold configured to trigger scaling \u2014 even though users are clearly experiencing slow responses and the service is struggling. What does this suggest, and what do you check next?",
+        "options": [
+          "The service is likely bottlenecked on something other than CPU (e.g., waiting on a slow downstream dependency, database connections, or I/O), so CPU-based autoscaling won't help \u2014 check what the pods are actually blocked on, and consider whether the HPA should scale on a different, more relevant metric",
+          "Lower the CPU threshold to 20% and move on",
+          "Assume the metrics-server is lying and restart it",
+          "Add more nodes to the cluster manually without changing the HPA"
+        ],
+        "correctIndex": 0,
+        "explanation": "If CPU is low but the service is clearly struggling, CPU simply isn't the bottleneck \u2014 the pods are likely spending most of their time blocked waiting on something (a slow database query, a downstream API call, connection pool exhaustion), which doesn't show up as CPU usage at all. Scaling on CPU in this case would never trigger even though more replicas might genuinely help (more replicas means more concurrent connections/requests in flight) \u2014 the real fix is identifying the actual bottleneck and potentially scaling on a more relevant metric (request latency, queue depth, or a custom metric) instead."
+      }
+    ],
+    "resolution": "Root cause: the service was bottlenecked on a slow downstream database query (a missing index that only became a problem under high concurrent load), not CPU \u2014 so the CPU-based HPA never triggered even as user-facing latency degraded badly. Fix: identify and fix the slow query (add the missing index), and separately, reconsider the autoscaling metric \u2014 request latency or in-flight request count is often a better signal than CPU for I/O-bound services, since CPU utilization only reflects compute-bound bottlenecks."
+  },
+  {
+    "id": 7,
+    "category": "ML Infrastructure",
+    "title": "Training loss suddenly becomes NaN",
+    "context": "You're fine-tuning a language model on a new internal dataset. Training was progressing normally (loss steadily decreasing) for about 2,000 steps, then the loss value becomes NaN and stays NaN for every subsequent step.",
+    "stages": [
+      {
+        "prompt": "What's the first thing to check when loss suddenly goes to NaN mid-training?",
+        "options": [
+          "Check the gradient norms and learning rate around the step where it happened \u2014 NaN often follows an exploding gradient or a numerically unstable operation, and the logs/checkpoints just before the NaN step usually hold the clue",
+          "Immediately reduce the model size",
+          "Switch to a completely different optimizer without further investigation",
+          "Assume the hardware is faulty and request a different GPU node"
+        ],
+        "correctIndex": 0,
+        "explanation": "NaN loss is very often preceded by an exploding gradient (a gradient norm spiking dramatically) that pushes weights into a numerically unstable region, or a specific operation (like a division, log, or exponential) hitting an invalid input due to an already-corrupted value. Checking gradient norms and any available step-by-step logs right before the NaN appeared is the fastest way to see whether this was a gradual instability building up or a sudden single-step event, which points to different root causes."
+      },
+      {
+        "prompt": "Gradient norms were stable until step 1,998, then spiked by roughly 1000x in a single step right before the NaN appeared. Checking the training data pipeline, you find that around that point in the data order, a batch contains several extremely long, mostly-repeated-character strings (like garbage/corrupted scraped text). What's the right fix?",
+        "options": [
+          "Add data validation/filtering to the pipeline to catch and remove degenerate examples like this before training, and add gradient clipping as a safety net so a single bad batch can't destabilize the whole run",
+          "Just restart training from scratch and hope the same batch ordering doesn't recur",
+          "Permanently lower the learning rate for the entire training run",
+          "Ignore it since it was a one-time event"
+        ],
+        "correctIndex": 0,
+        "explanation": "A batch of degenerate/corrupted text can produce unusually extreme loss values and gradients for that specific batch, which is consistent with the sudden 1000x spike. The durable fix has two parts: dataset engineering (filter out degenerate examples like this from the training data so a future run doesn't hit the same problem) and a training-time safety net (gradient clipping, which caps gradient norm at a threshold so even an unusual batch can't single-handedly destabilize training) \u2014 relying on just one of these leaves you exposed to either a recurrence of this exact issue or a different bad batch causing the same failure mode."
+      }
+    ],
+    "resolution": "Root cause: a small number of corrupted/degenerate examples in the training dataset (garbage text from a scraping pipeline issue) produced an extreme loss value and correspondingly huge gradient for that batch, which \u2014 with no gradient clipping in place \u2014 pushed model weights into a numerically unstable region and caused all subsequent loss computations to become NaN. Fix: add data validation/filtering to catch degenerate examples during dataset engineering (this is a dataset-quality problem, not fundamentally a training-hyperparameter problem), add gradient clipping as a defense-in-depth safety net, and resume training from the last good checkpoint before step 1,998 rather than restarting from scratch."
+  },
+  {
+    "id": 8,
+    "category": "Cloud Infrastructure",
+    "title": "Kafka consumer lag climbing steadily",
+    "context": "Your event-driven order-processing pipeline consumes from a Kafka topic. Consumer lag (the gap between latest produced offset and the consumer group's committed offset) has been climbing steadily over the last 6 hours, and downstream order confirmations are noticeably delayed.",
+    "stages": [
+      {
+        "prompt": "What's the first thing to check to understand whether this is a producer-side surge or a consumer-side slowdown?",
+        "options": [
+          "Compare the topic's incoming message rate (production rate) against the consumer group's processing rate (consumption rate) over the same time window",
+          "Immediately add more partitions to the topic",
+          "Restart the consumer group",
+          "Assume it's a Kafka broker issue and check broker disk usage first"
+        ],
+        "correctIndex": 0,
+        "explanation": "Lag climbing could mean either 'more messages are arriving than usual' (producer surge, consumers might be keeping up fine relative to their normal rate) or 'consumers have slowed down' (processing rate dropped while production stayed normal) \u2014 these point to completely different fixes, so you need to compare both rates before doing anything else."
+      },
+      {
+        "prompt": "Production rate looks normal and steady, but consumer processing rate has dropped by about 60% starting around the same time lag began climbing. Checking consumer logs, you see each message's processing time increased significantly, and the consumer calls an external payment-verification API as part of processing each order event. What's the most likely cause, and what do you check?",
+        "options": [
+          "Check the latency and error rate of the external payment-verification API directly \u2014 a slowdown in that dependency would directly explain the drop in consumer throughput, since each message now takes longer to process",
+          "Increase the consumer's poll batch size without further investigation",
+          "Add more Kafka partitions immediately",
+          "Assume the consumer code has a memory leak"
+        ],
+        "correctIndex": 0,
+        "explanation": "If per-message processing time increased and that processing includes a call to an external API, that dependency's latency is the natural first suspect \u2014 consumer throughput is directly limited by how long each message takes to process when processing is largely sequential per-partition, so a slower downstream dependency shows up exactly as reduced consumption rate and growing lag."
+      }
+    ],
+    "resolution": "Root cause: the external payment-verification API the consumer calls synchronously for each order event was experiencing elevated latency (due to its own capacity issue), which directly throttled the consumer's per-message processing time and therefore its overall throughput, causing lag to accumulate even though message production was normal. Fix (short-term): scale out consumer instances (more partitions + more consumers in the group) to parallelize the wait time across more concurrent calls to the slow API; (longer-term): make the payment-verification call asynchronous/non-blocking relative to Kafka consumption where possible, add a circuit breaker so a degraded dependency doesn't fully stall the pipeline, and add alerting on downstream dependency latency, not just on consumer lag itself, so the actual cause surfaces faster next time."
+  },
+  {
+    "id": 9,
+    "category": "Cloud Infrastructure",
+    "title": "GPU training nodes running out of disk space repeatedly",
+    "context": "Your ML platform team keeps getting paged because GPU training nodes run out of local disk space mid-job, killing training runs. It's happened three times this week across different teams' jobs.",
+    "stages": [
+      {
+        "prompt": "Before proposing a fix, what do you check first to understand what's actually consuming the disk?",
+        "options": [
+          "SSH into an affected node (or check its disk usage history if monitored) and identify which directories/files are consuming the most space, rather than guessing",
+          "Immediately provision nodes with larger disks for everyone",
+          "Tell all teams to checkpoint less frequently",
+          "Assume it's log files and delete all logs older than a day across the fleet"
+        ],
+        "correctIndex": 0,
+        "explanation": "Multiple plausible causes exist (model checkpoints, dataset caching, logs, temp files from a specific library) and jumping to a fix without knowing which one is actually responsible risks solving the wrong problem or making an unnecessarily expensive/broad change (like bigger disks for every node) when a targeted fix would do."
+      },
+      {
+        "prompt": "You find that checkpoint directories are the overwhelming majority of disk usage \u2014 jobs are saving a full model checkpoint every 500 steps and never deleting old ones, and a large model's checkpoint is tens of GB. What's the most appropriate fix?",
+        "options": [
+          "Implement automatic checkpoint rotation (keep only the last N checkpoints locally) combined with async upload of checkpoints to object storage, rather than just increasing local disk size, which only delays the same problem at a higher cost",
+          "Just add bigger local disks to every training node",
+          "Stop teams from checkpointing at all to save space",
+          "Manually delete old checkpoints only when someone notices disk is full"
+        ],
+        "correctIndex": 0,
+        "explanation": "Bigger disks treat the symptom, not the cause \u2014 checkpoint accumulation is unbounded, so it will eventually fill any disk size given enough training steps, just later. The right fix addresses the actual behavior: keep only a small rolling window of local checkpoints (for fast resume-from-crash) while asynchronously uploading checkpoints to object storage for durable, space-unconstrained long-term storage, and clean up local copies once uploaded successfully. This solves the problem at its root rather than buying temporary headroom."
+      }
+    ],
+    "resolution": "Root cause: training jobs across multiple teams were saving frequent full checkpoints to local node disk with no retention/cleanup policy, so disk usage grew unboundedly over the course of any sufficiently long training run, eventually exhausting local storage regardless of how large the disk was. Fix: implement automatic local checkpoint rotation (retain only the most recent few checkpoints on local disk) paired with asynchronous upload to object storage for durable retention, and add disk usage monitoring/alerting on training nodes so this class of issue is caught well before it kills a running job."
+  },
+  {
+    "id": 10,
+    "category": "ML Infrastructure",
+    "title": "Model accuracy silently degrading in production",
+    "context": "Your fraud-detection model has been in production for 4 months with no code or infrastructure changes. All system health metrics (latency, error rate, uptime) look perfectly normal, but the fraud team reports that the model's real-world precision has been quietly declining over the last several weeks, based on manual review of flagged cases.",
+    "stages": [
+      {
+        "prompt": "Given that every standard infrastructure metric looks healthy, what class of problem should you suspect, and what's the first thing to check?",
+        "options": [
+          "Suspect data or concept drift \u2014 check whether the distribution of incoming feature values has shifted meaningfully compared to the distribution the model was trained/validated on",
+          "Assume the monitoring dashboards themselves must be broken and rebuild them from scratch",
+          "Immediately retrain the model on the most recent week of data without further investigation",
+          "Assume this is a false alarm from the fraud team since infra metrics look fine"
+        ],
+        "correctIndex": 0,
+        "explanation": "A model can be technically healthy (fast, available, error-free) while being functionally wrong, because standard infra metrics don't measure output quality \u2014 they measure the system's operational health, which is a different thing. When a model degrades with no code/infra changes, the most common cause is the real world changing under it (data drift: input feature distributions shift, or concept drift: the actual relationship between features and the correct label shifts) \u2014 checking feature distributions against the training baseline is the standard first diagnostic step."
+      },
+      {
+        "prompt": "You compare current feature distributions against the training baseline and find one key feature \u2014 'average transaction amount over the last 30 days' \u2014 has shifted significantly, with the whole distribution's median roughly doubling. Digging further, you learn the company launched a new premium product tier 10 weeks ago with meaningfully higher typical transaction values. What's the appropriate response?",
+        "options": [
+          "Treat this as expected concept/data drift caused by a real product change, and plan a model retrain on more recent data that includes the new tier's transaction patterns, rather than treating it as a bug to patch around",
+          "Manually adjust the model's decision threshold as a permanent fix without addressing the underlying data shift",
+          "Roll back the premium product tier launch",
+          "Conclude the fraud team's manual reviews must be wrong since the model 'shouldn't' have changed"
+        ],
+        "correctIndex": 0,
+        "explanation": "This is a textbook case of legitimate concept drift driven by a real business change (a new product tier shifted the underlying transaction distribution the model needs to reason about) rather than a bug anywhere in the pipeline. The correct response is to retrain on data that reflects the new reality (including examples from the new tier), not to patch around it with a manual threshold tweak, which would be a fragile, temporary workaround that doesn't address the model's actual understanding of the new transaction patterns."
+      }
+    ],
+    "resolution": "Root cause: a new premium product tier launched 10 weeks prior shifted the real-world distribution of transaction amounts (and likely other correlated features) in ways the production model \u2014 trained before the tier existed \u2014 hadn't learned to handle well, causing gradually declining precision as premium-tier transaction volume grew, with no infrastructure or code change to explain it. Fix: retrain the model on more recent data that includes representative examples from the new product tier, and \u2014 to catch this class of issue earlier next time \u2014 add ongoing data/concept drift monitoring (tracking feature distribution shifts against the training baseline, and periodically validating model performance against fresh labeled data) as a standard part of the production monitoring stack, not just system-health metrics."
+  }
+]

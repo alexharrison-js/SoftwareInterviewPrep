@@ -148,6 +148,19 @@
     dueForRetryCount() {
       return this.retryQueue.length;
     }
+
+    // How many distinct cards have been shown in the current lap through
+    // the shuffled bag (i.e. since it was last fully exhausted and
+    // reshuffled). Surfaced on the home screen so progress persisting
+    // across tab closes/reopens — via localStorage — is directly visible,
+    // not just a behind-the-scenes guarantee.
+    seenThisLap() {
+      return Math.min(this.pointer, this.allIds.length);
+    }
+
+    totalCount() {
+      return this.allIds.length;
+    }
   }
 
   // ============================================================
@@ -190,23 +203,29 @@
   }
 
   async function loadData() {
-    const [dsa, sysdesign, ml, cloud, leadership] = await Promise.all([
+    const [dsa, sysdesign, ml, cloud, leadership, estimation, debugging] = await Promise.all([
       fetchJson('data/dsa.json'),
       fetchJson('data/system_design.json'),
       fetchJson('data/ml.json'),
       fetchJson('data/cloud.json'),
-      fetchJson('data/leadership.json')
+      fetchJson('data/leadership.json'),
+      fetchJson('data/estimation.json'),
+      fetchJson('data/debugging.json')
     ]);
     state.dsa = dsa;
     state.sysdesign = sysdesign;
     state.ml = ml;
     state.cloud = cloud;
     state.leadership = leadership;
+    state.estimation = estimation;
+    state.debugging = debugging;
 
     const dsaPatternById = new Map(dsa.problems.map(p => [p.id, p.correctPattern]));
     const mlCategoryById = new Map(ml.map(c => [c.id, c.category]));
     const cloudCategoryById = new Map(cloud.map(c => [c.id, c.category]));
     const leadershipCategoryById = new Map(leadership.map(c => [c.id, c.category]));
+    const estimationCategoryById = new Map(estimation.map(c => [c.id, c.category]));
+    const debuggingCategoryById = new Map(debugging.map(c => [c.id, c.category]));
 
     state.decks.dsa = new Deck('drillset_dsa_state', dsa.problems.map(p => p.id), id => dsaPatternById.get(id));
     // System design has no category grouping: each prompt is already a distinct
@@ -215,29 +234,30 @@
     state.decks.ml = new Deck('drillset_ml_state', ml.map(c => c.id), id => mlCategoryById.get(id));
     state.decks.cloud = new Deck('drillset_cloud_state', cloud.map(c => c.id), id => cloudCategoryById.get(id));
     state.decks.leadership = new Deck('drillset_leadership_state', leadership.map(c => c.id), id => leadershipCategoryById.get(id));
+    state.decks.estimation = new Deck('drillset_estimation_state', estimation.map(c => c.id), id => estimationCategoryById.get(id));
+    state.decks.debugging = new Deck('drillset_debugging_state', debugging.map(c => c.id), id => debuggingCategoryById.get(id));
 
     renderHomeStats();
   }
 
+  function deckStatLine(deck) {
+    return `${deck.seenThisLap()}/${deck.totalCount()} seen this pass · ${deck.dueForRetryCount()} queued for retry`;
+  }
+
   function renderHomeStats() {
-    const dsaDeck = state.decks.dsa, sdDeck = state.decks.sysdesign, mlDeck = state.decks.ml,
-          cloudDeck = state.decks.cloud, leadershipDeck = state.decks.leadership;
-    document.getElementById('stat-dsa').textContent =
-      `${state.dsa.problems.length} problems · ${dsaDeck.dueForRetryCount()} queued for retry`;
-    document.getElementById('stat-sysdesign').textContent =
-      `${state.sysdesign.length} prompts · ${sdDeck.dueForRetryCount()} queued for retry`;
-    document.getElementById('stat-ml').textContent =
-      `${state.ml.length} cards · ${mlDeck.dueForRetryCount()} queued for retry`;
-    document.getElementById('stat-cloud').textContent =
-      `${state.cloud.length} cards · ${cloudDeck.dueForRetryCount()} queued for retry`;
-    document.getElementById('stat-leadership').textContent =
-      `${state.leadership.length} cards · ${leadershipDeck.dueForRetryCount()} queued for retry`;
+    document.getElementById('stat-dsa').textContent = deckStatLine(state.decks.dsa);
+    document.getElementById('stat-sysdesign').textContent = deckStatLine(state.decks.sysdesign);
+    document.getElementById('stat-ml').textContent = deckStatLine(state.decks.ml);
+    document.getElementById('stat-cloud').textContent = deckStatLine(state.decks.cloud);
+    document.getElementById('stat-leadership').textContent = deckStatLine(state.decks.leadership);
+    document.getElementById('stat-estimation').textContent = deckStatLine(state.decks.estimation);
+    document.getElementById('stat-debugging').textContent = deckStatLine(state.decks.debugging);
   }
 
   // ============================================================
   // View navigation
   // ============================================================
-  const views = ['home', 'dsa', 'sysdesign', 'ml', 'cloud', 'leadership'];
+  const views = ['home', 'dsa', 'sysdesign', 'ml', 'cloud', 'leadership', 'estimation', 'debugging'];
 
   function showView(name) {
     views.forEach(v => {
@@ -249,6 +269,8 @@
     if (name === 'ml') mlDeckUI.render(state.decks.ml.current());
     if (name === 'cloud') cloudDeckUI.render(state.decks.cloud.current());
     if (name === 'leadership') leadershipDeckUI.render(state.decks.leadership.current());
+    if (name === 'estimation') estimationDeckUI.render(state.decks.estimation.current());
+    if (name === 'debugging') renderDebugScenario(state.decks.debugging.current());
     window.scrollTo(0, 0);
   }
 
@@ -308,9 +330,45 @@
     document.getElementById('dsaRetryBtn').hidden = true;
     document.getElementById('dsaNextBtn').hidden = true;
 
+    document.getElementById('complexityZone').hidden = true;
+    document.getElementById('talkthroughZone').hidden = true;
+    renderComplexityQuiz('timeComplexityButtons', 'timeComplexityFeedback', p.timeOptions, p.timeComplexity);
+    renderComplexityQuiz('spaceComplexityButtons', 'spaceComplexityFeedback', p.spaceOptions, p.spaceComplexity);
+
     const card = document.getElementById('dsaCard');
     const scroller = card.querySelector('.card-scroll');
     scroller.scrollTop = 0;
+  }
+
+  // Generic small multi-attempt quiz group, reused for both the time-
+  // complexity and space-complexity buttons: click wrong -> red + disabled,
+  // click right -> green + whole group disabled.
+  function renderComplexityQuiz(buttonsId, feedbackId, options, correct) {
+    const wrap = document.getElementById(buttonsId);
+    wrap.innerHTML = '';
+    const feedback = document.getElementById(feedbackId);
+    feedback.textContent = '';
+    feedback.className = 'feedback-msg';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.className = 'pattern-btn';
+      b.textContent = opt;
+      b.addEventListener('click', () => {
+        if (b.disabled) return;
+        if (opt === correct) {
+          b.classList.add('correct');
+          wrap.querySelectorAll('.pattern-btn').forEach(el => el.disabled = true);
+          feedback.textContent = 'Correct.';
+          feedback.className = 'feedback-msg correct';
+        } else {
+          b.classList.add('wrong');
+          b.disabled = true;
+          feedback.textContent = 'Not quite — try another.';
+          feedback.className = 'feedback-msg wrong';
+        }
+      });
+      wrap.appendChild(b);
+    });
   }
 
   function handlePatternClick(btn, chosen, problem) {
@@ -327,6 +385,8 @@
       const solutionZone = document.getElementById('solutionZone');
       solutionZone.hidden = false;
       document.getElementById('solutionCode').textContent = problem.solutions[state.lang];
+      document.getElementById('complexityZone').hidden = false;
+      document.getElementById('talkthroughZone').hidden = false;
 
       document.getElementById('dsaNextBtn').hidden = false;
       document.getElementById('dsaRetryBtn').hidden = false;
@@ -563,6 +623,104 @@
   const mlDeckUI = initSimpleDeck('ml', () => state.ml, () => state.decks.ml);
   const cloudDeckUI = initSimpleDeck('cloud', () => state.cloud, () => state.decks.cloud);
   const leadershipDeckUI = initSimpleDeck('leadership', () => state.leadership, () => state.decks.leadership);
+  const estimationDeckUI = initSimpleDeck('estimation', () => state.estimation, () => state.decks.estimation);
+
+  // ============================================================
+  // PRODUCTION DEBUGGING VIEW
+  // Multi-stage diagnostic scenarios: each stage is a multiple-choice
+  // "what do you check / do next" question (same multi-attempt mechanic as
+  // the DSA pattern buttons), and correctly answering the last stage
+  // reveals the full root-cause-and-fix writeup.
+  // ============================================================
+  let debugStageIndex = 0;
+  let debugStageSolved = false;
+
+  function getDebugScenario(id) {
+    return state.debugging.find(s => s.id === id);
+  }
+
+  function renderDebugScenario(id) {
+    const s = getDebugScenario(id);
+    debugStageIndex = 0;
+    document.getElementById('debugCategory').textContent = s.category;
+    document.getElementById('debugTitle').textContent = s.title;
+    document.getElementById('debugContext').textContent = s.context;
+    document.getElementById('debugTab').textContent = s.category.split(' ')[0].toUpperCase();
+    renderDebugStage(s);
+  }
+
+  function renderDebugStage(scenario) {
+    const stage = scenario.stages[debugStageIndex];
+    debugStageSolved = false;
+
+    document.getElementById('debugStagePill').textContent = `Stage ${debugStageIndex + 1} / ${scenario.stages.length}`;
+    document.getElementById('debugStagePrompt').textContent = stage.prompt;
+
+    document.getElementById('debugExplanationZone').hidden = true;
+    document.getElementById('debugResolutionZone').hidden = true;
+    document.getElementById('debugFeedback').textContent = '';
+    document.getElementById('debugFeedback').className = 'feedback-msg';
+
+    document.getElementById('debugActionBar').hidden = false;
+    document.getElementById('debugEndBar').hidden = true;
+    document.getElementById('debugNextStageBtn').hidden = true;
+
+    const wrap = document.getElementById('debugOptionButtons');
+    wrap.innerHTML = '';
+    stage.options.forEach((opt, idx) => {
+      const b = document.createElement('button');
+      b.className = 'pattern-btn';
+      b.textContent = opt;
+      b.addEventListener('click', () => handleDebugOptionClick(b, idx, stage, scenario));
+      wrap.appendChild(b);
+    });
+
+    document.querySelector('#debugCard .card-scroll').scrollTop = 0;
+  }
+
+  function handleDebugOptionClick(btn, idx, stage, scenario) {
+    if (debugStageSolved || btn.disabled) return;
+    const feedback = document.getElementById('debugFeedback');
+
+    if (idx === stage.correctIndex) {
+      btn.classList.add('correct');
+      document.querySelectorAll('#debugOptionButtons .pattern-btn').forEach(b => b.disabled = true);
+      feedback.textContent = 'Correct.';
+      feedback.className = 'feedback-msg correct';
+      debugStageSolved = true;
+
+      document.getElementById('debugExplanationZone').hidden = false;
+      document.getElementById('debugExplanation').textContent = stage.explanation;
+
+      const isLast = debugStageIndex === scenario.stages.length - 1;
+      if (isLast) {
+        document.getElementById('debugResolutionZone').hidden = false;
+        document.getElementById('debugResolution').textContent = scenario.resolution;
+        document.getElementById('debugActionBar').hidden = true;
+        document.getElementById('debugEndBar').hidden = false;
+      } else {
+        document.getElementById('debugNextStageBtn').hidden = false;
+      }
+    } else {
+      btn.classList.add('wrong');
+      btn.disabled = true;
+      feedback.textContent = "That's not the right next move here — try another option.";
+      feedback.className = 'feedback-msg wrong';
+    }
+  }
+
+  document.getElementById('debugNextStageBtn').addEventListener('click', () => {
+    const scenario = getDebugScenario(state.decks.debugging.currentId);
+    debugStageIndex++;
+    renderDebugStage(scenario);
+  });
+  document.getElementById('debugNextScenarioBtn').addEventListener('click', () => {
+    renderDebugScenario(state.decks.debugging.next());
+  });
+  document.getElementById('debugRetryBtn').addEventListener('click', () => {
+    state.decks.debugging.markRetryLater(state.decks.debugging.currentId);
+    renderDebugScenario(state.decks.debugging.next());
+  });
 
   // ============================================================
   // Boot

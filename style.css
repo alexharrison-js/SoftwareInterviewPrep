@@ -446,6 +446,31 @@ button { font-family: inherit; cursor: pointer; }
   animation: fadeIn 0.3s ease;
 }
 
+.complexity-zone {
+  margin-top: 20px;
+  border-top: 1px dashed var(--border);
+  padding-top: 18px;
+  animation: fadeIn 0.3s ease;
+}
+
+.talkthrough-zone {
+  margin-top: 20px;
+  border-top: 1px dashed var(--border);
+  padding-top: 18px;
+  animation: fadeIn 0.3s ease;
+}
+
+.talkthrough-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.talkthrough-list li { margin-bottom: 6px; }
+.talkthrough-list strong { color: var(--text); }
+
 .solution-head {
   display: flex;
   align-items: center;

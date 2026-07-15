@@ -45,7 +45,21 @@
         "cpp": "vector<int> twoSum(vector<int>& nums, int target) {\n    unordered_map<int, int> seen;\n    for (int i = 0; i < nums.size(); i++) {\n        int complement = target - nums[i];\n        if (seen.count(complement)) return {seen[complement], i};\n        seen[nums[i]] = i;\n    }\n    return {};\n}",
         "go": "func twoSum(nums []int, target int) []int {\n    seen := make(map[int]int)\n    for i, n := range nums {\n        if j, ok := seen[target-n]; ok {\n            return []int{j, i}\n        }\n        seen[n] = i\n    }\n    return []int{}\n}"
       },
-      "id": 1
+      "id": 1,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(2^n)",
+        "O(n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(1)",
+        "O(n)"
+      ]
     },
     {
       "number": 49,
@@ -69,7 +83,21 @@
         "cpp": "vector<vector<string>> groupAnagrams(vector<string>& strs) {\n    unordered_map<string, vector<string>> groups;\n    for (auto& s : strs) {\n        string key = s;\n        sort(key.begin(), key.end());\n        groups[key].push_back(s);\n    }\n    vector<vector<string>> result;\n    for (auto& [k, v] : groups) result.push_back(v);\n    return result;\n}",
         "go": "func groupAnagrams(strs []string) [][]string {\n    groups := make(map[string][]string)\n    for _, s := range strs {\n        b := []byte(s)\n        sort.Slice(b, func(i, j int) bool { return b[i] < b[j] })\n        key := string(b)\n        groups[key] = append(groups[key], s)\n    }\n    result := [][]string{}\n    for _, v := range groups {\n        result = append(result, v)\n    }\n    return result\n}"
       },
-      "id": 2
+      "id": 2,
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)"
+      ]
     },
     {
       "number": 125,
@@ -93,7 +121,21 @@
         "cpp": "bool isPalindrome(string s) {\n    int l = 0, r = s.size() - 1;\n    while (l < r) {\n        while (l < r && !isalnum(s[l])) l++;\n        while (l < r && !isalnum(s[r])) r--;\n        if (tolower(s[l]) != tolower(s[r])) return false;\n        l++; r--;\n    }\n    return true;\n}",
         "go": "func isPalindrome(s string) bool {\n    clean := []rune{}\n    for _, c := range strings.ToLower(s) {\n        if unicode.IsLetter(c) || unicode.IsDigit(c) {\n            clean = append(clean, c)\n        }\n    }\n    l, r := 0, len(clean)-1\n    for l < r {\n        if clean[l] != clean[r] {\n            return false\n        }\n        l++; r--\n    }\n    return true\n}"
       },
-      "id": 3
+      "id": 3,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(1)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(1)",
+        "O(log n)",
+        "O(n^2)"
+      ]
     },
     {
       "number": 11,
@@ -117,7 +159,21 @@
         "cpp": "int maxArea(vector<int>& height) {\n    int l = 0, r = height.size() - 1, best = 0;\n    while (l < r) {\n        best = max(best, (r - l) * min(height[l], height[r]));\n        if (height[l] < height[r]) l++; else r--;\n    }\n    return best;\n}",
         "go": "func maxArea(height []int) int {\n    l, r, best := 0, len(height)-1, 0\n    for l < r {\n        h := height[l]\n        if height[r] < h { h = height[r] }\n        area := (r - l) * h\n        if area > best { best = area }\n        if height[l] < height[r] { l++ } else { r-- }\n    }\n    return best\n}"
       },
-      "id": 4
+      "id": 4,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(1)"
+      ]
     },
     {
       "number": 3,
@@ -141,7 +197,21 @@
         "cpp": "int lengthOfLongestSubstring(string s) {\n    unordered_map<char, int> seen;\n    int l = 0, best = 0;\n    for (int r = 0; r < s.size(); r++) {\n        if (seen.count(s[r]) && seen[s[r]] >= l) l = seen[s[r]] + 1;\n        seen[s[r]] = r;\n        best = max(best, r - l + 1);\n    }\n    return best;\n}",
         "go": "func lengthOfLongestSubstring(s string) int {\n    seen := make(map[byte]int)\n    l, best := 0, 0\n    for r := 0; r < len(s); r++ {\n        if idx, ok := seen[s[r]]; ok && idx >= l {\n            l = idx + 1\n        }\n        seen[s[r]] = r\n        if r-l+1 > best { best = r - l + 1 }\n    }\n    return best\n}"
       },
-      "id": 5
+      "id": 5,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(n!)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)",
+        "O(1)"
+      ]
     },
     {
       "number": 20,
@@ -165,7 +235,21 @@
         "cpp": "bool isValid(string s) {\n    unordered_map<char, char> pairs = {{')', '('}, {']', '['}, {'}', '{'}};\n    stack<char> st;\n    for (char c : s) {\n        if (pairs.count(c)) {\n            if (st.empty() || st.top() != pairs[c]) return false;\n            st.pop();\n        } else {\n            st.push(c);\n        }\n    }\n    return st.empty();\n}",
         "go": "func isValid(s string) bool {\n    pairs := map[byte]byte{')': '(', ']': '[', '}': '{'}\n    stack := []byte{}\n    for i := 0; i < len(s); i++ {\n        c := s[i]\n        if open, ok := pairs[c]; ok {\n            if len(stack) == 0 || stack[len(stack)-1] != open {\n                return false\n            }\n            stack = stack[:len(stack)-1]\n        } else {\n            stack = append(stack, c)\n        }\n    }\n    return len(stack) == 0\n}"
       },
-      "id": 6
+      "id": 6,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(log n)"
+      ]
     },
     {
       "number": 33,
@@ -189,7 +273,21 @@
         "cpp": "int search(vector<int>& nums, int target) {\n    int l = 0, r = nums.size() - 1;\n    while (l <= r) {\n        int m = (l + r) / 2;\n        if (nums[m] == target) return m;\n        if (nums[l] <= nums[m]) {\n            if (nums[l] <= target && target < nums[m]) r = m - 1; else l = m + 1;\n        } else {\n            if (nums[m] < target && target <= nums[r]) l = m + 1; else r = m - 1;\n        }\n    }\n    return -1;\n}",
         "go": "func search(nums []int, target int) int {\n    l, r := 0, len(nums)-1\n    for l <= r {\n        m := (l + r) / 2\n        if nums[m] == target { return m }\n        if nums[l] <= nums[m] {\n            if nums[l] <= target && target < nums[m] { r = m - 1 } else { l = m + 1 }\n        } else {\n            if nums[m] < target && target <= nums[r] { l = m + 1 } else { r = m - 1 }\n        }\n    }\n    return -1\n}"
       },
-      "id": 7
+      "id": 7,
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n^3)",
+        "O(log n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
+      ]
     },
     {
       "number": 206,
@@ -213,7 +311,21 @@
         "cpp": "ListNode* reverseList(ListNode* head) {\n    ListNode* prev = nullptr;\n    ListNode* curr = head;\n    while (curr) {\n        ListNode* next = curr->next;\n        curr->next = prev;\n        prev = curr;\n        curr = next;\n    }\n    return prev;\n}",
         "go": "func reverseList(head *ListNode) *ListNode {\n    var prev *ListNode\n    curr := head\n    for curr != nil {\n        next := curr.Next\n        curr.Next = prev\n        prev = curr\n        curr = next\n    }\n    return prev\n}"
       },
-      "id": 8
+      "id": 8,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(n^2)",
+        "O(1)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)",
+        "O(log n)"
+      ]
     },
     {
       "number": 102,
@@ -237,7 +349,21 @@
         "cpp": "vector<vector<int>> levelOrder(TreeNode* root) {\n    vector<vector<int>> result;\n    if (!root) return result;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        int size = q.size();\n        vector<int> level;\n        for (int i = 0; i < size; i++) {\n            TreeNode* node = q.front(); q.pop();\n            level.push_back(node->val);\n            if (node->left) q.push(node->left);\n            if (node->right) q.push(node->right);\n        }\n        result.push_back(level);\n    }\n    return result;\n}",
         "go": "func levelOrder(root *TreeNode) [][]int {\n    result := [][]int{}\n    if root == nil { return result }\n    queue := []*TreeNode{root}\n    for len(queue) > 0 {\n        level := []int{}\n        next := []*TreeNode{}\n        for _, node := range queue {\n            level = append(level, node.Val)\n            if node.Left != nil { next = append(next, node.Left) }\n            if node.Right != nil { next = append(next, node.Right) }\n        }\n        result = append(result, level)\n        queue = next\n    }\n    return result\n}"
       },
-      "id": 9
+      "id": 9,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(log n)",
+        "O(n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
+      ]
     },
     {
       "number": 215,
@@ -261,7 +387,21 @@
         "cpp": "int findKthLargest(vector<int>& nums, int k) {\n    priority_queue<int, vector<int>, greater<int>> heap;\n    for (int n : nums) {\n        heap.push(n);\n        if (heap.size() > k) heap.pop();\n    }\n    return heap.top();\n}",
         "go": "func findKthLargest(nums []int, k int) int {\n    h := &IntHeap{}\n    heap.Init(h)\n    for _, n := range nums {\n        heap.Push(h, n)\n        if h.Len() > k {\n            heap.Pop(h)\n        }\n    }\n    return (*h)[0]\n}\n// IntHeap implements container/heap.Interface as a min-heap of ints"
       },
-      "id": 10
+      "id": 10,
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(1)"
+      ]
     },
     {
       "number": 78,
@@ -285,7 +425,21 @@
         "cpp": "void backtrack(vector<int>& nums, int start, vector<int>& path, vector<vector<int>>& result) {\n    result.push_back(path);\n    for (int i = start; i < nums.size(); i++) {\n        path.push_back(nums[i]);\n        backtrack(nums, i + 1, path, result);\n        path.pop_back();\n    }\n}\nvector<vector<int>> subsets(vector<int>& nums) {\n    vector<vector<int>> result;\n    vector<int> path;\n    backtrack(nums, 0, path, result);\n    return result;\n}",
         "go": "func subsets(nums []int) [][]int {\n    result := [][]int{}\n    path := []int{}\n    var backtrack func(start int)\n    backtrack = func(start int) {\n        cp := make([]int, len(path))\n        copy(cp, path)\n        result = append(result, cp)\n        for i := start; i < len(nums); i++ {\n            path = append(path, nums[i])\n            backtrack(i + 1)\n            path = path[:len(path)-1]\n        }\n    }\n    backtrack(0)\n    return result\n}"
       },
-      "id": 11
+      "id": 11,
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(log n)",
+        "O(n!)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(1)",
+        "O(n)"
+      ]
     },
     {
       "number": 200,
@@ -309,7 +463,21 @@
         "cpp": "void dfs(vector<vector<char>>& grid, int r, int c) {\n    if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size() || grid[r][c] != '1') return;\n    grid[r][c] = '0';\n    dfs(grid, r + 1, c); dfs(grid, r - 1, c); dfs(grid, r, c + 1); dfs(grid, r, c - 1);\n}\nint numIslands(vector<vector<char>>& grid) {\n    int count = 0;\n    for (int r = 0; r < grid.size(); r++) {\n        for (int c = 0; c < grid[0].size(); c++) {\n            if (grid[r][c] == '1') { count++; dfs(grid, r, c); }\n        }\n    }\n    return count;\n}",
         "go": "func numIslands(grid [][]byte) int {\n    rows, cols := len(grid), len(grid[0])\n    var dfs func(r, c int)\n    dfs = func(r, c int) {\n        if r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] != '1' { return }\n        grid[r][c] = '0'\n        dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    }\n    count := 0\n    for r := 0; r < rows; r++ {\n        for c := 0; c < cols; c++ {\n            if grid[r][c] == '1' {\n                count++\n                dfs(r, c)\n            }\n        }\n    }\n    return count\n}"
       },
-      "id": 12
+      "id": 12,
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^3)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(n)",
+        "O(1)"
+      ]
     },
     {
       "number": 322,
@@ -333,7 +501,21 @@
         "cpp": "int coinChange(vector<int>& coins, int amount) {\n    vector<int> dp(amount + 1, amount + 1);\n    dp[0] = 0;\n    for (int a = 1; a <= amount; a++) {\n        for (int c : coins) {\n            if (c <= a) dp[a] = min(dp[a], dp[a - c] + 1);\n        }\n    }\n    return dp[amount] > amount ? -1 : dp[amount];\n}",
         "go": "func coinChange(coins []int, amount int) int {\n    dp := make([]int, amount+1)\n    for i := 1; i <= amount; i++ { dp[i] = amount + 1 }\n    for a := 1; a <= amount; a++ {\n        for _, c := range coins {\n            if c <= a && dp[a-c]+1 < dp[a] {\n                dp[a] = dp[a-c] + 1\n            }\n        }\n    }\n    if dp[amount] > amount { return -1 }\n    return dp[amount]\n}"
       },
-      "id": 13
+      "id": 13,
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(log n)",
+        "O(n^2)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(log n)",
+        "O(n)"
+      ]
     },
     {
       "number": 56,
@@ -357,7 +539,21 @@
         "cpp": "vector<vector<int>> merge(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end());\n    vector<vector<int>> result = {intervals[0]};\n    for (int i = 1; i < intervals.size(); i++) {\n        if (intervals[i][0] <= result.back()[1]) {\n            result.back()[1] = max(result.back()[1], intervals[i][1]);\n        } else {\n            result.push_back(intervals[i]);\n        }\n    }\n    return result;\n}",
         "go": "func merge(intervals [][]int) [][]int {\n    sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })\n    result := [][]int{intervals[0]}\n    for _, interval := range intervals[1:] {\n        last := result[len(result)-1]\n        if interval[0] <= last[1] {\n            if interval[1] > last[1] { last[1] = interval[1] }\n        } else {\n            result = append(result, interval)\n        }\n    }\n    return result\n}"
       },
-      "id": 14
+      "id": 14,
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(n log n)",
+        "O(n^2)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(1)"
+      ]
     },
     {
       "number": 208,
@@ -381,7 +577,21 @@
         "cpp": "class Trie {\npublic:\n    unordered_map<char, Trie*> children;\n    bool isEnd = false;\n\n    void insert(string word) {\n        Trie* node = this;\n        for (char c : word) {\n            if (!node->children.count(c)) node->children[c] = new Trie();\n            node = node->children[c];\n        }\n        node->isEnd = true;\n    }\n    bool search(string word) {\n        Trie* node = find(word);\n        return node != nullptr && node->isEnd;\n    }\n    bool startsWith(string prefix) {\n        return find(prefix) != nullptr;\n    }\nprivate:\n    Trie* find(string s) {\n        Trie* node = this;\n        for (char c : s) {\n            if (!node->children.count(c)) return nullptr;\n            node = node->children[c];\n        }\n        return node;\n    }\n};",
         "go": "type Trie struct {\n    children map[byte]*Trie\n    isEnd    bool\n}\nfunc Constructor() Trie { return Trie{children: make(map[byte]*Trie)} }\nfunc (t *Trie) Insert(word string) {\n    node := t\n    for i := 0; i < len(word); i++ {\n        c := word[i]\n        if node.children[c] == nil {\n            child := Constructor()\n            node.children[c] = &child\n        }\n        node = node.children[c]\n    }\n    node.isEnd = true\n}\nfunc (t *Trie) find(s string) *Trie {\n    node := t\n    for i := 0; i < len(s); i++ {\n        node = node.children[s[i]]\n        if node == nil { return nil }\n    }\n    return node\n}\nfunc (t *Trie) Search(word string) bool {\n    node := t.find(word)\n    return node != nil && node.isEnd\n}\nfunc (t *Trie) StartsWith(prefix string) bool {\n    return t.find(prefix) != nil\n}"
       },
-      "id": 15
+      "id": 15,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n log n)",
+        "O(n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
+      ]
     },
     {
       "number": 136,
@@ -405,7 +615,21 @@
         "cpp": "int singleNumber(vector<int>& nums) {\n    int result = 0;\n    for (int n : nums) result ^= n;\n    return result;\n}",
         "go": "func singleNumber(nums []int) int {\n    result := 0\n    for _, n := range nums {\n        result ^= n\n    }\n    return result\n}"
       },
-      "id": 16
+      "id": 16,
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(log n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(1)",
+        "O(V + E)"
+      ]
     },
     {
       "number": 217,
@@ -429,6 +653,20 @@
         "Tree BFS/DFS",
         "Dynamic Programming",
         "Union Find"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(1)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -453,6 +691,20 @@
         "Two Pointers",
         "Binary Search",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -477,6 +729,20 @@
         "Union Find",
         "Prefix Sum",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -501,6 +767,20 @@
         "Dynamic Programming",
         "Union Find",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n log n)",
+        "O(n^2)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -525,6 +805,20 @@
         "Graph BFS/DFS",
         "Bit Manipulation",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(1)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -549,6 +843,20 @@
         "Tree BFS/DFS",
         "String Manipulation",
         "Union Find"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n log n)",
+        "O(1)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -573,6 +881,20 @@
         "Sorting",
         "Tree BFS/DFS",
         "Design"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^3)",
+        "O(n^2)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -597,6 +919,20 @@
         "Greedy / Intervals",
         "Stack",
         "Sorting"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(log n)",
+        "O(n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -621,6 +957,20 @@
         "Binary Search",
         "Graph BFS/DFS",
         "Sorting"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(log n)",
+        "O(n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -645,6 +995,20 @@
         "Binary Search",
         "Math",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(m * n)",
+        "O(n!)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -669,6 +1033,20 @@
         "Matrix / Grid",
         "Tree BFS/DFS",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -693,6 +1071,20 @@
         "Sliding Window",
         "String Manipulation",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(V + E)",
+        "O(2^n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -717,6 +1109,20 @@
         "Linked List",
         "Two Pointers",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -741,6 +1147,20 @@
         "Greedy / Intervals",
         "Tree BFS/DFS",
         "Linked List"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(m * n)",
+        "O(n^2)"
       ]
     },
     {
@@ -765,6 +1185,20 @@
         "Tree BFS/DFS",
         "Design",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(log n)",
+        "O(V + E)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -789,6 +1223,20 @@
         "Heap / Priority Queue",
         "Graph BFS/DFS",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(1)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -813,6 +1261,20 @@
         "String Manipulation",
         "Dynamic Programming",
         "Backtracking"
+      ],
+      "timeComplexity": "O(n!)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(V + E)",
+        "O(log n)"
       ]
     },
     {
@@ -837,6 +1299,20 @@
         "Linked List",
         "Greedy / Intervals",
         "Backtracking"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(m * n)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -861,6 +1337,20 @@
         "String Manipulation",
         "Dynamic Programming",
         "Hash Map"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(2^n)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(m * n)"
       ]
     },
     {
@@ -885,6 +1375,20 @@
         "Heap / Priority Queue",
         "Graph BFS/DFS",
         "Backtracking"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -909,6 +1413,20 @@
         "Linked List",
         "Tree BFS/DFS",
         "Binary Search"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(1)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -933,6 +1451,20 @@
         "Sliding Window",
         "Prefix Sum",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n^3)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -957,6 +1489,20 @@
         "Sliding Window",
         "Trie",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -981,6 +1527,20 @@
         "Binary Search",
         "Union Find",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(n log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(log n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1005,6 +1565,20 @@
         "Heap / Priority Queue",
         "Sliding Window",
         "Linked List"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n!)",
+        "O(m * n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1029,6 +1603,20 @@
         "Sliding Window",
         "Heap / Priority Queue",
         "Math"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -1053,6 +1641,20 @@
         "Greedy / Intervals",
         "Stack",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n^2)",
+        "O(2^n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1077,6 +1679,20 @@
         "Greedy / Intervals",
         "Backtracking",
         "Linked List"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -1101,6 +1717,20 @@
         "Bit Manipulation",
         "Graph BFS/DFS",
         "Trie"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(n!)",
+        "O(n^3)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(V + E)"
       ]
     },
     {
@@ -1125,6 +1755,20 @@
         "Sliding Window",
         "Hash Map",
         "Binary Search"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(log n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(m * n)"
       ]
     },
     {
@@ -1149,6 +1793,20 @@
         "Tree BFS/DFS",
         "Hash Map",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -1173,6 +1831,20 @@
         "Stack",
         "Trie",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(n)",
+        "O(n!)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -1197,6 +1869,20 @@
         "Greedy / Intervals",
         "Backtracking",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(V + E)"
       ]
     },
     {
@@ -1221,6 +1907,20 @@
         "Dynamic Programming",
         "Graph BFS/DFS",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n^3)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -1245,6 +1945,20 @@
         "Graph BFS/DFS",
         "Sliding Window",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(n log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -1269,6 +1983,20 @@
         "Union Find",
         "Math",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(2^n)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -1293,6 +2021,20 @@
         "Hash Map",
         "Sliding Window",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)",
+        "O(log n)"
       ]
     },
     {
@@ -1317,6 +2059,20 @@
         "Union Find",
         "Heap / Priority Queue",
         "Binary Search"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -1341,6 +2097,20 @@
         "Hash Map",
         "Union Find",
         "Linked List"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(n^3)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -1365,6 +2135,20 @@
         "Union Find",
         "Binary Search",
         "Bit Manipulation"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(1)",
+        "O(log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -1389,6 +2173,20 @@
         "Linked List",
         "Stack",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(V + E)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -1413,6 +2211,20 @@
         "Dynamic Programming",
         "Binary Search",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -1437,6 +2249,20 @@
         "Tree BFS/DFS",
         "Binary Search",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(n^2)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -1461,6 +2287,20 @@
         "Design",
         "Math",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(log n)",
+        "O(n)"
       ]
     },
     {
@@ -1485,6 +2325,20 @@
         "Hash Map",
         "Sliding Window",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(m * n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1509,6 +2363,20 @@
         "Dynamic Programming",
         "Tree BFS/DFS",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(1)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1533,6 +2401,20 @@
         "Linked List",
         "Tree BFS/DFS",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(2^n)",
+        "O(n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(m * n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1557,6 +2439,20 @@
         "Two Pointers",
         "Bit Manipulation",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(m * n)",
+        "O(n)"
       ]
     },
     {
@@ -1581,6 +2477,20 @@
         "Heap / Priority Queue",
         "Two Pointers",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -1605,6 +2515,20 @@
         "Linked List",
         "Dynamic Programming",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(1)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -1629,6 +2553,20 @@
         "Dynamic Programming",
         "Union Find",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(V + E)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(V + E)",
+        "O(1)"
       ]
     },
     {
@@ -1653,6 +2591,20 @@
         "Heap / Priority Queue",
         "Union Find",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(log n)",
+        "O(n log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -1677,6 +2629,20 @@
         "Bit Manipulation",
         "Union Find",
         "Sorting"
+      ],
+      "timeComplexity": "O(n!)",
+      "spaceComplexity": "O(n^2)",
+      "timeOptions": [
+        "O(n!)",
+        "O(n^2)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -1701,6 +2667,20 @@
         "Sliding Window",
         "Binary Search",
         "Backtracking"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(2^n)",
+        "O(log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -1725,6 +2705,20 @@
         "Graph BFS/DFS",
         "Union Find",
         "Sorting"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n^2)",
+        "O(m * n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)"
       ]
     },
     {
@@ -1749,6 +2743,20 @@
         "Binary Search",
         "Design",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(1)",
+        "O(n^3)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -1773,6 +2781,20 @@
         "Hash Map",
         "Union Find",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1797,6 +2819,20 @@
         "Graph BFS/DFS",
         "Heap / Priority Queue",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(m * n)",
+        "O(n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -1821,6 +2857,20 @@
         "Two Pointers",
         "Graph BFS/DFS",
         "Trie"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(1)",
+        "O(V + E)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -1845,6 +2895,20 @@
         "Heap / Priority Queue",
         "Tree BFS/DFS",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(2^n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(1)"
       ]
     },
     {
@@ -1869,6 +2933,20 @@
         "Dynamic Programming",
         "Graph BFS/DFS",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n!)",
+        "O(V + E)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -1893,6 +2971,20 @@
         "Dynamic Programming",
         "Trie",
         "Design"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(1)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -1917,6 +3009,20 @@
         "Union Find",
         "Tree BFS/DFS",
         "Backtracking"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -1941,6 +3047,20 @@
         "Dynamic Programming",
         "Union Find",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n!)",
+        "O(n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -1965,6 +3085,20 @@
         "Sorting",
         "Design",
         "Linked List"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(2^n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -1989,6 +3123,20 @@
         "Backtracking",
         "Bit Manipulation",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(2^n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(1)"
       ]
     },
     {
@@ -2013,6 +3161,20 @@
         "Dynamic Programming",
         "Sorting",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -2037,6 +3199,20 @@
         "Binary Search",
         "Dynamic Programming",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n!)",
+        "O(V + E)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(n)"
       ]
     },
     {
@@ -2061,6 +3237,20 @@
         "Tree BFS/DFS",
         "String Manipulation",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(log n)",
+        "O(n log n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -2085,6 +3275,20 @@
         "Greedy / Intervals",
         "Dynamic Programming",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -2109,6 +3313,20 @@
         "Bit Manipulation",
         "Dynamic Programming",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(log n)",
+        "O(1)"
       ]
     },
     {
@@ -2133,6 +3351,20 @@
         "Greedy / Intervals",
         "Design",
         "Backtracking"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n^2)",
+        "O(n!)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(log n)",
+        "O(V + E)",
+        "O(1)"
       ]
     },
     {
@@ -2157,6 +3389,20 @@
         "Linked List",
         "String Manipulation",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n!)",
+        "O(n log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -2181,6 +3427,20 @@
         "String Manipulation",
         "Sorting",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(n^3)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -2205,6 +3465,20 @@
         "Union Find",
         "Matrix / Grid",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -2229,6 +3503,20 @@
         "Hash Map",
         "Tree BFS/DFS",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(m * n)",
+        "O(1)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(log n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -2253,6 +3541,20 @@
         "String Manipulation",
         "Sorting",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(n!)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(V + E)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -2277,6 +3579,20 @@
         "Matrix / Grid",
         "Greedy / Intervals",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(1)"
       ]
     },
     {
@@ -2301,6 +3617,20 @@
         "Prefix Sum",
         "Stack",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(m * n)",
+        "O(n log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -2325,6 +3655,20 @@
         "Matrix / Grid",
         "Dynamic Programming",
         "Sorting"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(2^n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(log n)",
+        "O(1)"
       ]
     },
     {
@@ -2349,6 +3693,20 @@
         "String Manipulation",
         "Sliding Window",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n!)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -2373,6 +3731,20 @@
         "String Manipulation",
         "Greedy / Intervals",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -2397,6 +3769,20 @@
         "Sliding Window",
         "Heap / Priority Queue",
         "Math"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(1)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -2421,6 +3807,20 @@
         "Heap / Priority Queue",
         "Math",
         "Stack"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -2445,6 +3845,20 @@
         "Linked List",
         "Math",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -2469,6 +3883,20 @@
         "Two Pointers",
         "Design",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n^3)",
+        "O(n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(log n)",
+        "O(m * n)"
       ]
     },
     {
@@ -2493,6 +3921,20 @@
         "Backtracking",
         "Binary Search",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(2^n)",
+        "O(n log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(log n)",
+        "O(n)"
       ]
     },
     {
@@ -2517,6 +3959,20 @@
         "Backtracking",
         "Sliding Window",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -2541,6 +3997,20 @@
         "Tree BFS/DFS",
         "Heap / Priority Queue",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(1)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -2565,6 +4035,20 @@
         "Prefix Sum",
         "Tree BFS/DFS",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -2589,6 +4073,20 @@
         "Two Pointers",
         "String Manipulation",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n)",
+        "O(2^n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -2613,6 +4111,20 @@
         "Heap / Priority Queue",
         "Design",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(n)",
+        "O(2^n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -2637,6 +4149,20 @@
         "Matrix / Grid",
         "Linked List",
         "Sorting"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -2661,6 +4187,20 @@
         "Prefix Sum",
         "Tree BFS/DFS",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(1)",
+        "O(log n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -2685,6 +4225,20 @@
         "Two Pointers",
         "Sorting",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -2709,6 +4263,20 @@
         "String Manipulation",
         "Design",
         "Bit Manipulation"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -2733,6 +4301,20 @@
         "String Manipulation",
         "Linked List",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(V + E)"
       ]
     },
     {
@@ -2757,6 +4339,20 @@
         "Tree BFS/DFS",
         "Math",
         "Hash Map"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(2^n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -2781,6 +4377,20 @@
         "Sorting",
         "Math",
         "Design"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(1)",
+        "O(n log n)",
+        "O(n!)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -2805,6 +4415,20 @@
         "Matrix / Grid",
         "Binary Search",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(m * n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -2829,6 +4453,20 @@
         "Design",
         "Binary Search",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(1)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -2853,6 +4491,20 @@
         "Tree BFS/DFS",
         "Design",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n log n)",
+        "O(n^2)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -2877,6 +4529,20 @@
         "Linked List",
         "Trie",
         "Sorting"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -2901,6 +4567,20 @@
         "Backtracking",
         "Stack",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -2925,6 +4605,20 @@
         "Linked List",
         "Tree BFS/DFS",
         "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -2949,6 +4643,20 @@
         "Trie",
         "Tree BFS/DFS",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(2^n)",
+        "O(n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(m * n)",
+        "O(n)"
       ]
     },
     {
@@ -2973,6 +4681,20 @@
         "Heap / Priority Queue",
         "Tree BFS/DFS",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n^3)",
+        "O(n^2)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(log n)",
+        "O(1)"
       ]
     },
     {
@@ -2997,6 +4719,20 @@
         "Matrix / Grid",
         "Sorting",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n^2)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -3021,6 +4757,20 @@
         "Backtracking",
         "Tree BFS/DFS",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -3045,6 +4795,20 @@
         "Dynamic Programming",
         "Sorting",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(log n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -3069,6 +4833,20 @@
         "Graph BFS/DFS",
         "Linked List",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(log n)",
+        "O(m * n)",
+        "O(n)"
       ]
     },
     {
@@ -3093,6 +4871,20 @@
         "Union Find",
         "Dynamic Programming",
         "Linked List"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(2^n)",
+        "O(n log n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -3117,6 +4909,20 @@
         "Backtracking",
         "Binary Search",
         "Math"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(2^n)",
+        "O(n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -3141,6 +4947,20 @@
         "Sorting",
         "String Manipulation",
         "Union Find"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n log n)",
+        "O(n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -3165,6 +4985,20 @@
         "Trie",
         "Linked List",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(m * n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -3189,6 +5023,20 @@
         "Math",
         "Heap / Priority Queue",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n!)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -3213,6 +5061,20 @@
         "Tree BFS/DFS",
         "Heap / Priority Queue",
         "Sorting"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n^3)",
+        "O(2^n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -3237,6 +5099,20 @@
         "Backtracking",
         "Binary Search",
         "Bit Manipulation"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(2^n)",
+        "O(n!)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -3261,6 +5137,20 @@
         "Bit Manipulation",
         "Tree BFS/DFS",
         "Backtracking"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(V + E)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -3285,6 +5175,20 @@
         "Dynamic Programming",
         "Binary Search",
         "Backtracking"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -3309,6 +5213,20 @@
         "Math",
         "Sliding Window",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n^2)",
+        "O(1)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -3333,6 +5251,20 @@
         "Matrix / Grid",
         "Sliding Window",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(2^n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -3357,6 +5289,20 @@
         "Bit Manipulation",
         "Sliding Window",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(2^n)",
+        "O(V + E)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -3381,6 +5327,20 @@
         "Two Pointers",
         "Greedy / Intervals",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n^3)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -3405,6 +5365,20 @@
         "Backtracking",
         "Math",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(m * n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -3429,6 +5403,20 @@
         "Trie",
         "Sorting",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(n!)",
+        "O(n log n)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)"
       ]
     },
     {
@@ -3453,6 +5441,20 @@
         "Math",
         "Trie",
         "Stack"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n^2)",
+        "O(n^3)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -3477,6 +5479,20 @@
         "Dynamic Programming",
         "Math",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n!)",
+        "O(2^n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -3501,6 +5517,20 @@
         "Sliding Window",
         "Binary Search",
         "Bit Manipulation"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n log n)",
+        "O(V + E)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -3525,6 +5555,20 @@
         "Graph BFS/DFS",
         "Greedy / Intervals",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(1)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -3549,6 +5593,20 @@
         "Math",
         "Hash Map",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(n log n)",
+        "O(n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(log n)",
+        "O(n)"
       ]
     },
     {
@@ -3573,6 +5631,20 @@
         "Linked List",
         "Hash Map",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(1)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -3597,6 +5669,20 @@
         "Graph BFS/DFS",
         "Hash Map",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(m * n)",
+        "O(n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -3621,6 +5707,20 @@
         "Trie",
         "Stack",
         "Math"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n^3)",
+        "O(n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -3645,6 +5745,20 @@
         "Greedy / Intervals",
         "Hash Map",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(n log n)",
+        "O(log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -3669,6 +5783,20 @@
         "Greedy / Intervals",
         "Hash Map",
         "Bit Manipulation"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(m * n)",
+        "O(1)"
       ]
     },
     {
@@ -3693,6 +5821,20 @@
         "Tree BFS/DFS",
         "Sorting",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(V + E)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -3717,6 +5859,20 @@
         "Sliding Window",
         "String Manipulation",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -3741,6 +5897,20 @@
         "String Manipulation",
         "Union Find",
         "Sorting"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -3765,6 +5935,20 @@
         "Stack",
         "Hash Map",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(m * n)",
+        "O(n^3)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -3789,6 +5973,20 @@
         "Stack",
         "String Manipulation",
         "Backtracking"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(n)",
+        "O(V + E)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(1)"
       ]
     },
     {
@@ -3813,6 +6011,20 @@
         "Dynamic Programming",
         "Heap / Priority Queue",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(n^3)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -3837,6 +6049,20 @@
         "Linked List",
         "Heap / Priority Queue",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(n log n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -3861,6 +6087,20 @@
         "Sorting",
         "Prefix Sum",
         "Math"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n^2)",
+        "O(2^n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(log n)",
+        "O(n)"
       ]
     },
     {
@@ -3885,6 +6125,20 @@
         "Stack",
         "Sorting",
         "Union Find"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -3909,6 +6163,20 @@
         "Bit Manipulation",
         "Design",
         "Stack"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -3933,6 +6201,20 @@
         "Matrix / Grid",
         "Two Pointers",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n log n)",
+        "O(n^3)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(V + E)",
+        "O(m * n)"
       ]
     },
     {
@@ -3957,6 +6239,20 @@
         "Linked List",
         "Backtracking",
         "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(2^n)",
+        "O(n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(log n)"
       ]
     },
     {
@@ -3981,6 +6277,20 @@
         "Hash Map",
         "String Manipulation",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n^3)",
+        "O(n!)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(1)",
+        "O(n^2)"
       ]
     },
     {
@@ -4005,6 +6315,20 @@
         "Tree BFS/DFS",
         "Trie",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n!)",
+        "O(n^3)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4029,6 +6353,20 @@
         "Dynamic Programming",
         "Heap / Priority Queue",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(2^n)",
+        "O(V + E)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -4053,6 +6391,20 @@
         "Tree BFS/DFS",
         "Greedy / Intervals",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -4077,6 +6429,20 @@
         "Sliding Window",
         "Linked List",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n^3)",
+        "O(n^2)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -4101,6 +6467,20 @@
         "Heap / Priority Queue",
         "Tree BFS/DFS",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4125,6 +6505,20 @@
         "Dynamic Programming",
         "Bit Manipulation",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n)",
+        "O(n^3)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4149,6 +6543,20 @@
         "Two Pointers",
         "Sorting",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(log n)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4173,6 +6581,20 @@
         "Stack",
         "Design",
         "Binary Search"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n log n)",
+        "O(n^2)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -4197,6 +6619,20 @@
         "Matrix / Grid",
         "Graph BFS/DFS",
         "Backtracking"
+      ],
+      "timeComplexity": "O(2^n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(2^n)",
+        "O(V + E)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(log n)",
+        "O(n)"
       ]
     },
     {
@@ -4221,6 +6657,20 @@
         "Tree BFS/DFS",
         "Sliding Window",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n!)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(m * n)",
+        "O(log n)"
       ]
     },
     {
@@ -4245,6 +6695,20 @@
         "Backtracking",
         "Math",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n log n)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4269,6 +6733,20 @@
         "Linked List",
         "Design",
         "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(log n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4293,6 +6771,20 @@
         "Bit Manipulation",
         "Sliding Window",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(V + E)",
+      "spaceComplexity": "O(V + E)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)",
+        "O(m * n)"
       ]
     },
     {
@@ -4317,6 +6809,20 @@
         "Dynamic Programming",
         "Math",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n log n)",
+        "O(n^3)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -4341,6 +6847,20 @@
         "Two Pointers",
         "Binary Search",
         "Sorting"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n)",
+        "O(2^n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -4365,6 +6885,20 @@
         "Backtracking",
         "Bit Manipulation",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(n^2)",
+        "O(2^n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4389,6 +6923,20 @@
         "Dynamic Programming",
         "Union Find",
         "Hash Map"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n!)",
+        "O(n^3)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(log n)",
+        "O(1)"
       ]
     },
     {
@@ -4413,6 +6961,20 @@
         "Bit Manipulation",
         "String Manipulation",
         "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(1)"
       ]
     },
     {
@@ -4437,6 +6999,20 @@
         "Heap / Priority Queue",
         "Greedy / Intervals",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
       ]
     },
     {
@@ -4461,6 +7037,20 @@
         "Bit Manipulation",
         "Math",
         "Trie"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)",
+        "O(1)"
       ]
     },
     {
@@ -4485,6 +7075,20 @@
         "Stack",
         "Linked List",
         "Trie"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(2^n)",
+        "O(n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -4509,6 +7113,20 @@
         "Tree BFS/DFS",
         "Bit Manipulation",
         "Design"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n log n)",
+        "O(n!)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -4533,6 +7151,20 @@
         "Math",
         "Sorting",
         "Heap / Priority Queue"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n^2)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -4557,6 +7189,20 @@
         "Matrix / Grid",
         "Union Find",
         "Sorting"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -4581,6 +7227,20 @@
         "Sorting",
         "Union Find",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(2^n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4605,6 +7265,20 @@
         "Greedy / Intervals",
         "Union Find",
         "Tree BFS/DFS"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -4629,6 +7303,20 @@
         "Design",
         "Union Find",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^3)",
+        "O(n log n)",
+        "O(n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4653,6 +7341,20 @@
         "Trie",
         "Binary Search",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n^3)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n)",
+        "O(m * n)"
       ]
     },
     {
@@ -4677,6 +7379,20 @@
         "Sliding Window",
         "Dynamic Programming",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -4701,6 +7417,20 @@
         "Two Pointers",
         "Linked List",
         "Prefix Sum"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(1)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(log n)",
+        "O(m * n)"
       ]
     },
     {
@@ -4725,6 +7455,20 @@
         "Two Pointers",
         "Tree BFS/DFS",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n)",
+        "O(V + E)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(m * n)",
+        "O(1)",
+        "O(log n)"
       ]
     },
     {
@@ -4749,6 +7493,20 @@
         "Trie",
         "Two Pointers",
         "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -4773,6 +7531,20 @@
         "Greedy / Intervals",
         "Linked List",
         "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(log n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(n^2)",
+        "O(log n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(n)",
+        "O(log n)"
       ]
     },
     {
@@ -4797,6 +7569,20 @@
         "Bit Manipulation",
         "Sliding Window",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(n)",
+        "O(1)"
       ]
     },
     {
@@ -4821,6 +7607,20 @@
         "Prefix Sum",
         "Two Pointers",
         "Math"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(V + E)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(n^2)",
+        "O(m * n)"
       ]
     },
     {
@@ -4845,6 +7645,20 @@
         "Graph BFS/DFS",
         "Backtracking",
         "Math"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(2^n)",
+        "O(m * n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n^2)",
+        "O(n)"
       ]
     },
     {
@@ -4869,6 +7683,20 @@
         "Backtracking",
         "Math",
         "Stack"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n^2)",
+        "O(1)",
+        "O(n)"
       ]
     },
     {
@@ -4893,6 +7721,20 @@
         "String Manipulation",
         "Math",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(n^2)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n)",
+        "O(V + E)"
       ]
     },
     {
@@ -4917,6 +7759,20 @@
         "String Manipulation",
         "Linked List",
         "Backtracking"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(log n)",
+        "O(m * n)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -4941,6 +7797,20 @@
         "String Manipulation",
         "Dynamic Programming",
         "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(1)",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -4965,6 +7835,20 @@
         "Sorting",
         "String Manipulation",
         "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(1)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(n)",
+        "O(n^2)"
       ]
     },
     {
@@ -4989,6 +7873,20 @@
         "Sorting",
         "Bit Manipulation",
         "Sliding Window"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(1)",
+        "O(V + E)",
+        "O(n^2)"
       ]
     },
     {
@@ -5013,6 +7911,20 @@
         "Union Find",
         "Graph BFS/DFS",
         "Two Pointers"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n log n)",
+        "O(n!)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -5037,6 +7949,20 @@
         "Graph BFS/DFS",
         "Hash Map",
         "Binary Search"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(log n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(1)",
+        "O(V + E)"
       ]
     },
     {
@@ -5061,6 +7987,20 @@
         "Tree BFS/DFS",
         "Greedy / Intervals",
         "String Manipulation"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(V + E)",
+        "O(1)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(1)"
       ]
     },
     {
@@ -5085,6 +8025,20 @@
         "Sliding Window",
         "Stack",
         "Hash Map"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(log n)",
+        "O(1)",
+        "O(2^n)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(1)",
+        "O(m * n)"
       ]
     },
     {
@@ -5109,6 +8063,20 @@
         "String Manipulation",
         "Graph BFS/DFS",
         "Design"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(2^n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(1)",
+        "O(V + E)",
+        "O(n)"
       ]
     },
     {
@@ -5133,6 +8101,20 @@
         "Dynamic Programming",
         "Prefix Sum",
         "Trie"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(2^n)",
+        "O(1)",
+        "O(n)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(m * n)",
+        "O(log n)",
+        "O(n^2)"
       ]
     },
     {
@@ -5157,6 +8139,704 @@
         "Backtracking",
         "Tree BFS/DFS",
         "Dynamic Programming"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(n!)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(log n)",
+        "O(n)",
+        "O(1)"
+      ]
+    },
+    {
+      "number": 451,
+      "title": "Sort Characters By Frequency",
+      "difficulty": "Medium",
+      "correctPattern": "Sorting",
+      "description": "Given a string, sort it in decreasing order based on the frequency of characters, and return the sorted string.",
+      "solutions": {
+        "python": "def frequency_sort(s):\n    counts = {}\n    for c in s:\n        counts[c] = counts.get(c, 0) + 1\n    sorted_chars = sorted(counts.items(), key=lambda x: -x[1])\n    return ''.join(c * freq for c, freq in sorted_chars)",
+        "java": "public String frequencySort(String s) {\n    Map<Character, Integer> counts = new HashMap<>();\n    for (char c : s.toCharArray()) counts.merge(c, 1, Integer::sum);\n    List<Character> chars = new ArrayList<>(counts.keySet());\n    chars.sort((a, b) -> counts.get(b) - counts.get(a));\n    StringBuilder sb = new StringBuilder();\n    for (char c : chars) {\n        sb.append(String.valueOf(c).repeat(counts.get(c)));\n    }\n    return sb.toString();\n}",
+        "typescript": "function frequencySort(s: string): string {\n  const counts = new Map<string, number>();\n  for (const c of s) counts.set(c, (counts.get(c) || 0) + 1);\n  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);\n  return sorted.map(([c, freq]) => c.repeat(freq)).join('');\n}",
+        "javascript": "function frequencySort(s) {\n  const counts = new Map();\n  for (const c of s) counts.set(c, (counts.get(c) || 0) + 1);\n  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);\n  return sorted.map(([c, freq]) => c.repeat(freq)).join('');\n}",
+        "cpp": "string frequencySort(string s) {\n    unordered_map<char, int> counts;\n    for (char c : s) counts[c]++;\n    vector<pair<char,int>> items(counts.begin(), counts.end());\n    sort(items.begin(), items.end(), [](auto& a, auto& b) { return a.second > b.second; });\n    string result;\n    for (auto& [c, freq] : items) result += string(freq, c);\n    return result;\n}",
+        "go": "func frequencySort(s string) string {\n    counts := make(map[rune]int)\n    for _, c := range s { counts[c]++ }\n    type item struct{ char rune; freq int }\n    items := []item{}\n    for c, f := range counts { items = append(items, item{c, f}) }\n    sort.Slice(items, func(i, j int) bool { return items[i].freq > items[j].freq })\n    var sb strings.Builder\n    for _, it := range items {\n        for i := 0; i < it.freq; i++ { sb.WriteRune(it.char) }\n    }\n    return sb.String()\n}"
+      },
+      "id": 215,
+      "options": [
+        "Hash Map",
+        "Sorting",
+        "Trie",
+        "Binary Search",
+        "Backtracking",
+        "Union Find"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n log n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(n)",
+        "O(1)",
+        "O(n^2)"
+      ]
+    },
+    {
+      "number": 179,
+      "title": "Largest Number",
+      "difficulty": "Medium",
+      "correctPattern": "Sorting",
+      "description": "Given a list of non-negative integers, arrange them so as to form the largest possible number, and return it as a string.",
+      "solutions": {
+        "python": "from functools import cmp_to_key\ndef largest_number(nums):\n    strs = list(map(str, nums))\n    def compare(a, b):\n        if a + b > b + a:\n            return -1\n        elif a + b < b + a:\n            return 1\n        return 0\n    strs.sort(key=cmp_to_key(compare))\n    result = ''.join(strs).lstrip('0')\n    return result if result else '0'",
+        "java": "public String largestNumber(int[] nums) {\n    String[] strs = new String[nums.length];\n    for (int i = 0; i < nums.length; i++) strs[i] = String.valueOf(nums[i]);\n    Arrays.sort(strs, (a, b) -> (b + a).compareTo(a + b));\n    if (strs[0].equals(\"0\")) return \"0\";\n    StringBuilder sb = new StringBuilder();\n    for (String s : strs) sb.append(s);\n    return sb.toString();\n}",
+        "typescript": "function largestNumber(nums: number[]): string {\n  const strs = nums.map(String);\n  strs.sort((a, b) => (b + a).localeCompare(a + b));\n  const result = strs.join('').replace(/^0+/, '');\n  return result || '0';\n}",
+        "javascript": "function largestNumber(nums) {\n  const strs = nums.map(String);\n  strs.sort((a, b) => (b + a).localeCompare(a + b));\n  const result = strs.join('').replace(/^0+/, '');\n  return result || '0';\n}",
+        "cpp": "string largestNumber(vector<int>& nums) {\n    vector<string> strs;\n    for (int n : nums) strs.push_back(to_string(n));\n    sort(strs.begin(), strs.end(), [](string& a, string& b) { return a + b > b + a; });\n    if (strs[0] == \"0\") return \"0\";\n    string result;\n    for (auto& s : strs) result += s;\n    return result;\n}",
+        "go": "func largestNumber(nums []int) string {\n    strs := make([]string, len(nums))\n    for i, n := range nums { strs[i] = strconv.Itoa(n) }\n    sort.Slice(strs, func(i, j int) bool { return strs[i]+strs[j] > strs[j]+strs[i] })\n    if strs[0] == \"0\" { return \"0\" }\n    return strings.Join(strs, \"\")\n}"
+      },
+      "id": 216,
+      "options": [
+        "Prefix Sum",
+        "Trie",
+        "Sorting",
+        "Greedy / Intervals",
+        "Matrix / Grid",
+        "Backtracking"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(log n)",
+        "O(n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(V + E)"
+      ]
+    },
+    {
+      "number": 274,
+      "title": "H-Index",
+      "difficulty": "Medium",
+      "correctPattern": "Sorting",
+      "description": "Given an array of citations for a researcher's papers, return the researcher's h-index (the max h such that the researcher has at least h papers with at least h citations each).",
+      "solutions": {
+        "python": "def h_index(citations):\n    citations.sort(reverse=True)\n    h = 0\n    for i, c in enumerate(citations):\n        if c >= i + 1:\n            h = i + 1\n        else:\n            break\n    return h",
+        "java": "public int hIndex(int[] citations) {\n    Arrays.sort(citations);\n    int n = citations.length;\n    for (int i = 0; i < n; i++) {\n        if (citations[i] >= n - i) return n - i;\n    }\n    return 0;\n}",
+        "typescript": "function hIndex(citations: number[]): number {\n  citations.sort((a, b) => b - a);\n  let h = 0;\n  for (let i = 0; i < citations.length; i++) {\n    if (citations[i] >= i + 1) h = i + 1;\n    else break;\n  }\n  return h;\n}",
+        "javascript": "function hIndex(citations) {\n  citations.sort((a, b) => b - a);\n  let h = 0;\n  for (let i = 0; i < citations.length; i++) {\n    if (citations[i] >= i + 1) h = i + 1;\n    else break;\n  }\n  return h;\n}",
+        "cpp": "int hIndex(vector<int>& citations) {\n    sort(citations.rbegin(), citations.rend());\n    int h = 0;\n    for (int i = 0; i < citations.size(); i++) {\n        if (citations[i] >= i + 1) h = i + 1;\n        else break;\n    }\n    return h;\n}",
+        "go": "func hIndex(citations []int) int {\n    sort.Sort(sort.Reverse(sort.IntSlice(citations)))\n    h := 0\n    for i, c := range citations {\n        if c >= i+1 {\n            h = i + 1\n        } else {\n            break\n        }\n    }\n    return h\n}"
+      },
+      "id": 217,
+      "options": [
+        "Union Find",
+        "Design",
+        "Math",
+        "Binary Search",
+        "Sorting",
+        "Trie"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(1)",
+        "O(2^n)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(n)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 252,
+      "title": "Meeting Rooms",
+      "difficulty": "Easy",
+      "correctPattern": "Sorting",
+      "description": "Given an array of meeting time intervals, determine if a person could attend all meetings (i.e., no two intervals overlap).",
+      "solutions": {
+        "python": "def can_attend_meetings(intervals):\n    intervals.sort(key=lambda x: x[0])\n    for i in range(1, len(intervals)):\n        if intervals[i][0] < intervals[i - 1][1]:\n            return False\n    return True",
+        "java": "public boolean canAttendMeetings(int[][] intervals) {\n    Arrays.sort(intervals, (a, b) -> a[0] - b[0]);\n    for (int i = 1; i < intervals.length; i++) {\n        if (intervals[i][0] < intervals[i - 1][1]) return false;\n    }\n    return true;\n}",
+        "typescript": "function canAttendMeetings(intervals: number[][]): boolean {\n  intervals.sort((a, b) => a[0] - b[0]);\n  for (let i = 1; i < intervals.length; i++) {\n    if (intervals[i][0] < intervals[i - 1][1]) return false;\n  }\n  return true;\n}",
+        "javascript": "function canAttendMeetings(intervals) {\n  intervals.sort((a, b) => a[0] - b[0]);\n  for (let i = 1; i < intervals.length; i++) {\n    if (intervals[i][0] < intervals[i - 1][1]) return false;\n  }\n  return true;\n}",
+        "cpp": "bool canAttendMeetings(vector<vector<int>>& intervals) {\n    sort(intervals.begin(), intervals.end());\n    for (int i = 1; i < intervals.size(); i++) {\n        if (intervals[i][0] < intervals[i - 1][1]) return false;\n    }\n    return true;\n}",
+        "go": "func canAttendMeetings(intervals [][]int) bool {\n    sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })\n    for i := 1; i < len(intervals); i++ {\n        if intervals[i][0] < intervals[i-1][1] { return false }\n    }\n    return true\n}"
+      },
+      "id": 218,
+      "options": [
+        "Sorting",
+        "Graph BFS/DFS",
+        "Stack",
+        "Two Pointers",
+        "Bit Manipulation",
+        "Trie"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(m * n)"
+      ]
+    },
+    {
+      "number": 421,
+      "title": "Maximum XOR of Two Numbers in an Array",
+      "difficulty": "Medium",
+      "correctPattern": "Trie",
+      "description": "Given an integer array nums, return the maximum result of nums[i] XOR nums[j], using a binary trie over bit representations for an O(n) approach.",
+      "solutions": {
+        "python": "def find_maximum_xor(nums):\n    max_xor = 0\n    mask = 0\n    for i in range(31, -1, -1):\n        mask |= (1 << i)\n        prefixes = {n & mask for n in nums}\n        candidate = max_xor | (1 << i)\n        for p in prefixes:\n            if (candidate ^ p) in prefixes:\n                max_xor = candidate\n                break\n    return max_xor",
+        "java": "public int findMaximumXOR(int[] nums) {\n    int maxXor = 0, mask = 0;\n    for (int i = 31; i >= 0; i--) {\n        mask |= (1 << i);\n        Set<Integer> prefixes = new HashSet<>();\n        for (int n : nums) prefixes.add(n & mask);\n        int candidate = maxXor | (1 << i);\n        for (int p : prefixes) {\n            if (prefixes.contains(candidate ^ p)) {\n                maxXor = candidate;\n                break;\n            }\n        }\n    }\n    return maxXor;\n}",
+        "typescript": "function findMaximumXOR(nums: number[]): number {\n  let maxXor = 0, mask = 0;\n  for (let i = 31; i >= 0; i--) {\n    mask |= (1 << i);\n    const prefixes = new Set(nums.map(n => n & mask));\n    const candidate = maxXor | (1 << i);\n    for (const p of prefixes) {\n      if (prefixes.has(candidate ^ p)) {\n        maxXor = candidate;\n        break;\n      }\n    }\n  }\n  return maxXor;\n}",
+        "javascript": "function findMaximumXOR(nums) {\n  let maxXor = 0, mask = 0;\n  for (let i = 31; i >= 0; i--) {\n    mask |= (1 << i);\n    const prefixes = new Set(nums.map(n => n & mask));\n    const candidate = maxXor | (1 << i);\n    for (const p of prefixes) {\n      if (prefixes.has(candidate ^ p)) {\n        maxXor = candidate;\n        break;\n      }\n    }\n  }\n  return maxXor;\n}",
+        "cpp": "int findMaximumXOR(vector<int>& nums) {\n    int maxXor = 0, mask = 0;\n    for (int i = 31; i >= 0; i--) {\n        mask |= (1 << i);\n        unordered_set<int> prefixes;\n        for (int n : nums) prefixes.insert(n & mask);\n        int candidate = maxXor | (1 << i);\n        for (int p : prefixes) {\n            if (prefixes.count(candidate ^ p)) {\n                maxXor = candidate;\n                break;\n            }\n        }\n    }\n    return maxXor;\n}",
+        "go": "func findMaximumXOR(nums []int) int {\n    maxXor, mask := 0, 0\n    for i := 31; i >= 0; i-- {\n        mask |= (1 << i)\n        prefixes := make(map[int]bool)\n        for _, n := range nums { prefixes[n&mask] = true }\n        candidate := maxXor | (1 << i)\n        for p := range prefixes {\n            if prefixes[candidate^p] {\n                maxXor = candidate\n                break\n            }\n        }\n    }\n    return maxXor\n}"
+      },
+      "id": 219,
+      "options": [
+        "Trie",
+        "Sorting",
+        "Linked List",
+        "Stack",
+        "Sliding Window",
+        "Backtracking"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(m * n)",
+        "O(n^3)",
+        "O(n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(n^2)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 677,
+      "title": "Map Sum Pairs",
+      "difficulty": "Medium",
+      "correctPattern": "Trie",
+      "description": "Design a map that supports inserting a (key, value) pair and querying the sum of values for all keys that start with a given prefix.",
+      "solutions": {
+        "python": "class MapSum:\n    def __init__(self):\n        self.map = {}\n\n    def insert(self, key, val):\n        self.map[key] = val\n\n    def sum(self, prefix):\n        return sum(v for k, v in self.map.items() if k.startswith(prefix))",
+        "java": "class MapSum {\n    private Map<String, Integer> map = new HashMap<>();\n\n    public void insert(String key, int val) {\n        map.put(key, val);\n    }\n    public int sum(String prefix) {\n        int total = 0;\n        for (var entry : map.entrySet()) {\n            if (entry.getKey().startsWith(prefix)) total += entry.getValue();\n        }\n        return total;\n    }\n}",
+        "typescript": "class MapSum {\n  private map = new Map<string, number>();\n\n  insert(key: string, val: number): void {\n    this.map.set(key, val);\n  }\n  sum(prefix: string): number {\n    let total = 0;\n    for (const [k, v] of this.map) {\n      if (k.startsWith(prefix)) total += v;\n    }\n    return total;\n  }\n}",
+        "javascript": "class MapSum {\n  constructor() {\n    this.map = new Map();\n  }\n  insert(key, val) {\n    this.map.set(key, val);\n  }\n  sum(prefix) {\n    let total = 0;\n    for (const [k, v] of this.map) {\n      if (k.startsWith(prefix)) total += v;\n    }\n    return total;\n  }\n}",
+        "cpp": "class MapSum {\n    unordered_map<string, int> mp;\npublic:\n    void insert(string key, int val) {\n        mp[key] = val;\n    }\n    int sum(string prefix) {\n        int total = 0;\n        for (auto& [k, v] : mp) {\n            if (k.substr(0, prefix.size()) == prefix) total += v;\n        }\n        return total;\n    }\n};",
+        "go": "type MapSum struct {\n    m map[string]int\n}\nfunc Constructor() MapSum {\n    return MapSum{m: make(map[string]int)}\n}\nfunc (s *MapSum) Insert(key string, val int) {\n    s.m[key] = val\n}\nfunc (s *MapSum) Sum(prefix string) int {\n    total := 0\n    for k, v := range s.m {\n        if strings.HasPrefix(k, prefix) { total += v }\n    }\n    return total\n}"
+      },
+      "id": 220,
+      "options": [
+        "Trie",
+        "Binary Search",
+        "Tree BFS/DFS",
+        "Heap / Priority Queue",
+        "Greedy / Intervals",
+        "Hash Map"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(n^3)",
+        "O(n log n)",
+        "O(1)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 1268,
+      "title": "Search Suggestions System",
+      "difficulty": "Medium",
+      "correctPattern": "Trie",
+      "description": "Given a list of products and a search word, return a list of up to 3 lexicographically smallest matching products (by prefix) after each character the user types.",
+      "solutions": {
+        "python": "def suggested_products(products, search_word):\n    products.sort()\n    result = []\n    prefix = ''\n    for c in search_word:\n        prefix += c\n        matches = [p for p in products if p.startswith(prefix)][:3]\n        result.append(matches)\n    return result",
+        "java": "public List<List<String>> suggestedProducts(String[] products, String searchWord) {\n    Arrays.sort(products);\n    List<List<String>> result = new ArrayList<>();\n    String prefix = \"\";\n    for (char c : searchWord.toCharArray()) {\n        prefix += c;\n        List<String> matches = new ArrayList<>();\n        for (String p : products) {\n            if (p.startsWith(prefix)) {\n                matches.add(p);\n                if (matches.size() == 3) break;\n            }\n        }\n        result.add(matches);\n    }\n    return result;\n}",
+        "typescript": "function suggestedProducts(products: string[], searchWord: string): string[][] {\n  products.sort();\n  const result: string[][] = [];\n  let prefix = '';\n  for (const c of searchWord) {\n    prefix += c;\n    result.push(products.filter(p => p.startsWith(prefix)).slice(0, 3));\n  }\n  return result;\n}",
+        "javascript": "function suggestedProducts(products, searchWord) {\n  products.sort();\n  const result = [];\n  let prefix = '';\n  for (const c of searchWord) {\n    prefix += c;\n    result.push(products.filter(p => p.startsWith(prefix)).slice(0, 3));\n  }\n  return result;\n}",
+        "cpp": "vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {\n    sort(products.begin(), products.end());\n    vector<vector<string>> result;\n    string prefix;\n    for (char c : searchWord) {\n        prefix += c;\n        vector<string> matches;\n        for (auto& p : products) {\n            if (p.substr(0, prefix.size()) == prefix) {\n                matches.push_back(p);\n                if (matches.size() == 3) break;\n            }\n        }\n        result.push_back(matches);\n    }\n    return result;\n}",
+        "go": "func suggestedProducts(products []string, searchWord string) [][]string {\n    sort.Strings(products)\n    result := [][]string{}\n    prefix := \"\"\n    for i := 0; i < len(searchWord); i++ {\n        prefix += string(searchWord[i])\n        matches := []string{}\n        for _, p := range products {\n            if strings.HasPrefix(p, prefix) {\n                matches = append(matches, p)\n                if len(matches) == 3 { break }\n            }\n        }\n        result = append(result, matches)\n    }\n    return result\n}"
+      },
+      "id": 221,
+      "options": [
+        "Stack",
+        "Trie",
+        "Sorting",
+        "Math",
+        "Sliding Window",
+        "Linked List"
+      ],
+      "timeComplexity": "O(n log n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n log n)",
+        "O(2^n)",
+        "O(V + E)",
+        "O(n^3)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(V + E)",
+        "O(m * n)"
+      ]
+    },
+    {
+      "number": 1472,
+      "title": "Design Browser History",
+      "difficulty": "Medium",
+      "correctPattern": "Design",
+      "description": "Design a browser history system supporting visit(url), back(steps), and forward(steps), where visiting a new page clears forward history.",
+      "solutions": {
+        "python": "class BrowserHistory:\n    def __init__(self, homepage):\n        self.history = [homepage]\n        self.curr = 0\n\n    def visit(self, url):\n        self.history = self.history[:self.curr + 1]\n        self.history.append(url)\n        self.curr += 1\n\n    def back(self, steps):\n        self.curr = max(0, self.curr - steps)\n        return self.history[self.curr]\n\n    def forward(self, steps):\n        self.curr = min(len(self.history) - 1, self.curr + steps)\n        return self.history[self.curr]",
+        "java": "class BrowserHistory {\n    private List<String> history = new ArrayList<>();\n    private int curr = 0;\n\n    public BrowserHistory(String homepage) {\n        history.add(homepage);\n    }\n    public void visit(String url) {\n        history = new ArrayList<>(history.subList(0, curr + 1));\n        history.add(url);\n        curr++;\n    }\n    public String back(int steps) {\n        curr = Math.max(0, curr - steps);\n        return history.get(curr);\n    }\n    public String forward(int steps) {\n        curr = Math.min(history.size() - 1, curr + steps);\n        return history.get(curr);\n    }\n}",
+        "typescript": "class BrowserHistory {\n  private history: string[];\n  private curr = 0;\n\n  constructor(homepage: string) {\n    this.history = [homepage];\n  }\n  visit(url: string): void {\n    this.history = this.history.slice(0, this.curr + 1);\n    this.history.push(url);\n    this.curr++;\n  }\n  back(steps: number): string {\n    this.curr = Math.max(0, this.curr - steps);\n    return this.history[this.curr];\n  }\n  forward(steps: number): string {\n    this.curr = Math.min(this.history.length - 1, this.curr + steps);\n    return this.history[this.curr];\n  }\n}",
+        "javascript": "class BrowserHistory {\n  constructor(homepage) {\n    this.history = [homepage];\n    this.curr = 0;\n  }\n  visit(url) {\n    this.history = this.history.slice(0, this.curr + 1);\n    this.history.push(url);\n    this.curr++;\n  }\n  back(steps) {\n    this.curr = Math.max(0, this.curr - steps);\n    return this.history[this.curr];\n  }\n  forward(steps) {\n    this.curr = Math.min(this.history.length - 1, this.curr + steps);\n    return this.history[this.curr];\n  }\n}",
+        "cpp": "class BrowserHistory {\n    vector<string> history;\n    int curr = 0;\npublic:\n    BrowserHistory(string homepage) {\n        history.push_back(homepage);\n    }\n    void visit(string url) {\n        history.resize(curr + 1);\n        history.push_back(url);\n        curr++;\n    }\n    string back(int steps) {\n        curr = max(0, curr - steps);\n        return history[curr];\n    }\n    string forward(int steps) {\n        curr = min((int)history.size() - 1, curr + steps);\n        return history[curr];\n    }\n};",
+        "go": "type BrowserHistory struct {\n    history []string\n    curr    int\n}\nfunc Constructor(homepage string) BrowserHistory {\n    return BrowserHistory{history: []string{homepage}}\n}\nfunc (b *BrowserHistory) Visit(url string) {\n    b.history = append(b.history[:b.curr+1], url)\n    b.curr++\n}\nfunc (b *BrowserHistory) Back(steps int) string {\n    b.curr -= steps\n    if b.curr < 0 { b.curr = 0 }\n    return b.history[b.curr]\n}\nfunc (b *BrowserHistory) Forward(steps int) string {\n    b.curr += steps\n    if b.curr > len(b.history)-1 { b.curr = len(b.history) - 1 }\n    return b.history[b.curr]\n}"
+      },
+      "id": 222,
+      "options": [
+        "Heap / Priority Queue",
+        "Dynamic Programming",
+        "Design",
+        "Hash Map",
+        "Two Pointers",
+        "Bit Manipulation"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(log n)",
+        "O(1)"
+      ]
+    },
+    {
+      "number": 348,
+      "title": "Design Tic-Tac-Toe",
+      "difficulty": "Medium",
+      "correctPattern": "Design",
+      "description": "Design a Tic-Tac-Toe game played on an n x n board by two players, with a move(row, col, player) function that returns the winning player's id (or 0 if no winner yet), in O(n) time per move.",
+      "solutions": {
+        "python": "class TicTacToe:\n    def __init__(self, n):\n        self.n = n\n        self.rows = [0] * n\n        self.cols = [0] * n\n        self.diag = 0\n        self.anti_diag = 0\n\n    def move(self, row, col, player):\n        delta = 1 if player == 1 else -1\n        self.rows[row] += delta\n        self.cols[col] += delta\n        if row == col:\n            self.diag += delta\n        if row + col == self.n - 1:\n            self.anti_diag += delta\n        if abs(self.rows[row]) == self.n or abs(self.cols[col]) == self.n or \\\n           abs(self.diag) == self.n or abs(self.anti_diag) == self.n:\n            return player\n        return 0",
+        "java": "class TicTacToe {\n    private int[] rows, cols;\n    private int diag, antiDiag, n;\n\n    public TicTacToe(int n) {\n        this.n = n;\n        rows = new int[n];\n        cols = new int[n];\n    }\n    public int move(int row, int col, int player) {\n        int delta = (player == 1) ? 1 : -1;\n        rows[row] += delta;\n        cols[col] += delta;\n        if (row == col) diag += delta;\n        if (row + col == n - 1) antiDiag += delta;\n        if (Math.abs(rows[row]) == n || Math.abs(cols[col]) == n ||\n            Math.abs(diag) == n || Math.abs(antiDiag) == n) return player;\n        return 0;\n    }\n}",
+        "typescript": "class TicTacToe {\n  private rows: number[];\n  private cols: number[];\n  private diag = 0;\n  private antiDiag = 0;\n  private n: number;\n\n  constructor(n: number) {\n    this.n = n;\n    this.rows = new Array(n).fill(0);\n    this.cols = new Array(n).fill(0);\n  }\n  move(row: number, col: number, player: number): number {\n    const delta = player === 1 ? 1 : -1;\n    this.rows[row] += delta;\n    this.cols[col] += delta;\n    if (row === col) this.diag += delta;\n    if (row + col === this.n - 1) this.antiDiag += delta;\n    if (Math.abs(this.rows[row]) === this.n || Math.abs(this.cols[col]) === this.n ||\n        Math.abs(this.diag) === this.n || Math.abs(this.antiDiag) === this.n) return player;\n    return 0;\n  }\n}",
+        "javascript": "class TicTacToe {\n  constructor(n) {\n    this.n = n;\n    this.rows = new Array(n).fill(0);\n    this.cols = new Array(n).fill(0);\n    this.diag = 0;\n    this.antiDiag = 0;\n  }\n  move(row, col, player) {\n    const delta = player === 1 ? 1 : -1;\n    this.rows[row] += delta;\n    this.cols[col] += delta;\n    if (row === col) this.diag += delta;\n    if (row + col === this.n - 1) this.antiDiag += delta;\n    if (Math.abs(this.rows[row]) === this.n || Math.abs(this.cols[col]) === this.n ||\n        Math.abs(this.diag) === this.n || Math.abs(this.antiDiag) === this.n) return player;\n    return 0;\n  }\n}",
+        "cpp": "class TicTacToe {\n    vector<int> rows, cols;\n    int diag = 0, antiDiag = 0, n;\npublic:\n    TicTacToe(int n) : n(n), rows(n, 0), cols(n, 0) {}\n    int move(int row, int col, int player) {\n        int delta = (player == 1) ? 1 : -1;\n        rows[row] += delta;\n        cols[col] += delta;\n        if (row == col) diag += delta;\n        if (row + col == n - 1) antiDiag += delta;\n        if (abs(rows[row]) == n || abs(cols[col]) == n || abs(diag) == n || abs(antiDiag) == n) return player;\n        return 0;\n    }\n};",
+        "go": "type TicTacToe struct {\n    rows, cols       []int\n    diag, antiDiag, n int\n}\nfunc Constructor(n int) TicTacToe {\n    return TicTacToe{rows: make([]int, n), cols: make([]int, n), n: n}\n}\nfunc (t *TicTacToe) Move(row int, col int, player int) int {\n    delta := 1\n    if player != 1 { delta = -1 }\n    t.rows[row] += delta\n    t.cols[col] += delta\n    if row == col { t.diag += delta }\n    if row+col == t.n-1 { t.antiDiag += delta }\n    abs := func(x int) int { if x < 0 { return -x }; return x }\n    if abs(t.rows[row]) == t.n || abs(t.cols[col]) == t.n || abs(t.diag) == t.n || abs(t.antiDiag) == t.n {\n        return player\n    }\n    return 0\n}"
+      },
+      "id": 223,
+      "options": [
+        "Greedy / Intervals",
+        "Sorting",
+        "Matrix / Grid",
+        "Linked List",
+        "Prefix Sum",
+        "Design"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)",
+        "O(n^2)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)"
+      ]
+    },
+    {
+      "number": 1166,
+      "title": "Design File System",
+      "difficulty": "Medium",
+      "correctPattern": "Design",
+      "description": "Design a file system that supports createPath(path, value) to create a new path with a value (only if its parent exists and the path itself doesn't), and get(path) to retrieve a path's value.",
+      "solutions": {
+        "python": "class FileSystem:\n    def __init__(self):\n        self.paths = {}\n\n    def create_path(self, path, value):\n        if path in self.paths:\n            return False\n        parent = path[:path.rfind('/')]\n        if parent != '' and parent not in self.paths:\n            return False\n        self.paths[path] = value\n        return True\n\n    def get(self, path):\n        return self.paths.get(path, -1)",
+        "java": "class FileSystem {\n    private Map<String, Integer> paths = new HashMap<>();\n\n    public boolean createPath(String path, int value) {\n        if (paths.containsKey(path)) return false;\n        String parent = path.substring(0, path.lastIndexOf('/'));\n        if (!parent.isEmpty() && !paths.containsKey(parent)) return false;\n        paths.put(path, value);\n        return true;\n    }\n    public int get(String path) {\n        return paths.getOrDefault(path, -1);\n    }\n}",
+        "typescript": "class FileSystem {\n  private paths = new Map<string, number>();\n\n  createPath(path: string, value: number): boolean {\n    if (this.paths.has(path)) return false;\n    const parent = path.slice(0, path.lastIndexOf('/'));\n    if (parent !== '' && !this.paths.has(parent)) return false;\n    this.paths.set(path, value);\n    return true;\n  }\n  get(path: string): number {\n    return this.paths.has(path) ? this.paths.get(path)! : -1;\n  }\n}",
+        "javascript": "class FileSystem {\n  constructor() {\n    this.paths = new Map();\n  }\n  createPath(path, value) {\n    if (this.paths.has(path)) return false;\n    const parent = path.slice(0, path.lastIndexOf('/'));\n    if (parent !== '' && !this.paths.has(parent)) return false;\n    this.paths.set(path, value);\n    return true;\n  }\n  get(path) {\n    return this.paths.has(path) ? this.paths.get(path) : -1;\n  }\n}",
+        "cpp": "class FileSystem {\n    unordered_map<string, int> paths;\npublic:\n    bool createPath(string path, int value) {\n        if (paths.count(path)) return false;\n        string parent = path.substr(0, path.find_last_of('/'));\n        if (!parent.empty() && !paths.count(parent)) return false;\n        paths[path] = value;\n        return true;\n    }\n    int get(string path) {\n        return paths.count(path) ? paths[path] : -1;\n    }\n};",
+        "go": "type FileSystem struct {\n    paths map[string]int\n}\nfunc Constructor() FileSystem {\n    return FileSystem{paths: make(map[string]int)}\n}\nfunc (fs *FileSystem) CreatePath(path string, value int) bool {\n    if _, ok := fs.paths[path]; ok { return false }\n    idx := strings.LastIndex(path, \"/\")\n    parent := path[:idx]\n    if parent != \"\" {\n        if _, ok := fs.paths[parent]; !ok { return false }\n    }\n    fs.paths[path] = value\n    return true\n}\nfunc (fs *FileSystem) Get(path string) int {\n    if v, ok := fs.paths[path]; ok { return v }\n    return -1\n}"
+      },
+      "id": 224,
+      "options": [
+        "Stack",
+        "Trie",
+        "Sliding Window",
+        "String Manipulation",
+        "Design",
+        "Linked List"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(n log n)",
+        "O(n)",
+        "O(m * n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(V + E)",
+        "O(m * n)",
+        "O(n^2)"
+      ]
+    },
+    {
+      "number": 304,
+      "title": "Range Sum Query 2D - Immutable",
+      "difficulty": "Medium",
+      "correctPattern": "Prefix Sum",
+      "description": "Given a 2D matrix, design a class that efficiently answers multiple sumRegion(row1, col1, row2, col2) queries, returning the sum of elements within that rectangle.",
+      "solutions": {
+        "python": "class NumMatrix:\n    def __init__(self, matrix):\n        rows, cols = len(matrix), len(matrix[0])\n        self.prefix = [[0] * (cols + 1) for _ in range(rows + 1)]\n        for r in range(rows):\n            for c in range(cols):\n                self.prefix[r + 1][c + 1] = (matrix[r][c] + self.prefix[r][c + 1] +\n                                              self.prefix[r + 1][c] - self.prefix[r][c])\n\n    def sum_region(self, row1, col1, row2, col2):\n        return (self.prefix[row2 + 1][col2 + 1] - self.prefix[row1][col2 + 1] -\n                self.prefix[row2 + 1][col1] + self.prefix[row1][col1])",
+        "java": "class NumMatrix {\n    private int[][] prefix;\n\n    public NumMatrix(int[][] matrix) {\n        int rows = matrix.length, cols = matrix[0].length;\n        prefix = new int[rows + 1][cols + 1];\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                prefix[r + 1][c + 1] = matrix[r][c] + prefix[r][c + 1] + prefix[r + 1][c] - prefix[r][c];\n            }\n        }\n    }\n    public int sumRegion(int row1, int col1, int row2, int col2) {\n        return prefix[row2 + 1][col2 + 1] - prefix[row1][col2 + 1] - prefix[row2 + 1][col1] + prefix[row1][col1];\n    }\n}",
+        "typescript": "class NumMatrix {\n  private prefix: number[][];\n\n  constructor(matrix: number[][]) {\n    const rows = matrix.length, cols = matrix[0].length;\n    this.prefix = Array.from({ length: rows + 1 }, () => new Array(cols + 1).fill(0));\n    for (let r = 0; r < rows; r++) {\n      for (let c = 0; c < cols; c++) {\n        this.prefix[r + 1][c + 1] = matrix[r][c] + this.prefix[r][c + 1] + this.prefix[r + 1][c] - this.prefix[r][c];\n      }\n    }\n  }\n  sumRegion(row1: number, col1: number, row2: number, col2: number): number {\n    return this.prefix[row2 + 1][col2 + 1] - this.prefix[row1][col2 + 1] - this.prefix[row2 + 1][col1] + this.prefix[row1][col1];\n  }\n}",
+        "javascript": "class NumMatrix {\n  constructor(matrix) {\n    const rows = matrix.length, cols = matrix[0].length;\n    this.prefix = Array.from({ length: rows + 1 }, () => new Array(cols + 1).fill(0));\n    for (let r = 0; r < rows; r++) {\n      for (let c = 0; c < cols; c++) {\n        this.prefix[r + 1][c + 1] = matrix[r][c] + this.prefix[r][c + 1] + this.prefix[r + 1][c] - this.prefix[r][c];\n      }\n    }\n  }\n  sumRegion(row1, col1, row2, col2) {\n    return this.prefix[row2 + 1][col2 + 1] - this.prefix[row1][col2 + 1] - this.prefix[row2 + 1][col1] + this.prefix[row1][col1];\n  }\n}",
+        "cpp": "class NumMatrix {\n    vector<vector<int>> prefix;\npublic:\n    NumMatrix(vector<vector<int>>& matrix) {\n        int rows = matrix.size(), cols = matrix[0].size();\n        prefix.assign(rows + 1, vector<int>(cols + 1, 0));\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                prefix[r+1][c+1] = matrix[r][c] + prefix[r][c+1] + prefix[r+1][c] - prefix[r][c];\n            }\n        }\n    }\n    int sumRegion(int row1, int col1, int row2, int col2) {\n        return prefix[row2+1][col2+1] - prefix[row1][col2+1] - prefix[row2+1][col1] + prefix[row1][col1];\n    }\n};",
+        "go": "type NumMatrix struct {\n    prefix [][]int\n}\nfunc Constructor(matrix [][]int) NumMatrix {\n    rows, cols := len(matrix), len(matrix[0])\n    prefix := make([][]int, rows+1)\n    for i := range prefix { prefix[i] = make([]int, cols+1) }\n    for r := 0; r < rows; r++ {\n        for c := 0; c < cols; c++ {\n            prefix[r+1][c+1] = matrix[r][c] + prefix[r][c+1] + prefix[r+1][c] - prefix[r][c]\n        }\n    }\n    return NumMatrix{prefix: prefix}\n}\nfunc (m *NumMatrix) SumRegion(row1 int, col1 int, row2 int, col2 int) int {\n    return m.prefix[row2+1][col2+1] - m.prefix[row1][col2+1] - m.prefix[row2+1][col1] + m.prefix[row1][col1]\n}"
+      },
+      "id": 225,
+      "options": [
+        "Prefix Sum",
+        "Math",
+        "Union Find",
+        "Backtracking",
+        "Sorting",
+        "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(1)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(1)",
+        "O(n!)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 724,
+      "title": "Find Pivot Index",
+      "difficulty": "Easy",
+      "correctPattern": "Prefix Sum",
+      "description": "Given an array of integers, return the leftmost pivot index where the sum of elements to the left equals the sum of elements to the right, or -1 if none exists.",
+      "solutions": {
+        "python": "def pivot_index(nums):\n    total = sum(nums)\n    left_sum = 0\n    for i, n in enumerate(nums):\n        if left_sum == total - left_sum - n:\n            return i\n        left_sum += n\n    return -1",
+        "java": "public int pivotIndex(int[] nums) {\n    int total = 0;\n    for (int n : nums) total += n;\n    int leftSum = 0;\n    for (int i = 0; i < nums.length; i++) {\n        if (leftSum == total - leftSum - nums[i]) return i;\n        leftSum += nums[i];\n    }\n    return -1;\n}",
+        "typescript": "function pivotIndex(nums: number[]): number {\n  const total = nums.reduce((a, b) => a + b, 0);\n  let leftSum = 0;\n  for (let i = 0; i < nums.length; i++) {\n    if (leftSum === total - leftSum - nums[i]) return i;\n    leftSum += nums[i];\n  }\n  return -1;\n}",
+        "javascript": "function pivotIndex(nums) {\n  const total = nums.reduce((a, b) => a + b, 0);\n  let leftSum = 0;\n  for (let i = 0; i < nums.length; i++) {\n    if (leftSum === total - leftSum - nums[i]) return i;\n    leftSum += nums[i];\n  }\n  return -1;\n}",
+        "cpp": "int pivotIndex(vector<int>& nums) {\n    int total = accumulate(nums.begin(), nums.end(), 0);\n    int leftSum = 0;\n    for (int i = 0; i < nums.size(); i++) {\n        if (leftSum == total - leftSum - nums[i]) return i;\n        leftSum += nums[i];\n    }\n    return -1;\n}",
+        "go": "func pivotIndex(nums []int) int {\n    total := 0\n    for _, n := range nums { total += n }\n    leftSum := 0\n    for i, n := range nums {\n        if leftSum == total-leftSum-n { return i }\n        leftSum += n\n    }\n    return -1\n}"
+      },
+      "id": 226,
+      "options": [
+        "Bit Manipulation",
+        "Tree BFS/DFS",
+        "Stack",
+        "Prefix Sum",
+        "Union Find",
+        "Binary Search"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(n!)",
+        "O(2^n)",
+        "O(n)",
+        "O(V + E)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n^2)",
+        "O(V + E)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 974,
+      "title": "Subarray Sums Divisible by K",
+      "difficulty": "Medium",
+      "correctPattern": "Prefix Sum",
+      "description": "Given an integer array nums and an integer k, return the number of non-empty subarrays whose sum is divisible by k.",
+      "solutions": {
+        "python": "def subarrays_div_by_k(nums, k):\n    counts = {0: 1}\n    prefix = 0\n    result = 0\n    for n in nums:\n        prefix = (prefix + n) % k\n        result += counts.get(prefix, 0)\n        counts[prefix] = counts.get(prefix, 0) + 1\n    return result",
+        "java": "public int subarraysDivByK(int[] nums, int k) {\n    Map<Integer, Integer> counts = new HashMap<>();\n    counts.put(0, 1);\n    int prefix = 0, result = 0;\n    for (int n : nums) {\n        prefix = ((prefix + n) % k + k) % k;\n        result += counts.getOrDefault(prefix, 0);\n        counts.merge(prefix, 1, Integer::sum);\n    }\n    return result;\n}",
+        "typescript": "function subarraysDivByK(nums: number[], k: number): number {\n  const counts = new Map<number, number>([[0, 1]]);\n  let prefix = 0, result = 0;\n  for (const n of nums) {\n    prefix = ((prefix + n) % k + k) % k;\n    result += counts.get(prefix) || 0;\n    counts.set(prefix, (counts.get(prefix) || 0) + 1);\n  }\n  return result;\n}",
+        "javascript": "function subarraysDivByK(nums, k) {\n  const counts = new Map([[0, 1]]);\n  let prefix = 0, result = 0;\n  for (const n of nums) {\n    prefix = ((prefix + n) % k + k) % k;\n    result += counts.get(prefix) || 0;\n    counts.set(prefix, (counts.get(prefix) || 0) + 1);\n  }\n  return result;\n}",
+        "cpp": "int subarraysDivByK(vector<int>& nums, int k) {\n    unordered_map<int, int> counts;\n    counts[0] = 1;\n    int prefix = 0, result = 0;\n    for (int n : nums) {\n        prefix = ((prefix + n) % k + k) % k;\n        result += counts[prefix];\n        counts[prefix]++;\n    }\n    return result;\n}",
+        "go": "func subarraysDivByK(nums []int, k int) int {\n    counts := map[int]int{0: 1}\n    prefix, result := 0, 0\n    for _, n := range nums {\n        prefix = ((prefix+n)%k + k) % k\n        result += counts[prefix]\n        counts[prefix]++\n    }\n    return result\n}"
+      },
+      "id": 227,
+      "options": [
+        "Prefix Sum",
+        "Graph BFS/DFS",
+        "Sorting",
+        "Matrix / Grid",
+        "Linked List",
+        "Greedy / Intervals"
+      ],
+      "timeComplexity": "O(n)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(n)",
+        "O(V + E)",
+        "O(n!)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n)",
+        "O(log n)"
+      ]
+    },
+    {
+      "number": 16,
+      "title": "3Sum Closest",
+      "difficulty": "Medium",
+      "correctPattern": "Two Pointers",
+      "description": "Given an integer array and a target, find three integers whose sum is closest to target, and return that sum.",
+      "solutions": {
+        "python": "def three_sum_closest(nums, target):\n    nums.sort()\n    closest = nums[0] + nums[1] + nums[2]\n    for i in range(len(nums) - 2):\n        l, r = i + 1, len(nums) - 1\n        while l < r:\n            total = nums[i] + nums[l] + nums[r]\n            if abs(total - target) < abs(closest - target):\n                closest = total\n            if total < target:\n                l += 1\n            elif total > target:\n                r -= 1\n            else:\n                return total\n    return closest",
+        "java": "public int threeSumClosest(int[] nums, int target) {\n    Arrays.sort(nums);\n    int closest = nums[0] + nums[1] + nums[2];\n    for (int i = 0; i < nums.length - 2; i++) {\n        int l = i + 1, r = nums.length - 1;\n        while (l < r) {\n            int total = nums[i] + nums[l] + nums[r];\n            if (Math.abs(total - target) < Math.abs(closest - target)) closest = total;\n            if (total < target) l++;\n            else if (total > target) r--;\n            else return total;\n        }\n    }\n    return closest;\n}",
+        "typescript": "function threeSumClosest(nums: number[], target: number): number {\n  nums.sort((a, b) => a - b);\n  let closest = nums[0] + nums[1] + nums[2];\n  for (let i = 0; i < nums.length - 2; i++) {\n    let l = i + 1, r = nums.length - 1;\n    while (l < r) {\n      const total = nums[i] + nums[l] + nums[r];\n      if (Math.abs(total - target) < Math.abs(closest - target)) closest = total;\n      if (total < target) l++;\n      else if (total > target) r--;\n      else return total;\n    }\n  }\n  return closest;\n}",
+        "javascript": "function threeSumClosest(nums, target) {\n  nums.sort((a, b) => a - b);\n  let closest = nums[0] + nums[1] + nums[2];\n  for (let i = 0; i < nums.length - 2; i++) {\n    let l = i + 1, r = nums.length - 1;\n    while (l < r) {\n      const total = nums[i] + nums[l] + nums[r];\n      if (Math.abs(total - target) < Math.abs(closest - target)) closest = total;\n      if (total < target) l++;\n      else if (total > target) r--;\n      else return total;\n    }\n  }\n  return closest;\n}",
+        "cpp": "int threeSumClosest(vector<int>& nums, int target) {\n    sort(nums.begin(), nums.end());\n    int closest = nums[0] + nums[1] + nums[2];\n    for (int i = 0; i < nums.size() - 2; i++) {\n        int l = i + 1, r = nums.size() - 1;\n        while (l < r) {\n            int total = nums[i] + nums[l] + nums[r];\n            if (abs(total - target) < abs(closest - target)) closest = total;\n            if (total < target) l++;\n            else if (total > target) r--;\n            else return total;\n        }\n    }\n    return closest;\n}",
+        "go": "func threeSumClosest(nums []int, target int) int {\n    sort.Ints(nums)\n    closest := nums[0] + nums[1] + nums[2]\n    for i := 0; i < len(nums)-2; i++ {\n        l, r := i+1, len(nums)-1\n        for l < r {\n            total := nums[i] + nums[l] + nums[r]\n            diff := func(x int) int { if x < 0 { return -x }; return x }\n            if diff(total-target) < diff(closest-target) { closest = total }\n            if total < target {\n                l++\n            } else if total > target {\n                r--\n            } else {\n                return total\n            }\n        }\n    }\n    return closest\n}"
+      },
+      "id": 228,
+      "options": [
+        "Binary Search",
+        "Graph BFS/DFS",
+        "Bit Manipulation",
+        "Backtracking",
+        "Sliding Window",
+        "Two Pointers"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(V + E)",
+        "O(n^2)",
+        "O(n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(m * n)",
+        "O(V + E)",
+        "O(1)",
+        "O(n)"
+      ]
+    },
+    {
+      "number": 153,
+      "title": "Find Minimum in Rotated Sorted Array",
+      "difficulty": "Medium",
+      "correctPattern": "Binary Search",
+      "description": "Given a rotated sorted array of unique elements with no duplicates, find the minimum element in O(log n) time.",
+      "solutions": {
+        "python": "def find_min(nums):\n    lo, hi = 0, len(nums) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]:\n            lo = mid + 1\n        else:\n            hi = mid\n    return nums[lo]",
+        "java": "public int findMin(int[] nums) {\n    int lo = 0, hi = nums.length - 1;\n    while (lo < hi) {\n        int mid = (lo + hi) / 2;\n        if (nums[mid] > nums[hi]) lo = mid + 1;\n        else hi = mid;\n    }\n    return nums[lo];\n}",
+        "typescript": "function findMin(nums: number[]): number {\n  let lo = 0, hi = nums.length - 1;\n  while (lo < hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (nums[mid] > nums[hi]) lo = mid + 1;\n    else hi = mid;\n  }\n  return nums[lo];\n}",
+        "javascript": "function findMin(nums) {\n  let lo = 0, hi = nums.length - 1;\n  while (lo < hi) {\n    const mid = Math.floor((lo + hi) / 2);\n    if (nums[mid] > nums[hi]) lo = mid + 1;\n    else hi = mid;\n  }\n  return nums[lo];\n}",
+        "cpp": "int findMin(vector<int>& nums) {\n    int lo = 0, hi = nums.size() - 1;\n    while (lo < hi) {\n        int mid = (lo + hi) / 2;\n        if (nums[mid] > nums[hi]) lo = mid + 1;\n        else hi = mid;\n    }\n    return nums[lo];\n}",
+        "go": "func findMin(nums []int) int {\n    lo, hi := 0, len(nums)-1\n    for lo < hi {\n        mid := (lo + hi) / 2\n        if nums[mid] > nums[hi] {\n            lo = mid + 1\n        } else {\n            hi = mid\n        }\n    }\n    return nums[lo]\n}"
+      },
+      "id": 229,
+      "options": [
+        "Two Pointers",
+        "Union Find",
+        "Binary Search",
+        "String Manipulation",
+        "Prefix Sum",
+        "Graph BFS/DFS"
+      ],
+      "timeComplexity": "O(log n)",
+      "spaceComplexity": "O(1)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(log n)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(m * n)",
+        "O(n^2)",
+        "O(1)"
+      ]
+    },
+    {
+      "number": 1091,
+      "title": "Shortest Path in Binary Matrix",
+      "difficulty": "Medium",
+      "correctPattern": "Graph BFS/DFS",
+      "description": "Given an n x n binary grid, find the length of the shortest clear path (8-directionally connected, only through 0 cells) from top-left to bottom-right, or -1 if none exists.",
+      "solutions": {
+        "python": "from collections import deque\ndef shortest_path_binary_matrix(grid):\n    n = len(grid)\n    if grid[0][0] != 0 or grid[n-1][n-1] != 0:\n        return -1\n    queue = deque([(0, 0, 1)])\n    visited = {(0, 0)}\n    dirs = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]\n    while queue:\n        r, c, dist = queue.popleft()\n        if r == n - 1 and c == n - 1:\n            return dist\n        for dr, dc in dirs:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < n and 0 <= nc < n and grid[nr][nc] == 0 and (nr, nc) not in visited:\n                visited.add((nr, nc))\n                queue.append((nr, nc, dist + 1))\n    return -1",
+        "java": "public int shortestPathBinaryMatrix(int[][] grid) {\n    int n = grid.length;\n    if (grid[0][0] != 0 || grid[n-1][n-1] != 0) return -1;\n    Queue<int[]> queue = new LinkedList<>();\n    queue.add(new int[]{0, 0, 1});\n    boolean[][] visited = new boolean[n][n];\n    visited[0][0] = true;\n    int[][] dirs = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};\n    while (!queue.isEmpty()) {\n        int[] cur = queue.poll();\n        if (cur[0] == n - 1 && cur[1] == n - 1) return cur[2];\n        for (int[] d : dirs) {\n            int nr = cur[0] + d[0], nc = cur[1] + d[1];\n            if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 0 && !visited[nr][nc]) {\n                visited[nr][nc] = true;\n                queue.add(new int[]{nr, nc, cur[2] + 1});\n            }\n        }\n    }\n    return -1;\n}",
+        "typescript": "function shortestPathBinaryMatrix(grid: number[][]): number {\n  const n = grid.length;\n  if (grid[0][0] !== 0 || grid[n-1][n-1] !== 0) return -1;\n  let queue: [number, number, number][] = [[0, 0, 1]];\n  const visited = new Set(['0,0']);\n  const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];\n  while (queue.length) {\n    const [r, c, dist] = queue.shift()!;\n    if (r === n - 1 && c === n - 1) return dist;\n    for (const [dr, dc] of dirs) {\n      const nr = r + dr, nc = c + dc;\n      const key = `${nr},${nc}`;\n      if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] === 0 && !visited.has(key)) {\n        visited.add(key);\n        queue.push([nr, nc, dist + 1]);\n      }\n    }\n  }\n  return -1;\n}",
+        "javascript": "function shortestPathBinaryMatrix(grid) {\n  const n = grid.length;\n  if (grid[0][0] !== 0 || grid[n-1][n-1] !== 0) return -1;\n  let queue = [[0, 0, 1]];\n  const visited = new Set(['0,0']);\n  const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];\n  while (queue.length) {\n    const [r, c, dist] = queue.shift();\n    if (r === n - 1 && c === n - 1) return dist;\n    for (const [dr, dc] of dirs) {\n      const nr = r + dr, nc = c + dc;\n      const key = `${nr},${nc}`;\n      if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] === 0 && !visited.has(key)) {\n        visited.add(key);\n        queue.push([nr, nc, dist + 1]);\n      }\n    }\n  }\n  return -1;\n}",
+        "cpp": "int shortestPathBinaryMatrix(vector<vector<int>>& grid) {\n    int n = grid.size();\n    if (grid[0][0] != 0 || grid[n-1][n-1] != 0) return -1;\n    queue<tuple<int,int,int>> q;\n    q.push({0, 0, 1});\n    vector<vector<bool>> visited(n, vector<bool>(n, false));\n    visited[0][0] = true;\n    int dirs[8][2] = {{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};\n    while (!q.empty()) {\n        auto [r, c, dist] = q.front(); q.pop();\n        if (r == n - 1 && c == n - 1) return dist;\n        for (auto& d : dirs) {\n            int nr = r + d[0], nc = c + d[1];\n            if (nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 0 && !visited[nr][nc]) {\n                visited[nr][nc] = true;\n                q.push({nr, nc, dist + 1});\n            }\n        }\n    }\n    return -1;\n}",
+        "go": "func shortestPathBinaryMatrix(grid [][]int) int {\n    n := len(grid)\n    if grid[0][0] != 0 || grid[n-1][n-1] != 0 { return -1 }\n    type cell struct{ r, c, dist int }\n    queue := []cell{{0, 0, 1}}\n    visited := map[[2]int]bool{{0, 0}: true}\n    dirs := [][2]int{{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}}\n    for len(queue) > 0 {\n        cur := queue[0]\n        queue = queue[1:]\n        if cur.r == n-1 && cur.c == n-1 { return cur.dist }\n        for _, d := range dirs {\n            nr, nc := cur.r+d[0], cur.c+d[1]\n            key := [2]int{nr, nc}\n            if nr >= 0 && nr < n && nc >= 0 && nc < n && grid[nr][nc] == 0 && !visited[key] {\n                visited[key] = true\n                queue = append(queue, cell{nr, nc, cur.dist + 1})\n            }\n        }\n    }\n    return -1\n}"
+      },
+      "id": 230,
+      "options": [
+        "Math",
+        "Linked List",
+        "Graph BFS/DFS",
+        "Tree BFS/DFS",
+        "Binary Search",
+        "Stack"
+      ],
+      "timeComplexity": "O(n^2)",
+      "spaceComplexity": "O(n^2)",
+      "timeOptions": [
+        "O(n^2)",
+        "O(n)",
+        "O(n^3)",
+        "O(n log n)"
+      ],
+      "spaceOptions": [
+        "O(log n)",
+        "O(V + E)",
+        "O(n^2)",
+        "O(m * n)"
+      ]
+    },
+    {
+      "number": 1143,
+      "title": "Longest Common Subsequence",
+      "difficulty": "Medium",
+      "correctPattern": "Dynamic Programming",
+      "description": "Given two strings text1 and text2, return the length of their longest common subsequence (not necessarily contiguous), or 0 if none exists.",
+      "solutions": {
+        "python": "def longest_common_subsequence(text1, text2):\n    m, n = len(text1), len(text2)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if text1[i - 1] == text2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n    return dp[m][n]",
+        "java": "public int longestCommonSubsequence(String text1, String text2) {\n    int m = text1.length(), n = text2.length();\n    int[][] dp = new int[m + 1][n + 1];\n    for (int i = 1; i <= m; i++) {\n        for (int j = 1; j <= n; j++) {\n            if (text1.charAt(i - 1) == text2.charAt(j - 1)) dp[i][j] = dp[i - 1][j - 1] + 1;\n            else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n        }\n    }\n    return dp[m][n];\n}",
+        "typescript": "function longestCommonSubsequence(text1: string, text2: string): number {\n  const m = text1.length, n = text2.length;\n  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));\n  for (let i = 1; i <= m; i++) {\n    for (let j = 1; j <= n; j++) {\n      if (text1[i - 1] === text2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;\n      else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n    }\n  }\n  return dp[m][n];\n}",
+        "javascript": "function longestCommonSubsequence(text1, text2) {\n  const m = text1.length, n = text2.length;\n  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));\n  for (let i = 1; i <= m; i++) {\n    for (let j = 1; j <= n; j++) {\n      if (text1[i - 1] === text2[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;\n      else dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n    }\n  }\n  return dp[m][n];\n}",
+        "cpp": "int longestCommonSubsequence(string text1, string text2) {\n    int m = text1.size(), n = text2.size();\n    vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));\n    for (int i = 1; i <= m; i++) {\n        for (int j = 1; j <= n; j++) {\n            if (text1[i-1] == text2[j-1]) dp[i][j] = dp[i-1][j-1] + 1;\n            else dp[i][j] = max(dp[i-1][j], dp[i][j-1]);\n        }\n    }\n    return dp[m][n];\n}",
+        "go": "func longestCommonSubsequence(text1 string, text2 string) int {\n    m, n := len(text1), len(text2)\n    dp := make([][]int, m+1)\n    for i := range dp { dp[i] = make([]int, n+1) }\n    for i := 1; i <= m; i++ {\n        for j := 1; j <= n; j++ {\n            if text1[i-1] == text2[j-1] {\n                dp[i][j] = dp[i-1][j-1] + 1\n            } else {\n                if dp[i-1][j] > dp[i][j-1] {\n                    dp[i][j] = dp[i-1][j]\n                } else {\n                    dp[i][j] = dp[i][j-1]\n                }\n            }\n        }\n    }\n    return dp[m][n]\n}"
+      },
+      "id": 231,
+      "options": [
+        "Prefix Sum",
+        "Dynamic Programming",
+        "Backtracking",
+        "String Manipulation",
+        "Greedy / Intervals",
+        "Binary Search"
+      ],
+      "timeComplexity": "O(m * n)",
+      "spaceComplexity": "O(m * n)",
+      "timeOptions": [
+        "O(m * n)",
+        "O(1)",
+        "O(n^3)",
+        "O(2^n)"
+      ],
+      "spaceOptions": [
+        "O(1)",
+        "O(n)",
+        "O(m * n)",
+        "O(n^2)"
+      ]
+    },
+    {
+      "number": 47,
+      "title": "Permutations II",
+      "difficulty": "Medium",
+      "correctPattern": "Backtracking",
+      "description": "Given an integer array nums that may contain duplicates, return all possible unique permutations in any order.",
+      "solutions": {
+        "python": "def permute_unique(nums):\n    nums.sort()\n    result = []\n    used = [False] * len(nums)\n    def backtrack(path):\n        if len(path) == len(nums):\n            result.append(path[:])\n            return\n        for i in range(len(nums)):\n            if used[i]:\n                continue\n            if i > 0 and nums[i] == nums[i - 1] and not used[i - 1]:\n                continue\n            used[i] = True\n            path.append(nums[i])\n            backtrack(path)\n            path.pop()\n            used[i] = False\n    backtrack([])\n    return result",
+        "java": "public List<List<Integer>> permuteUnique(int[] nums) {\n    Arrays.sort(nums);\n    List<List<Integer>> result = new ArrayList<>();\n    boolean[] used = new boolean[nums.length];\n    backtrack(nums, used, new ArrayList<>(), result);\n    return result;\n}\nprivate void backtrack(int[] nums, boolean[] used, List<Integer> path, List<List<Integer>> result) {\n    if (path.size() == nums.length) {\n        result.add(new ArrayList<>(path));\n        return;\n    }\n    for (int i = 0; i < nums.length; i++) {\n        if (used[i]) continue;\n        if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) continue;\n        used[i] = true;\n        path.add(nums[i]);\n        backtrack(nums, used, path, result);\n        path.remove(path.size() - 1);\n        used[i] = false;\n    }\n}",
+        "typescript": "function permuteUnique(nums: number[]): number[][] {\n  nums.sort((a, b) => a - b);\n  const result: number[][] = [];\n  const used = new Array(nums.length).fill(false);\n  function backtrack(path: number[]) {\n    if (path.length === nums.length) {\n      result.push([...path]);\n      return;\n    }\n    for (let i = 0; i < nums.length; i++) {\n      if (used[i]) continue;\n      if (i > 0 && nums[i] === nums[i - 1] && !used[i - 1]) continue;\n      used[i] = true;\n      path.push(nums[i]);\n      backtrack(path);\n      path.pop();\n      used[i] = false;\n    }\n  }\n  backtrack([]);\n  return result;\n}",
+        "javascript": "function permuteUnique(nums) {\n  nums.sort((a, b) => a - b);\n  const result = [];\n  const used = new Array(nums.length).fill(false);\n  function backtrack(path) {\n    if (path.length === nums.length) {\n      result.push([...path]);\n      return;\n    }\n    for (let i = 0; i < nums.length; i++) {\n      if (used[i]) continue;\n      if (i > 0 && nums[i] === nums[i - 1] && !used[i - 1]) continue;\n      used[i] = true;\n      path.push(nums[i]);\n      backtrack(path);\n      path.pop();\n      used[i] = false;\n    }\n  }\n  backtrack([]);\n  return result;\n}",
+        "cpp": "void backtrack(vector<int>& nums, vector<bool>& used, vector<int>& path, vector<vector<int>>& result) {\n    if (path.size() == nums.size()) {\n        result.push_back(path);\n        return;\n    }\n    for (int i = 0; i < nums.size(); i++) {\n        if (used[i]) continue;\n        if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) continue;\n        used[i] = true;\n        path.push_back(nums[i]);\n        backtrack(nums, used, path, result);\n        path.pop_back();\n        used[i] = false;\n    }\n}\nvector<vector<int>> permuteUnique(vector<int>& nums) {\n    sort(nums.begin(), nums.end());\n    vector<vector<int>> result;\n    vector<int> path;\n    vector<bool> used(nums.size(), false);\n    backtrack(nums, used, path, result);\n    return result;\n}",
+        "go": "func permuteUnique(nums []int) [][]int {\n    sort.Ints(nums)\n    result := [][]int{}\n    used := make([]bool, len(nums))\n    path := []int{}\n    var backtrack func()\n    backtrack = func() {\n        if len(path) == len(nums) {\n            cp := make([]int, len(path))\n            copy(cp, path)\n            result = append(result, cp)\n            return\n        }\n        for i := 0; i < len(nums); i++ {\n            if used[i] { continue }\n            if i > 0 && nums[i] == nums[i-1] && !used[i-1] { continue }\n            used[i] = true\n            path = append(path, nums[i])\n            backtrack()\n            path = path[:len(path)-1]\n            used[i] = false\n        }\n    }\n    backtrack()\n    return result\n}"
+      },
+      "id": 232,
+      "options": [
+        "Graph BFS/DFS",
+        "Union Find",
+        "Sorting",
+        "Backtracking",
+        "Sliding Window",
+        "Matrix / Grid"
+      ],
+      "timeComplexity": "O(n!)",
+      "spaceComplexity": "O(n)",
+      "timeOptions": [
+        "O(n!)",
+        "O(V + E)",
+        "O(2^n)",
+        "O(log n)"
+      ],
+      "spaceOptions": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(m * n)"
       ]
     }
   ]
