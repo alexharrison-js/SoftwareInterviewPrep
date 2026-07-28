@@ -373,217 +373,131 @@
   // DSA VIEW
   // ============================================================
   const langSelect = document.getElementById("langSelect");
-  const dsaActionBar = document.querySelector("#view-dsa .action-bar");
-  let dsaSolved = false;
-  let dsaMode = "pattern"; // pattern | show-code | implement-pseudo | implement-chunks | final
-  let dsaImplementationState = null;
-  let dsaImplementationZone = null;
-
   langSelect.value = state.lang;
-  langSelect.addEventListener("change", () => {
-    state.lang = langSelect.value;
-    localStorage.setItem("drillset_lang", state.lang);
-    const problem = getDsaProblem(state.decks.dsa.currentId);
-    if (
-      problem &&
-      dsaMode === "show-code" &&
-      !document.getElementById("solutionZone").hidden
-    ) {
-      document.getElementById("solutionLang").textContent = state.lang;
-      document.getElementById("solutionCode").textContent =
-        problem.solutions[state.lang];
-    }
-  });
 
   function getDsaProblem(id) {
     return state.dsa.problems.find((p) => p.id === id);
   }
 
-  function getImplementation(problem) {
-    return problem.implementationDrill || null;
-  }
+  const dsaFlow = {
+    mode: null, // "show" | "implement"
+    pseudoSolved: false,
+    currentProblemId: null,
+    currentCode: "",
+    currentChunkIndex: 0,
+    currentChunks: [],
+  };
 
-  function hideImplementationZone() {
-    if (dsaImplementationZone) dsaImplementationZone.hidden = true;
-  }
+  function ensureDsaDrillUi() {
+    if (document.getElementById("dsaModeZone")) return;
 
-  function ensureImplementationZone() {
-    if (dsaImplementationZone) return dsaImplementationZone;
-    const zone = document.createElement("div");
-    zone.id = "implementationZone";
-    zone.className = "implementation-zone";
-    zone.hidden = true;
-    zone.style.display = "flex";
-    zone.style.flexDirection = "column";
-    zone.style.gap = "18px";
-    zone.style.marginTop = "18px";
-    zone.innerHTML = `
-      <div class="implementation-step" id="implementationModeZone" style="border-top: 1px solid var(--border); padding-top: 18px;">
-        <div class="solution-head" style="margin-bottom: 8px;">
+    const patternZone = document.querySelector("#dsaCard .pattern-zone");
+    patternZone.insertAdjacentHTML(
+      "afterend",
+      `
+      <div class="drill-stage-zone" id="dsaModeZone" hidden>
+        <div class="solution-head">
           <span class="solution-label">Choose a path</span>
         </div>
-        <div class="pattern-buttons" id="implementationModeButtons"></div>
+        <div class="pattern-buttons" id="dsaModeButtons"></div>
       </div>
 
-      <div class="implementation-step" id="implementationPseudoZone" hidden style="border-top: 1px solid var(--border); padding-top: 18px;">
-        <div class="solution-head" style="margin-bottom: 8px;">
+      <div class="drill-stage-zone" id="dsaPseudoZone" hidden>
+        <div class="solution-head">
           <span class="solution-label">High-level pseudo code</span>
         </div>
-        <p class="pattern-label">Which pseudo code best matches the solution?</p>
-        <div class="pattern-buttons" id="implementationPseudoButtons"></div>
-        <p class="feedback-msg" id="implementationPseudoFeedback"></p>
+        <p class="pattern-label" id="dsaPseudoPrompt">
+          Pick the best high-level pseudo code.
+        </p>
+        <div class="pattern-buttons" id="dsaPseudoButtons"></div>
+        <p class="feedback-msg" id="dsaPseudoFeedback"></p>
       </div>
 
-      <div class="implementation-step" id="implementationSummaryZone" hidden style="border-top: 1px solid var(--border); padding-top: 18px;">
-        <div class="solution-head" style="margin-bottom: 8px;">
-          <span class="solution-label">Pseudo code scaffold</span>
-        </div>
-        <pre class="code-block"><code id="implementationPseudoSummary"></code></pre>
-      </div>
-
-      <div class="implementation-step" id="implementationCodeZone" hidden style="border-top: 1px solid var(--border); padding-top: 18px;">
+      <div class="drill-stage-zone" id="dsaImplementZone" hidden>
         <div class="solution-head">
-          <span class="solution-label">Reference solution scaffold</span>
-          <span class="solution-lang">python</span>
+          <span class="solution-label">High-level pseudo code</span>
         </div>
-        <pre class="code-block"><code id="implementationCode"></code></pre>
-      </div>
+        <pre class="pseudo-summary" id="dsaPseudoSummary"></pre>
 
-      <div class="implementation-step" id="implementationChunkZone" hidden style="border-top: 1px solid var(--border); padding-top: 18px;">
-        <div class="solution-head" style="margin-bottom: 8px;">
-          <span class="solution-label" id="implementationChunkLabel">Choose the next chunk</span>
+        <div class="chunk-zone">
+          <div class="solution-head">
+            <span class="solution-label" id="dsaChunkPrompt">
+              Select the next logical Python chunk.
+            </span>
+          </div>
+          <div class="pattern-buttons" id="dsaChunkButtons"></div>
+          <p class="feedback-msg" id="dsaChunkFeedback"></p>
         </div>
-        <div class="pattern-buttons" id="implementationChunkButtons"></div>
-        <p class="feedback-msg" id="implementationChunkFeedback"></p>
       </div>
-    `;
-    document
-      .getElementById("feedbackMsg")
-      .insertAdjacentElement("afterend", zone);
-    dsaImplementationZone = zone;
-    return zone;
+      `,
+    );
   }
 
-  function resetDsaView() {
-    dsaSolved = false;
-    dsaMode = "pattern";
-    dsaImplementationState = null;
-    hideImplementationZone();
-    document.getElementById("solutionZone").hidden = true;
-    document.getElementById("complexityZone").hidden = true;
-    document.getElementById("talkthroughZone").hidden = true;
-    document.getElementById("feedbackMsg").textContent = "";
-    document.getElementById("feedbackMsg").className = "feedback-msg";
-    document.getElementById("solutionLang").textContent = state.lang;
-    document.getElementById("dsaCard").querySelector(".card-scroll").scrollTop =
-      0;
-    dsaActionBar.innerHTML = "";
+  function setDsaZoneVisibility({
+    modeZone = false,
+    pseudoZone = false,
+    implementZone = false,
+    solutionZone = false,
+    complexityZone = false,
+    talkthroughZone = false,
+    retryBtn = false,
+    nextBtn = false,
+  }) {
+    document.getElementById("dsaModeZone").hidden = !modeZone;
+    document.getElementById("dsaPseudoZone").hidden = !pseudoZone;
+    document.getElementById("dsaImplementZone").hidden = !implementZone;
+    document.getElementById("solutionZone").hidden = !solutionZone;
+    document.getElementById("complexityZone").hidden = !complexityZone;
+    document.getElementById("talkthroughZone").hidden = !talkthroughZone;
+    document.getElementById("dsaRetryBtn").hidden = !retryBtn;
+    document.getElementById("dsaNextBtn").hidden = !nextBtn;
   }
 
-  function renderFinalActionBar() {
-    dsaActionBar.innerHTML = "";
-    const retry = document.createElement("button");
-    retry.className = "btn btn-ghost";
-    retry.textContent = "Retry later";
-    retry.addEventListener("click", () => {
-      state.decks.dsa.markRetryLater(state.decks.dsa.currentId);
-      renderDsaCard(state.decks.dsa.next());
+  function renderDsaModeButtons(problem) {
+    const wrap = document.getElementById("dsaModeButtons");
+    wrap.innerHTML = "";
+
+    [
+      { label: "Show Code", mode: "show" },
+      { label: "Implement python", mode: "implement" },
+    ].forEach(({ label, mode }) => {
+      const b = document.createElement("button");
+      b.className = "pattern-btn";
+      b.textContent = label;
+      b.addEventListener("click", () => {
+        if (mode === "show") startShowCodeMode(problem);
+        else startImplementMode(problem);
+      });
+      wrap.appendChild(b);
     });
-
-    const next = document.createElement("button");
-    next.className = "btn btn-primary";
-    next.textContent = "Next problem →";
-    next.addEventListener("click", () => renderDsaCard(state.decks.dsa.next()));
-
-    dsaActionBar.appendChild(retry);
-    dsaActionBar.appendChild(next);
   }
 
-  function renderModeChoiceBar(problem) {
-    dsaActionBar.innerHTML = "";
-    const showCodeBtn = document.createElement("button");
-    showCodeBtn.className = "btn btn-secondary";
-    showCodeBtn.textContent = "Show Code";
-    showCodeBtn.addEventListener("click", () => showCodeMode(problem));
-
-    const implBtn = document.createElement("button");
-    implBtn.className = "btn btn-primary";
-    implBtn.textContent = "Implement python";
-    implBtn.addEventListener("click", () => startImplementationMode(problem));
-
-    dsaActionBar.appendChild(showCodeBtn);
-    dsaActionBar.appendChild(implBtn);
-  }
-
-  function showCodeMode(problem) {
-    dsaMode = "show-code";
-    document.getElementById("solutionZone").hidden = false;
-    document.getElementById("solutionLang").textContent = state.lang;
-    document.getElementById("solutionCode").textContent =
-      problem.solutions[state.lang];
-    document.getElementById("complexityZone").hidden = false;
-    document.getElementById("talkthroughZone").hidden = false;
-    renderFinalActionBar();
-    document.getElementById("dsaCard").querySelector(".card-scroll").scrollTop =
-      0;
-  }
-
-  function startImplementationMode(problem) {
-    const impl = getImplementation(problem);
-    if (!impl) return;
-    dsaMode = "implement-pseudo";
-    dsaImplementationState = {
-      problemId: problem.id,
-      pseudoSolved: false,
-      chunkIndex: 0,
-      codeLines: impl.starterLines.slice(),
-      impl,
-      problem,
-    };
-
-    const zone = ensureImplementationZone();
-    zone.hidden = false;
-    document.getElementById("implementationModeZone").hidden = true;
-    document.getElementById("implementationPseudoZone").hidden = false;
-    document.getElementById("implementationSummaryZone").hidden = true;
-    document.getElementById("implementationCodeZone").hidden = true;
-    document.getElementById("implementationChunkZone").hidden = true;
-    document.getElementById("implementationPseudoFeedback").textContent = "";
-    document.getElementById("implementationPseudoFeedback").className =
-      "feedback-msg";
-    renderImplementationPseudo(problem);
-    document.getElementById("dsaCard").querySelector(".card-scroll").scrollTop =
-      0;
-  }
-
-  function renderImplementationPseudo(problem) {
-    const impl = getImplementation(problem);
-    const wrap = document.getElementById("implementationPseudoButtons");
-    const feedback = document.getElementById("implementationPseudoFeedback");
+  function renderPseudoButtons(problem) {
+    const wrap = document.getElementById("dsaPseudoButtons");
+    const feedback = document.getElementById("dsaPseudoFeedback");
     wrap.innerHTML = "";
     feedback.textContent = "";
     feedback.className = "feedback-msg";
 
-    impl.pseudoOptions.forEach((opt, idx) => {
+    problem.drill.pseudoOptions.forEach((opt, idx) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt.text;
-      b.style.whiteSpace = "pre-wrap";
-      b.style.textAlign = "left";
+      b.textContent = opt;
       b.addEventListener("click", () => {
-        if (b.disabled) return;
-        if (idx === impl.pseudoCorrectIndex) {
+        if (b.disabled || dsaFlow.pseudoSolved) return;
+        if (idx === problem.drill.pseudoCorrectIndex) {
           b.classList.add("correct");
           wrap
             .querySelectorAll(".pattern-btn")
             .forEach((el) => (el.disabled = true));
-          feedback.textContent = "Correct — nice high-level reasoning.";
+          feedback.textContent = "Correct.";
           feedback.className = "feedback-msg correct";
-          onPseudoCorrect(problem);
+          dsaFlow.pseudoSolved = true;
+          showImplementationAfterPseudo(problem);
         } else {
           b.classList.add("wrong");
           b.disabled = true;
-          feedback.textContent = "Not quite — try another pseudo code option.";
+          feedback.textContent = "Not quite — try another pseudo-code option.";
           feedback.className = "feedback-msg wrong";
         }
       });
@@ -591,68 +505,27 @@
     });
   }
 
-  function onPseudoCorrect(problem) {
-    const impl = getImplementation(problem);
-    dsaMode = "implement-chunks";
-    const stateObj = dsaImplementationState;
-    if (!stateObj) return;
-    stateObj.pseudoSolved = true;
-
-    document.getElementById("implementationPseudoZone").hidden = true;
-    document.getElementById("implementationSummaryZone").hidden = false;
-    document.getElementById("implementationCodeZone").hidden = false;
-    document.getElementById("implementationChunkZone").hidden = false;
-
-    document.getElementById("implementationPseudoSummary").textContent =
-      impl.pseudoAbbrev.join("\n");
-    document.getElementById("implementationCode").textContent =
-      stateObj.codeLines.join("\n");
-
-    renderImplementationChunk(problem);
-  }
-
-  function renderImplementationChunk(problem) {
-    const impl = getImplementation(problem);
-    const stateObj = dsaImplementationState;
-    if (!stateObj) return;
-
-    if (stateObj.chunkIndex >= impl.chunks.length) {
-      document.getElementById("implementationChunkZone").hidden = true;
-      document.getElementById("implementationModeZone").hidden = true;
-      document.getElementById("implementationSummaryZone").hidden = false;
-      document.getElementById("implementationCodeZone").hidden = false;
-      document.getElementById("implementationPseudoFeedback").textContent = "";
-      document.getElementById("implementationPseudoFeedback").className =
-        "feedback-msg";
-      document.getElementById("implementationCode").textContent =
-        stateObj.codeLines.join("\n");
-      document.getElementById("complexityZone").hidden = false;
-      document.getElementById("talkthroughZone").hidden = false;
-      renderFinalActionBar();
-      dsaMode = "final";
-      document
-        .getElementById("dsaCard")
-        .querySelector(".card-scroll").scrollTop = 0;
-      return;
-    }
-
-    const chunk = impl.chunks[stateObj.chunkIndex];
-    document.getElementById("implementationChunkLabel").textContent =
-      chunk.label
-        ? `Choose the next chunk: ${chunk.label}`
-        : "Choose the next chunk";
-    const wrap = document.getElementById("implementationChunkButtons");
-    const feedback = document.getElementById("implementationChunkFeedback");
+  function renderChunkButtons(problem) {
+    const wrap = document.getElementById("dsaChunkButtons");
+    const feedback = document.getElementById("dsaChunkFeedback");
+    const prompt = document.getElementById("dsaChunkPrompt");
     wrap.innerHTML = "";
     feedback.textContent = "";
     feedback.className = "feedback-msg";
+
+    const chunk = dsaFlow.currentChunks[dsaFlow.currentChunkIndex];
+    if (!chunk) {
+      finalizeImplementation(problem);
+      return;
+    }
+
+    prompt.textContent =
+      chunk.prompt || "Select the next logical Python chunk.";
 
     chunk.options.forEach((opt, idx) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
       b.textContent = opt;
-      b.style.whiteSpace = "pre-wrap";
-      b.style.textAlign = "left";
       b.addEventListener("click", () => {
         if (b.disabled) return;
         if (idx === chunk.correctIndex) {
@@ -660,15 +533,18 @@
           wrap
             .querySelectorAll(".pattern-btn")
             .forEach((el) => (el.disabled = true));
-          feedback.textContent = "Correct — added to the implementation.";
+          feedback.textContent = "Correct.";
           feedback.className = "feedback-msg correct";
-
-          stateObj.codeLines.push(chunk.text);
-          document.getElementById("implementationCode").textContent =
-            stateObj.codeLines.join("\n");
-          stateObj.chunkIndex += 1;
-
-          window.setTimeout(() => renderImplementationChunk(problem), 0);
+          if (dsaFlow.currentCode && !dsaFlow.currentCode.endsWith("\n")) {
+            dsaFlow.currentCode += "\n";
+          }
+          dsaFlow.currentCode += chunk.code;
+          dsaFlow.currentChunkIndex += 1;
+          document.getElementById("solutionCode").textContent =
+            dsaFlow.currentCode;
+          const card = document.querySelector("#dsaCard .card-scroll");
+          card.scrollTop = card.scrollHeight;
+          setTimeout(() => renderChunkButtons(problem), 0);
         } else {
           b.classList.add("wrong");
           b.disabled = true;
@@ -680,13 +556,109 @@
     });
   }
 
-  function getDsaAction(problem) {
-    return problem ? getImplementation(problem) : null;
+  function resetDsaFlow(problem) {
+    dsaFlow.mode = null;
+    dsaFlow.pseudoSolved = false;
+    dsaFlow.currentProblemId = problem.id;
+    dsaFlow.currentCode = problem.drill.starterCode || "";
+    dsaFlow.currentChunkIndex = 0;
+    dsaFlow.currentChunks = problem.drill.chunks || [];
+    langSelect.disabled = false;
   }
 
+  function showImplementationAfterPseudo(problem) {
+    document.getElementById("dsaPseudoZone").hidden = true;
+    document.getElementById("dsaImplementZone").hidden = false;
+    document.getElementById("solutionZone").hidden = false;
+    document.getElementById("complexityZone").hidden = true;
+    document.getElementById("talkthroughZone").hidden = true;
+    document.getElementById("dsaPseudoSummary").textContent =
+      problem.drill.pseudoSummary;
+    document.getElementById("solutionLang").textContent = "python";
+    document.getElementById("solutionCode").textContent = dsaFlow.currentCode;
+    copyCodeBtn.textContent = "Copy";
+    copyCodeBtn.classList.remove("copied");
+    document.getElementById("dsaRetryBtn").hidden = true;
+    document.getElementById("dsaNextBtn").hidden = true;
+    renderChunkButtons(problem);
+    document.querySelector("#dsaCard .card-scroll").scrollTop = 0;
+  }
+
+  function startShowCodeMode(problem) {
+    dsaFlow.mode = "show";
+    langSelect.disabled = false;
+    document.getElementById("dsaModeZone").hidden = true;
+    document.getElementById("dsaPseudoZone").hidden = true;
+    document.getElementById("dsaImplementZone").hidden = true;
+
+    document.getElementById("solutionZone").hidden = false;
+    document.getElementById("complexityZone").hidden = false;
+    document.getElementById("talkthroughZone").hidden = false;
+
+    document.getElementById("solutionLang").textContent = state.lang;
+    document.getElementById("solutionCode").textContent =
+      problem.solutions[state.lang];
+    copyCodeBtn.textContent = "Copy";
+    copyCodeBtn.classList.remove("copied");
+    document.getElementById("dsaRetryBtn").hidden = false;
+    document.getElementById("dsaNextBtn").hidden = false;
+    document.querySelector("#dsaCard .card-scroll").scrollTop = 0;
+  }
+
+  function startImplementMode(problem) {
+    dsaFlow.mode = "implement";
+    langSelect.value = "python";
+    langSelect.disabled = true;
+    document.getElementById("dsaModeZone").hidden = true;
+    document.getElementById("dsaPseudoZone").hidden = false;
+    document.getElementById("dsaImplementZone").hidden = true;
+    document.getElementById("solutionZone").hidden = true;
+    document.getElementById("complexityZone").hidden = true;
+    document.getElementById("talkthroughZone").hidden = true;
+    document.getElementById("solutionCode").textContent = "";
+    document.getElementById("dsaPseudoSummary").textContent = "";
+    document.getElementById("dsaRetryBtn").hidden = true;
+    document.getElementById("dsaNextBtn").hidden = true;
+    renderPseudoButtons(problem);
+    document.querySelector("#dsaCard .card-scroll").scrollTop = 0;
+  }
+
+  function finalizeImplementation(problem) {
+    document.getElementById("dsaImplementZone").hidden = false;
+    document.getElementById("solutionZone").hidden = false;
+    document.getElementById("complexityZone").hidden = false;
+    document.getElementById("talkthroughZone").hidden = false;
+    document.getElementById("dsaChunkButtons").innerHTML = "";
+    document.getElementById("dsaChunkFeedback").textContent =
+      "Implementation complete.";
+    document.getElementById("dsaChunkFeedback").className =
+      "feedback-msg correct";
+    document.getElementById("dsaRetryBtn").hidden = false;
+    document.getElementById("dsaNextBtn").hidden = false;
+  }
+
+  langSelect.value = state.lang;
+  langSelect.addEventListener("change", () => {
+    state.lang = langSelect.value;
+    localStorage.setItem("drillset_lang", state.lang);
+    if (dsaFlow.mode === "implement") {
+      langSelect.value = "python";
+      return;
+    }
+    const problem = getDsaProblem(state.decks.dsa.currentId);
+    if (problem && !document.getElementById("solutionZone").hidden) {
+      document.getElementById("solutionCode").textContent =
+        problem.solutions[state.lang];
+    }
+  });
+
   function renderDsaCard(id) {
+    ensureDsaDrillUi();
     const p = getDsaProblem(id);
-    resetDsaView();
+    resetDsaFlow(p);
+    copyCodeBtn.textContent = "Copy";
+    copyCodeBtn.classList.remove("copied");
+
     document.getElementById("dsaNumber").textContent = `#${p.number}`;
     document.getElementById("dsaDiff").textContent = p.difficulty;
     document.getElementById("dsaTitle").textContent = p.title;
@@ -709,15 +681,67 @@
     document.getElementById("feedbackMsg").className = "feedback-msg";
     document.getElementById("solutionZone").hidden = true;
     document.getElementById("solutionLang").textContent = state.lang;
+    document.getElementById("dsaRetryBtn").hidden = true;
+    document.getElementById("dsaNextBtn").hidden = true;
+
     document.getElementById("complexityZone").hidden = true;
     document.getElementById("talkthroughZone").hidden = true;
+    document.getElementById("dsaModeZone").hidden = true;
+    document.getElementById("dsaPseudoZone").hidden = true;
+    document.getElementById("dsaImplementZone").hidden = true;
+    renderComplexityQuiz(
+      "timeComplexityButtons",
+      "timeComplexityFeedback",
+      p.timeOptions,
+      p.timeComplexity,
+    );
+    renderComplexityQuiz(
+      "spaceComplexityButtons",
+      "spaceComplexityFeedback",
+      p.spaceOptions,
+      p.spaceComplexity,
+    );
 
     const card = document.getElementById("dsaCard");
-    card.querySelector(".card-scroll").scrollTop = 0;
+    const scroller = card.querySelector(".card-scroll");
+    scroller.scrollTop = 0;
+  }
+
+  // Generic small multi-attempt quiz group, reused for both the time-
+  // complexity and space-complexity buttons: click wrong -> red + disabled,
+  // click right -> green + whole group disabled.
+  function renderComplexityQuiz(buttonsId, feedbackId, options, correct) {
+    const wrap = document.getElementById(buttonsId);
+    wrap.innerHTML = "";
+    const feedback = document.getElementById(feedbackId);
+    feedback.textContent = "";
+    feedback.className = "feedback-msg";
+    options.forEach((opt) => {
+      const b = document.createElement("button");
+      b.className = "pattern-btn";
+      b.textContent = opt;
+      b.addEventListener("click", () => {
+        if (b.disabled) return;
+        if (opt === correct) {
+          b.classList.add("correct");
+          wrap
+            .querySelectorAll(".pattern-btn")
+            .forEach((el) => (el.disabled = true));
+          feedback.textContent = "Correct.";
+          feedback.className = "feedback-msg correct";
+        } else {
+          b.classList.add("wrong");
+          b.disabled = true;
+          feedback.textContent = "Not quite — try another.";
+          feedback.className = "feedback-msg wrong";
+        }
+      });
+      wrap.appendChild(b);
+    });
   }
 
   function handlePatternClick(btn, chosen, problem) {
-    if (dsaSolved || btn.disabled) return;
+    if (btn.disabled) return;
     const feedback = document.getElementById("feedbackMsg");
 
     if (chosen === problem.correctPattern) {
@@ -727,21 +751,120 @@
         .forEach((b) => (b.disabled = true));
       feedback.textContent = "Correct — nice pattern recognition.";
       feedback.className = "feedback-msg correct";
-      dsaSolved = true;
+
+      renderDsaModeButtons(problem);
+      setDsaZoneVisibility({
+        modeZone: true,
+        pseudoZone: false,
+        implementZone: false,
+        solutionZone: false,
+        complexityZone: false,
+        talkthroughZone: false,
+        retryBtn: false,
+        nextBtn: false,
+      });
+      document.getElementById("dsaRetryBtn").hidden = true;
+      document.getElementById("dsaNextBtn").hidden = true;
       state.decks.dsa.markResult(true);
-      renderModeChoiceBar(problem);
-      hideImplementationZone();
-      document.getElementById("solutionZone").hidden = true;
-      document.getElementById("complexityZone").hidden = true;
-      document.getElementById("talkthroughZone").hidden = true;
     } else {
       btn.classList.add("wrong");
       btn.disabled = true;
       feedback.textContent = "Incorrect — try another pattern.";
       feedback.className = "feedback-msg wrong";
+      document.getElementById("dsaRetryBtn").hidden = true;
       state.decks.dsa.markResult(false);
     }
   }
+
+  document.getElementById("dsaNextBtn").addEventListener("click", () => {
+    renderDsaCard(state.decks.dsa.next());
+  });
+  document.getElementById("dsaRetryBtn").addEventListener("click", () => {
+    state.decks.dsa.markRetryLater(state.decks.dsa.currentId);
+    renderDsaCard(state.decks.dsa.next());
+  });
+
+  const copyCodeBtn = document.getElementById("copyCodeBtn");
+  let copyResetTimer = null;
+
+  function selectCodeTextForManualCopy() {
+    const codeEl = document.getElementById("solutionCode");
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(codeEl);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  copyCodeBtn.addEventListener("click", async () => {
+    const code = document.getElementById("solutionCode").textContent;
+    let success = false;
+
+    // Preferred path: the async Clipboard API. This requires a secure
+    // context (https, or localhost) — it's silently unavailable on plain
+    // http, which is a common reason this can appear to "do nothing".
+    if (
+      window.isSecureContext &&
+      navigator.clipboard &&
+      navigator.clipboard.writeText
+    ) {
+      try {
+        await navigator.clipboard.writeText(code);
+        success = true;
+      } catch (err) {
+        console.warn("Clipboard API write failed, falling back:", err);
+      }
+    }
+
+    // Fallback: legacy execCommand via a hidden, focused, selected textarea.
+    // Its return value must be checked explicitly — it fails by returning
+    // false, not by throwing, so skipping that check was the original bug
+    // (the UI would claim success even when nothing was actually copied).
+    if (!success) {
+      try {
+        const textarea = document.createElement("textarea");
+        textarea.value = code;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.top = "0";
+        textarea.style.left = "0";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, textarea.value.length); // needed on iOS Safari
+        success = document.execCommand("copy");
+        document.body.removeChild(textarea);
+      } catch (err) {
+        console.warn("execCommand copy fallback failed:", err);
+      }
+    }
+
+    if (success) {
+      copyCodeBtn.textContent = "Copied!";
+      copyCodeBtn.classList.add("copied");
+    } else {
+      // Last resort: both programmatic methods were blocked (some browsers
+      // restrict clipboard access entirely outside a very narrow set of
+      // conditions). Select the code instead so a manual Ctrl/Cmd+C still works.
+      selectCodeTextForManualCopy();
+      copyCodeBtn.textContent = "Selected — press ⌘/Ctrl+C";
+    }
+
+    clearTimeout(copyResetTimer);
+    copyResetTimer = setTimeout(
+      () => {
+        copyCodeBtn.textContent = "Copy";
+        copyCodeBtn.classList.remove("copied");
+      },
+      success ? 1500 : 3000,
+    );
+  });
   // ============================================================
   // SYSTEM DESIGN VIEW
   // ============================================================
