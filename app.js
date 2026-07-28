@@ -30,10 +30,23 @@
   }
 
   function buildShuffledChoices(options, isCorrect) {
-    const choices = options.map((label, idx) => ({
-      label,
-      isCorrect: Boolean(isCorrect(label, idx)),
-    }));
+    const choices = options.map((option, idx) => {
+      const label =
+        typeof option === "string"
+          ? option
+          : option && typeof option === "object" && "label" in option
+            ? option.label
+            : String(option);
+      return {
+        label,
+        value:
+          option && typeof option === "object" && "value" in option
+            ? option.value
+            : option,
+        raw: option,
+        isCorrect: Boolean(isCorrect(option, idx)),
+      };
+    });
     return shuffleInPlace(choices);
   }
 
@@ -476,7 +489,12 @@
       b.className = "pattern-btn";
       b.textContent = choice.label;
       b.addEventListener("click", () => {
-        if (choice.label === "Show Code") startShowCodeMode(problem);
+        const mode =
+          choice.value && typeof choice.value === "object"
+            ? choice.value.mode
+            : choice.raw?.mode;
+        if (mode === "show" || choice.label === "Show Code")
+          startShowCodeMode(problem);
         else startImplementMode(problem);
       });
       wrap.appendChild(b);
