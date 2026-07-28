@@ -29,6 +29,14 @@
     return arr;
   }
 
+  function buildShuffledChoices(options, isCorrect) {
+    const choices = options.map((label, idx) => ({
+      label,
+      isCorrect: Boolean(isCorrect(label, idx)),
+    }));
+    return shuffleInPlace(choices);
+  }
+
   // Builds one full pass over `ids`, interleaved by category so the same
   // category rarely repeats back-to-back. `categoryOf(id)` returns a
   // grouping key; if omitted, everything is treated as one bucket (a
@@ -457,15 +465,18 @@
     const wrap = document.getElementById("dsaModeButtons");
     wrap.innerHTML = "";
 
-    [
-      { label: "Show Code", mode: "show" },
-      { label: "Implement python", mode: "implement" },
-    ].forEach(({ label, mode }) => {
+    buildShuffledChoices(
+      [
+        { label: "Show Code", mode: "show" },
+        { label: "Implement python", mode: "implement" },
+      ],
+      () => false,
+    ).forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = label;
+      b.textContent = choice.label;
       b.addEventListener("click", () => {
-        if (mode === "show") startShowCodeMode(problem);
+        if (choice.label === "Show Code") startShowCodeMode(problem);
         else startImplementMode(problem);
       });
       wrap.appendChild(b);
@@ -479,13 +490,18 @@
     feedback.textContent = "";
     feedback.className = "feedback-msg";
 
-    problem.drill.pseudoOptions.forEach((opt, idx) => {
+    const choices = buildShuffledChoices(
+      problem.drill.pseudoOptions,
+      (_, idx) => idx === problem.drill.pseudoCorrectIndex,
+    );
+
+    choices.forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt;
+      b.textContent = choice.label;
       b.addEventListener("click", () => {
         if (b.disabled || dsaFlow.pseudoSolved) return;
-        if (idx === problem.drill.pseudoCorrectIndex) {
+        if (choice.isCorrect) {
           b.classList.add("correct");
           wrap
             .querySelectorAll(".pattern-btn")
@@ -522,13 +538,18 @@
     prompt.textContent =
       chunk.prompt || "Select the next logical Python chunk.";
 
-    chunk.options.forEach((opt, idx) => {
+    const choices = buildShuffledChoices(
+      chunk.options,
+      (_, idx) => idx === chunk.correctIndex,
+    );
+
+    choices.forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt;
+      b.textContent = choice.label;
       b.addEventListener("click", () => {
         if (b.disabled) return;
-        if (idx === chunk.correctIndex) {
+        if (choice.isCorrect) {
           b.classList.add("correct");
           wrap
             .querySelectorAll(".pattern-btn")
@@ -669,11 +690,19 @@
 
     const btnWrap = document.getElementById("patternButtons");
     btnWrap.innerHTML = "";
-    p.options.forEach((opt) => {
+
+    const choices = buildShuffledChoices(
+      p.options,
+      (opt) => opt === p.correctPattern,
+    );
+
+    choices.forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt;
-      b.addEventListener("click", () => handlePatternClick(b, opt, p));
+      b.textContent = choice.label;
+      b.addEventListener("click", () =>
+        handlePatternClick(b, choice.isCorrect, p),
+      );
       btnWrap.appendChild(b);
     });
 
@@ -716,13 +745,16 @@
     const feedback = document.getElementById(feedbackId);
     feedback.textContent = "";
     feedback.className = "feedback-msg";
-    options.forEach((opt) => {
+
+    const choices = buildShuffledChoices(options, (opt) => opt === correct);
+
+    choices.forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt;
+      b.textContent = choice.label;
       b.addEventListener("click", () => {
         if (b.disabled) return;
-        if (opt === correct) {
+        if (choice.isCorrect) {
           b.classList.add("correct");
           wrap
             .querySelectorAll(".pattern-btn")
@@ -740,11 +772,11 @@
     });
   }
 
-  function handlePatternClick(btn, chosen, problem) {
+  function handlePatternClick(btn, isCorrect, problem) {
     if (btn.disabled) return;
     const feedback = document.getElementById("feedbackMsg");
 
-    if (chosen === problem.correctPattern) {
+    if (isCorrect) {
       btn.classList.add("correct");
       document
         .querySelectorAll("#patternButtons .pattern-btn")
@@ -1080,12 +1112,18 @@
 
     const wrap = document.getElementById("debugOptionButtons");
     wrap.innerHTML = "";
-    stage.options.forEach((opt, idx) => {
+
+    const choices = buildShuffledChoices(
+      stage.options,
+      (_, idx) => idx === stage.correctIndex,
+    );
+
+    choices.forEach((choice) => {
       const b = document.createElement("button");
       b.className = "pattern-btn";
-      b.textContent = opt;
+      b.textContent = choice.label;
       b.addEventListener("click", () =>
-        handleDebugOptionClick(b, idx, stage, scenario),
+        handleDebugOptionClick(b, choice.isCorrect, stage, scenario),
       );
       wrap.appendChild(b);
     });
@@ -1093,11 +1131,11 @@
     document.querySelector("#debugCard .card-scroll").scrollTop = 0;
   }
 
-  function handleDebugOptionClick(btn, idx, stage, scenario) {
+  function handleDebugOptionClick(btn, isCorrect, stage, scenario) {
     if (debugStageSolved || btn.disabled) return;
     const feedback = document.getElementById("debugFeedback");
 
-    if (idx === stage.correctIndex) {
+    if (isCorrect) {
       btn.classList.add("correct");
       document
         .querySelectorAll("#debugOptionButtons .pattern-btn")
