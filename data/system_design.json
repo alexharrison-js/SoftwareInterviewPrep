@@ -568,5 +568,1335 @@
     ],
     "diagram": "flowchart LR\n    Producer[Job Producer\\nmay retry/duplicate] -->|enqueue job| Queue[(Job Queue)]\n    Queue --> Worker[Worker]\n    Worker -->|SETNX dedup_key TTL| DedupStore[(Redis Dedup Store)]\n    DedupStore -->|key existed: skip| Worker\n    DedupStore -->|key new: proceed| Process[Process Job]\n    Process -->|crash before finish| Expire[Key expires via TTL]\n    Expire -.->|reclaimable| Worker",
     "id": 30
+  },
+  {
+    "title": "Design an AI Agent Orchestration Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform that lets an LLM-based agent break a user's goal into a sequence of steps, call tools/APIs, and iterate based on results (an 'observe-plan-act' loop) until the goal is achieved.",
+        "answer": "Core loop: an orchestrator maintains agent state (goal, conversation history, available tools, results so far) and repeatedly prompts the LLM for the next action, which is either a tool call or a final answer. Each tool call is dispatched to a tool-execution layer (sandboxed, with a defined schema per tool), its result is appended to the agent's context, and the loop continues until the model signals completion or a step/time budget is exhausted. Persist state after every step so a crashed orchestrator process can resume rather than losing the whole run."
+      },
+      {
+        "prompt": "Agents sometimes loop indefinitely (repeating similar failed tool calls) or run away with cost (each step is an LLM call). How do you bound this in production?",
+        "answer": "Enforce hard limits: a maximum step count, a wall-clock timeout, and a cost/token budget per run, with the orchestrator forcibly terminating and returning a partial result once any limit is hit. Detect repetition explicitly (e.g., hashing recent tool calls and flagging near-identical repeated calls) to short-circuit obvious loops before hitting the hard limit. Surface these guardrails as configurable per-use-case, since a customer-support agent might tolerate a much smaller budget than a long-running research agent."
+      },
+      {
+        "prompt": "How do you make agent behavior debuggable and observable, given the LLM's reasoning isn't fully deterministic?",
+        "answer": "Log every step of the loop as a structured trace (prompt sent, model output, tool called with arguments, tool result, timestamp), not just the final answer, so a failed or weird run can be replayed and inspected step-by-step. Build a tracing UI that visualizes the full decision tree of a run, and track aggregate metrics (average steps per run, tool failure rate, cost per successful completion) to catch systemic issues rather than only debugging one run at a time."
+      }
+    ],
+    "diagram": "flowchart TD\n    User[User Goal] --> Orchestrator[Agent Orchestrator]\n    Orchestrator -->|prompt + context| LLM[LLM]\n    LLM -->|next action| Orchestrator\n    Orchestrator -->|tool call| ToolLayer[Sandboxed Tool Execution]\n    ToolLayer -->|result| Orchestrator\n    Orchestrator -->|persist each step| StateStore[(Agent State Store)]\n    Orchestrator -->|trace| Tracing[Tracing/Observability]\n    Orchestrator -->|final answer or budget exceeded| User",
+    "id": 31
+  },
+  {
+    "title": "Design a Retrieval-Augmented Generation (RAG) System at Scale",
+    "stages": [
+      {
+        "prompt": "Design a RAG system that lets an LLM answer questions grounded in a large, frequently-updated corpus of internal company documents (millions of documents).",
+        "answer": "Ingestion pipeline: chunk documents into overlapping passages, compute embeddings for each chunk via an embedding model, and store them in a vector database alongside metadata (source, timestamp, permissions). At query time: embed the user's question, retrieve the top-k most similar chunks via approximate nearest neighbor search, optionally re-rank them with a cheaper cross-encoder for better precision, and inject the top results into the LLM's prompt alongside the question, instructing it to answer only from the provided context."
+      },
+      {
+        "prompt": "Documents are updated and deleted constantly, and some documents are permission-restricted per user. How do you handle freshness and access control without re-embedding the whole corpus on every change?",
+        "answer": "For freshness, use incremental ingestion: only re-chunk and re-embed documents that changed since the last run (tracked via a content hash or last-modified timestamp), and delete/replace their vectors rather than rebuilding the whole index. For access control, store the document's permission metadata (ACLs, org/team ownership) alongside its vector, and filter retrieval results by the querying user's permissions at query time \u2014 never rely on the LLM to enforce access control after the fact, since a restricted chunk that reaches the prompt has already leaked."
+      },
+      {
+        "prompt": "How do you evaluate and improve RAG answer quality over time, given it depends on both retrieval and generation?",
+        "answer": "Maintain a labeled evaluation set of representative questions with known-good answers/source documents, and track retrieval metrics (did the right chunk get retrieved, at what rank) separately from generation metrics (did the final answer correctly use the retrieved context, measured via an LLM-as-judge or human review) \u2014 since a bad answer could stem from either stage, and conflating them makes it hard to know what to fix. Continuously sample real production queries for review (with attention to low-confidence or user-flagged answers) to catch failure patterns the static eval set doesn't cover."
+      }
+    ],
+    "diagram": "flowchart TD\n    Docs[Document Corpus] -->|chunk + embed| Ingest[Ingestion Pipeline]\n    Ingest --> VectorDB[(Vector DB\\nembeddings + ACL metadata)]\n    Query[User Question] -->|embed| Retriever[Retriever]\n    Retriever --> VectorDB\n    VectorDB -->|top-k chunks, filtered by user ACL| Rerank[Re-ranker]\n    Rerank -->|top passages| LLM[LLM + Prompt]\n    LLM --> Answer[Grounded Answer]\n    Eval[Eval Set + Production Sampling] -.->|quality tracking| Retriever\n    Eval -.-> LLM",
+    "id": 32
+  },
+  {
+    "title": "Design an LLM Gateway (Multi-Provider API Router)",
+    "stages": [
+      {
+        "prompt": "Design a gateway that sits between your applications and multiple LLM providers (OpenAI, Anthropic, self-hosted models), giving a single unified API, handling authentication, and routing requests appropriately.",
+        "answer": "The gateway exposes one consistent API contract to internal callers, translating each request into the specific format each provider expects, and normalizing responses back to a common shape so callers don't need provider-specific code. It centrally manages API keys/credentials (callers never hold provider secrets directly), and can route a given request to a specific provider/model based on configuration (e.g., 'use Claude for this use case, GPT-4 for that one') without callers needing to know provider details."
+      },
+      {
+        "prompt": "One provider starts returning errors/timeouts intermittently. How do you make the gateway resilient to a single provider's degradation without every calling application needing its own retry/fallback logic?",
+        "answer": "Implement automatic fallback at the gateway level: if the primary provider for a request fails or exceeds a latency threshold, retry against a configured secondary provider/model, transparent to the caller (though the caller may want to know which provider actually served the request, for cost/quality tracking). Use a circuit breaker per provider so that once failures cross a threshold, the gateway stops sending it traffic for a cooldown period rather than letting every request pay the cost of trying (and timing out against) a clearly-degraded provider."
+      },
+      {
+        "prompt": "Different providers/models have very different costs. How do you add cost-aware routing and budget enforcement to the gateway?",
+        "answer": "Track cost per request (token counts \u00d7 provider pricing) and aggregate it per team/application/API key, enforcing configurable budgets (hard cutoffs or soft alerts) centrally rather than requiring every team to track their own spend. For cost-aware routing, support policies like 'use a cheaper model for low-stakes requests, escalate to a more expensive model only if the cheaper one's output fails a quality check' \u2014 implementable as a simple two-tier routing rule or a more sophisticated classifier that predicts which requests need the expensive model."
+      }
+    ],
+    "diagram": "flowchart LR\n    App1[App] -->|unified API| Gateway[LLM Gateway]\n    App2[App] -->|unified API| Gateway\n    Gateway -->|primary| ProviderA[Provider A - Claude]\n    Gateway -.->|fallback on failure| ProviderB[Provider B - GPT]\n    Gateway -.->|fallback| ProviderC[Self-hosted Model]\n    Gateway --> CostTracker[(Cost & Budget Tracker)]\n    Gateway --> CircuitBreaker[Per-provider Circuit Breaker]",
+    "id": 33
+  },
+  {
+    "title": "Design a Prompt & Model Experimentation Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform that lets AI engineers version prompts, run them against multiple models, and compare results systematically before shipping a change to production.",
+        "answer": "Treat prompts as versioned artifacts (like code), stored with metadata (author, version history, associated eval set) rather than hardcoded in application code, so changes are tracked and reviewable. The platform runs a given prompt version against a defined evaluation set (representative test inputs with either known-good outputs or scoring criteria) across one or more candidate models, capturing outputs, latency, and cost for side-by-side comparison \u2014 turning 'does this new prompt work better' into a repeatable, comparable experiment rather than an engineer's subjective read of a few examples."
+      },
+      {
+        "prompt": "How do you evaluate whether a new prompt version is actually better, especially for open-ended generation tasks where there's no single 'correct' answer?",
+        "answer": "Combine multiple evaluation signals rather than relying on one: automated checks where possible (format validity, keyword/constraint presence), an LLM-as-judge scoring outputs against a rubric for more subjective quality dimensions, and periodic human review of a sample, especially before a significant change ships. Track these scores per prompt version over time so a regression is visible immediately, and require a new version to meet or beat the current production version on the eval set before it's eligible for rollout."
+      },
+      {
+        "prompt": "How do you safely roll out a new prompt/model version to production once it passes evaluation?",
+        "answer": "Use the same staged-rollout discipline as any risky production change: deploy the new version to a small percentage of live traffic (or a shadow mode comparing its output against production without acting on it), monitor real-world signals (user feedback, regeneration rate, downstream task success) alongside the offline eval scores, and progressively increase traffic only if those signals hold up \u2014 keeping the previous version as an instant rollback target rather than assuming the offline eval fully predicts production behavior."
+      }
+    ],
+    "diagram": "flowchart TD\n    Engineer[AI Engineer] -->|new prompt version| PromptStore[(Versioned Prompt Store)]\n    PromptStore --> EvalRunner[Eval Runner]\n    EvalSet[(Eval Set)] --> EvalRunner\n    EvalRunner -->|run against| ModelA[Model A]\n    EvalRunner -->|run against| ModelB[Model B]\n    EvalRunner --> Comparison[Side-by-side Comparison\\nscore, latency, cost]\n    Comparison -->|passes bar| StagedRollout[Staged Production Rollout]\n    StagedRollout -->|monitor| ProdSignals[Production Feedback Signals]",
+    "id": 34
+  },
+  {
+    "title": "Design an AI Agent Tool-Calling Sandbox",
+    "stages": [
+      {
+        "prompt": "Your AI agent platform lets agents execute arbitrary code or shell commands as one of their available tools (e.g., a coding assistant that runs code to verify its own output). Design the execution environment for this.",
+        "answer": "Execute all agent-requested code in an isolated, ephemeral sandbox (a container or microVM) with no network access by default, strict CPU/memory/time limits, and a filesystem that's wiped after each execution \u2014 never execute untrusted, model-generated code directly on a shared host. Return only the captured stdout/stderr/exit code (and any explicitly-produced output files, if that's a supported capability) back to the agent, treating the sandbox as a fully disposable, isolated unit of work per execution."
+      },
+      {
+        "prompt": "A malicious or buggy agent-generated script attempts to consume unbounded resources or exfiltrate data over the network. What specific isolation guarantees does your sandbox design need?",
+        "answer": "Resource limits enforced at the container/VM level (CPU quota, memory limit, disk quota, execution timeout) that the sandboxed process cannot override from inside; no network access by default (or a tightly allow-listed egress if some tools genuinely need it, e.g., a specific API), preventing data exfiltration or the sandbox being used to attack other systems; and no access to the host filesystem or other tenants' sandboxes, using per-execution ephemeral environments rather than a shared long-lived sandbox that could accumulate state or cross-contaminate between users."
+      },
+      {
+        "prompt": "How do you scale this sandbox execution layer to handle many concurrent agent sessions cost-effectively, given spinning up a fresh container per execution has overhead?",
+        "answer": "Maintain a warm pool of pre-initialized sandbox containers/microVMs ready to be assigned to an incoming execution request, avoiding cold-start latency on every call, and recycle (destroy and replace) a sandbox after each use rather than reusing it for a different session, to preserve isolation guarantees. Autoscale the pool size based on observed concurrent demand, and consider lightweight microVM technology (like Firecracker) specifically because it offers strong isolation with much faster startup and lower overhead than full VMs, which matters a lot at the request volumes agentic tool use can generate."
+      }
+    ],
+    "diagram": "flowchart LR\n    Agent[AI Agent] -->|code to execute| SandboxPool[Warm Sandbox Pool\\nmicroVMs/containers]\n    SandboxPool -->|assign ephemeral sandbox| Sandbox[Isolated Sandbox\\nno network, resource-limited]\n    Sandbox -->|stdout/stderr/exit code| Agent\n    Sandbox -->|destroyed after use| SandboxPool\n    Autoscaler[Autoscaler] -->|scale pool to demand| SandboxPool",
+    "id": 35
+  },
+  {
+    "title": "Design a Vector Database",
+    "stages": [
+      {
+        "prompt": "Design the core of a vector database that stores high-dimensional embedding vectors and answers approximate nearest-neighbor (ANN) queries efficiently at scale (hundreds of millions of vectors).",
+        "answer": "Exact nearest-neighbor search (comparing a query against every stored vector) doesn't scale past a modest number of vectors, so the core design decision is an approximate index structure \u2014 common choices include HNSW (a navigable graph structure enabling fast approximate search) or IVF (partitioning vectors into clusters and only searching relevant clusters). Store vectors plus associated metadata (for filtered search) together, and expose an API for insert/delete/query-by-similarity with a configurable top-k and similarity metric (cosine, dot product, Euclidean)."
+      },
+      {
+        "prompt": "The dataset grows to a scale where the index no longer fits in memory on a single machine. How do you shard the vector index across multiple machines while keeping query latency low?",
+        "answer": "Partition vectors across shards (e.g., by a hash of the vector's ID, or via a learned/clustering-based partitioning that groups similar vectors together to reduce cross-shard queries), and for each query, fan out to all shards in parallel, retrieve each shard's local top-k candidates, then merge and re-rank the combined candidate set at a coordinator layer to produce the final top-k. This scatter-gather pattern trades some coordination overhead for the ability to scale index size roughly linearly with the number of shards."
+      },
+      {
+        "prompt": "How do you support metadata filtering (e.g., 'find similar vectors, but only among documents the user has access to') without it destroying query performance?",
+        "answer": "Pure post-filtering (retrieve top-k by similarity, then discard results that don't match the filter) breaks down when the filter excludes most candidates, since you might discard almost everything and return too few results. Better approaches include pre-filtering within the ANN search itself (index structures that support filtered traversal, only exploring the subset of the graph/clusters matching the filter), or maintaining separate indexes per common filter dimension (e.g., per-tenant indexes) when filter cardinality is low and predictable enough to make this practical \u2014 the right choice depends on filter selectivity and cardinality, which is worth stating explicitly as the deciding factor."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client -->|insert vector + metadata| Coordinator[Coordinator]\n    Coordinator --> Shard1[(Shard 1 - HNSW/IVF index)]\n    Coordinator --> Shard2[(Shard 2)]\n    Coordinator --> Shard3[(Shard 3)]\n    Client -->|query: top-k + filter| Coordinator\n    Coordinator -->|scatter query| Shard1\n    Coordinator -->|scatter query| Shard2\n    Coordinator -->|scatter query| Shard3\n    Shard1 -->|local top-k| Coordinator\n    Shard2 -->|local top-k| Coordinator\n    Shard3 -->|local top-k| Coordinator\n    Coordinator -->|merge + re-rank| Client",
+    "id": 36
+  },
+  {
+    "title": "Design a Feature Store for Machine Learning",
+    "stages": [
+      {
+        "prompt": "Design a feature store that lets multiple ML teams define, compute, and reuse features consistently for both offline model training and low-latency online inference.",
+        "answer": "Separate the feature store into an offline store (a data warehouse holding historical feature values for training, computed via batch pipelines over historical data) and an online store (a low-latency key-value store like Redis holding the current value of each feature for real-time inference lookups), fed by the same feature definitions/transformation logic so training and serving stay consistent. Features are registered with metadata (owner, description, computation logic, freshness SLA) in a central registry so teams can discover and reuse existing features rather than each team recomputing similar features independently."
+      },
+      {
+        "prompt": "A model trained on features computed one way in the offline store performs worse in production than expected. Investigation reveals the online store's feature computation logic had subtly drifted from the offline version. How do you prevent this class of bug (training-serving skew)?",
+        "answer": "Define feature transformation logic once, in a single shared codebase/specification, and generate both the offline batch computation and the online real-time computation from that same definition, rather than maintaining two independently-written implementations that can drift apart. Add automated consistency checks that periodically compare offline and online feature values for the same entity at the same point in time and alert on unexpected divergence, catching skew early rather than only discovering it via a degraded model."
+      },
+      {
+        "prompt": "How do you handle features that require expensive computation (e.g., aggregating a user's last 90 days of transactions) while still meeting a strict low-latency requirement for online inference?",
+        "answer": "Precompute and continuously update expensive aggregate features in the background (via a streaming pipeline that incrementally updates the aggregate as new events arrive, rather than recomputing from scratch on every request) and simply look up the current precomputed value at inference time \u2014 turning an expensive computation into a fast key-value read. This requires the feature store's online layer to support this streaming-update pattern, not just static batch refreshes, for features that need to reflect very recent activity."
+      }
+    ],
+    "diagram": "flowchart TD\n    RawData[(Raw Event Data)] --> BatchPipeline[Batch Feature Pipeline]\n    RawData --> StreamPipeline[Streaming Feature Pipeline]\n    BatchPipeline --> OfflineStore[(Offline Store - training)]\n    StreamPipeline --> OnlineStore[(Online Store - Redis, serving)]\n    Registry[(Feature Registry\\nshared definitions)] --> BatchPipeline\n    Registry --> StreamPipeline\n    Training[Model Training] --> OfflineStore\n    Inference[Online Inference] --> OnlineStore\n    Consistency[Consistency Checker] -.-> OfflineStore\n    Consistency -.-> OnlineStore",
+    "id": 37
+  },
+  {
+    "title": "Design an ML Training Pipeline Orchestrator",
+    "stages": [
+      {
+        "prompt": "Design a system that lets ML teams define multi-step training pipelines (data prep \u2192 training \u2192 evaluation \u2192 registration) as reusable, schedulable workflows across a shared GPU cluster.",
+        "answer": "Model each pipeline as a directed acyclic graph (DAG) of steps with explicit dependencies, where each step runs as a containerized job with its own resource requirements; the orchestrator (similar to Airflow or Kubeflow Pipelines) schedules each step once its dependencies complete, tracks artifacts (datasets, model checkpoints) passed between steps, and retries failed steps without re-running the whole pipeline."
+      },
+      {
+        "prompt": "Multiple teams submit pipelines competing for the same limited GPU pool. How do you allocate fairly while still letting high-priority jobs run promptly?",
+        "answer": "Use a priority-aware job scheduler (queueing with priority classes and fair-share quotas per team) rather than pure first-come-first-served, so no single team can monopolize the cluster, while allowing an explicit high-priority lane for urgent jobs. Support preemption carefully \u2014 checkpointing long-running jobs so a preempted job can resume rather than losing all progress \u2014 since preemption without checkpointing just shifts unfairness onto whichever job gets evicted."
+      },
+      {
+        "prompt": "How do you ensure a training run is fully reproducible months later when someone asks 'how was this exact model produced'?",
+        "answer": "Version and record everything the pipeline used: exact code commit, dataset version/hash, hyperparameters, environment/dependency versions, and random seeds, all tied to the resulting model artifact in a metadata store \u2014 so reproducing a run means replaying a fully-specified recipe rather than reconstructing it from memory or scattered notes."
+      }
+    ],
+    "diagram": "flowchart LR\n    Submit[Pipeline Submission - DAG] --> Scheduler[Priority-aware Scheduler]\n    Scheduler --> GPUPool[(Shared GPU Cluster)]\n    GPUPool --> DataPrep[Data Prep Step] --> Train[Training Step] --> Eval[Eval Step] --> Registry[(Model Registry)]\n    Metadata[(Run Metadata Store\\ncode, data, params, seeds)] -.-> Train\n    Metadata -.-> Registry",
+    "id": 38
+  },
+  {
+    "title": "Design a Real-Time Fraud Detection System",
+    "stages": [
+      {
+        "prompt": "Design a system that scores every transaction for fraud risk in under 100ms, combining rule-based checks with an ML model.",
+        "answer": "On each transaction, fetch precomputed features from a low-latency feature store (user's recent transaction history, velocity checks, device fingerprint), run fast deterministic rules first (hard blocks like a known-stolen card), then score the transaction with the ML model, combining rule outputs and model score into a final decision (allow, block, or flag for manual review) \u2014 all within the latency budget by keeping every step in the hot path fast and precomputed rather than doing heavy computation synchronously."
+      },
+      {
+        "prompt": "Fraud patterns evolve constantly as fraudsters adapt. How do you keep the model effective without constantly manual-retraining?",
+        "answer": "Continuously monitor model performance against labeled outcomes (confirmed fraud/chargebacks arriving with a delay), track drift in key feature distributions, and set up automated or frequent scheduled retraining on recent data so the model incorporates new patterns rather than staying frozen at its original training snapshot; combine this with a fast-path rule system that can react to a newly-identified fraud pattern within hours, since model retraining is inherently slower than the pace fraud rings can adapt."
+      },
+      {
+        "prompt": "A legitimate transaction gets incorrectly blocked (a false positive), frustrating a real customer. How do you balance fraud prevention against this cost?",
+        "answer": "Treat the decision threshold as a tunable business tradeoff, not a fixed technical constant \u2014 track both false-positive rate (blocked legitimate transactions) and false-negative rate (missed fraud) explicitly, and let risk/product stakeholders set the threshold based on the actual cost of each error type for the business. For borderline-confidence transactions, route to manual review or a secondary verification step (like a confirmation code) instead of a binary allow/block, reducing the cost of uncertainty."
+      }
+    ],
+    "diagram": "flowchart LR\n    Txn[Incoming Transaction] --> Rules[Fast Rule Checks]\n    Txn --> FeatureStore[(Feature Store)]\n    FeatureStore --> Model[ML Fraud Model]\n    Rules --> Decision[Decision Engine]\n    Model --> Decision\n    Decision -->|allow/block/review| Response[Response < 100ms]\n    Outcomes[(Confirmed Fraud Outcomes)] -.->|retraining loop| Model",
+    "id": 39
+  },
+  {
+    "title": "Design a Content Moderation System",
+    "stages": [
+      {
+        "prompt": "Design a system that moderates user-generated content (text, images) at the scale of millions of posts per day, using a mix of automated ML classifiers and human review.",
+        "answer": "Run every piece of content through fast automated classifiers first (text toxicity models, image classifiers for policy violations), which handle the large majority of clearly-fine or clearly-violating content automatically; route only ambiguous/borderline cases (classifier confidence in a middle range) to a human review queue, since human review doesn't scale to full volume and shouldn't need to."
+      },
+      {
+        "prompt": "Human moderators need to review flagged content quickly, and moderator wellbeing matters given exposure to disturbing content. How do you design the review workflow?",
+        "answer": "Prioritize the review queue by severity and virality (a violating post gaining rapid traction needs faster review than a low-visibility one), and route content to appropriately-trained moderator pools by content category. For moderator wellbeing, apply protective measures like blurring/graying disturbing images by default until explicitly revealed, capping continuous exposure time, and providing support resources \u2014 this is a real operational design concern, not just a technical afterthought."
+      },
+      {
+        "prompt": "How do you handle appeals when a user disputes a moderation decision, and how do you improve the system based on those appeals?",
+        "answer": "Provide a clear appeals path where a different reviewer (not the original one) re-examines contested decisions, and track appeal outcomes (overturned vs. upheld) as a direct quality signal on both the automated classifiers and individual human reviewers. Feed overturned decisions back into classifier retraining and reviewer calibration/training, since a high overturn rate on a specific violation category is a strong signal that classifier or policy needs adjustment."
+      }
+    ],
+    "diagram": "flowchart TD\n    Content[User-Generated Content] --> Classifier[Automated Classifiers]\n    Classifier -->|clear violation| AutoAction[Automated Removal]\n    Classifier -->|clearly fine| Publish[Published]\n    Classifier -->|ambiguous| ReviewQueue[Human Review Queue\\nprioritized by severity]\n    ReviewQueue --> Moderator[Moderator Decision]\n    Moderator -->|disputed| Appeals[Appeals - different reviewer]\n    Appeals -.->|feedback| Classifier",
+    "id": 40
+  },
+  {
+    "title": "Design an AI Customer Support Chatbot Platform",
+    "stages": [
+      {
+        "prompt": "Design a chatbot platform that resolves common customer support queries automatically via an LLM, escalating to a human agent when needed, integrated with a company's knowledge base and ticketing system.",
+        "answer": "Use a RAG-based architecture where the LLM answers grounded in the company's actual knowledge base/documentation (to reduce hallucination on policy-sensitive answers like refunds), with tool-calling access to backend systems (order lookup, account status) so it can act on real data, not just describe generic steps. Define clear escalation triggers \u2014 the model expressing low confidence, the user explicitly asking for a human, detecting frustration/repeated re-asks, or the query falling into a category defined as always-human (like account security issues) \u2014 handing off to a human agent with full conversation context rather than making the user repeat themselves."
+      },
+      {
+        "prompt": "How do you prevent the bot from confidently giving wrong answers on things like refund policy or account actions, where being wrong has real cost?",
+        "answer": "For high-stakes categories, require the model's answer to be strictly grounded in retrieved policy documents (not generated from general knowledge), and add a verification step for any action with real consequences (like issuing a refund) \u2014 the bot can propose the action, but final execution goes through an explicit confirmation or a business-rule engine that validates it's actually permitted, rather than trusting the LLM's own judgment on policy compliance."
+      },
+      {
+        "prompt": "How do you measure and improve the bot's performance over time?",
+        "answer": "Track resolution rate (queries fully handled without escalation), customer satisfaction on bot-handled conversations, and escalation reasons (which reveal gaps in knowledge base coverage or capability) as core metrics. Use escalated conversations as a direct feedback loop \u2014 reviewing why the bot couldn't handle them and using that to expand knowledge base coverage or refine prompts/tools, treating escalations as the most valuable signal for where the system needs improvement."
+      }
+    ],
+    "diagram": "flowchart LR\n    User[Customer] --> Bot[LLM Support Bot]\n    Bot --> KB[(Knowledge Base - RAG)]\n    Bot --> Tools[Backend Tools\\norder lookup, account status]\n    Bot -->|low confidence/frustration/policy| Escalation[Escalate to Human Agent]\n    Escalation -->|with full context| Agent[Human Agent]\n    Agent -.->|resolution feedback| KB",
+    "id": 41
+  },
+  {
+    "title": "Design a Multi-Agent Collaboration System",
+    "stages": [
+      {
+        "prompt": "Design a system where multiple specialized AI agents (e.g., a researcher agent, a coder agent, a reviewer agent) collaborate on a complex task, each with different tools and capabilities.",
+        "answer": "Use an orchestrating 'manager' agent (or a defined workflow) that decomposes the overall task into subtasks and assigns each to the appropriate specialized agent based on required capability, collecting each agent's output and feeding relevant results to downstream agents (e.g., coder agent's output goes to the reviewer agent). Each specialized agent operates with its own narrower tool access and context, which both improves focus (a coder agent doesn't need the same tools as a researcher) and limits blast radius if one agent misbehaves."
+      },
+      {
+        "prompt": "Agents can get stuck disagreeing (e.g., reviewer agent keeps rejecting coder agent's output) or the overall task never converges. How do you handle this?",
+        "answer": "Set explicit iteration limits on inter-agent back-and-forth (e.g., max 3 review-revise cycles) before escalating to a human or accepting the current best result rather than looping indefinitely, mirroring the same runaway-loop protection a single agent needs. Log the full multi-agent conversation/handoff trace so a stuck collaboration is debuggable \u2014 was the reviewer being overly strict, was the coder not addressing feedback, etc. \u2014 rather than just seeing a timeout with no insight into why."
+      },
+      {
+        "prompt": "How do you keep costs manageable when a complex task might involve many agents each making multiple LLM calls?",
+        "answer": "Set a total budget (cost/token/step count) for the entire multi-agent task, not just per individual agent, so the orchestrator can track cumulative spend and terminate gracefully with a partial result if the budget is exhausted. Use cheaper/smaller models for simpler subtasks (a routing or formatting step doesn't need your most expensive model) and reserve the most capable model for the specific subtasks that actually need it, similar to cost-aware routing in a single-agent system."
+      }
+    ],
+    "diagram": "flowchart TD\n    Task[Complex Task] --> Manager[Manager Agent]\n    Manager -->|subtask| Researcher[Researcher Agent]\n    Manager -->|subtask| Coder[Coder Agent]\n    Coder --> Reviewer[Reviewer Agent]\n    Reviewer -->|feedback loop, max N cycles| Coder\n    Researcher --> Manager\n    Reviewer -->|approved| Manager\n    Manager -->|budget exceeded or complete| Result[Final Result]",
+    "id": 42
+  },
+  {
+    "title": "Design an LLM Fine-Tuning Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform that lets ML teams fine-tune LLMs on custom datasets without each team building their own training infrastructure from scratch.",
+        "answer": "Provide a managed pipeline: teams upload/point to a training dataset (validated against a required format), select a base model and fine-tuning method (full fine-tune vs. parameter-efficient methods like LoRA), and submit a job that the platform schedules onto the GPU cluster, handling distributed training setup, checkpointing, and logging automatically so teams don't need deep infrastructure expertise to fine-tune a model."
+      },
+      {
+        "prompt": "How do you validate a dataset before an expensive training run starts, to avoid wasting GPU-hours on a run that fails or produces a bad model due to bad data?",
+        "answer": "Run automated pre-flight checks on the dataset before scheduling the expensive job: format/schema validation, checking for empty or malformed examples, flagging extreme outliers (like the abnormally long examples that caused the NaN-loss incident discussed earlier), and computing basic statistics (size, class balance for classification tasks) for the team to sanity-check. Catching data problems in a fast pre-flight check is far cheaper than discovering them hours into a multi-GPU training run."
+      },
+      {
+        "prompt": "How do you let teams evaluate whether their fine-tuned model is actually better than the base model before deploying it?",
+        "answer": "Require (or strongly encourage) an evaluation step as part of the standard pipeline, not an optional afterthought \u2014 running the fine-tuned model against a held-out test set and against the base model on the same set, surfacing a clear comparison (task-specific metrics, and ideally a sample of side-by-side outputs) so the team makes an informed decision rather than assuming fine-tuning helped just because training completed without errors."
+      }
+    ],
+    "diagram": "flowchart LR\n    Dataset[Training Dataset] --> Preflight[Pre-flight Validation]\n    Preflight -->|passes| Scheduler[Training Job Scheduler]\n    Scheduler --> GPUCluster[(GPU Cluster)]\n    GPUCluster --> Checkpoint[(Checkpoints)]\n    Checkpoint --> Eval[Evaluation vs Base Model]\n    Eval -->|comparison report| Team[ML Team Decision]\n    Team -->|approved| ModelRegistry[(Model Registry)]",
+    "id": 43
+  },
+  {
+    "title": "Design a Semantic Search Engine",
+    "stages": [
+      {
+        "prompt": "Design a search engine that returns results based on semantic meaning rather than exact keyword matching, for a large product catalog (tens of millions of items).",
+        "answer": "Compute embeddings for each product (from its title, description, and possibly image) and store them in a vector index for approximate nearest-neighbor search; at query time, embed the search query and retrieve the most semantically similar products. Combine this with traditional keyword/inverted-index search (a hybrid approach) since pure semantic search alone can sometimes miss exact-match intent (a user searching an exact model number wants that exact item, not just something semantically similar)."
+      },
+      {
+        "prompt": "Users complain that semantic search sometimes returns results that are thematically related but not what they actually wanted, while keyword search sometimes misses relevant results phrased differently. How do you combine both approaches?",
+        "answer": "Run both semantic and keyword search in parallel for each query and merge/re-rank the combined candidate results using a ranking model that considers signals from both (semantic similarity score, keyword match score, plus business signals like popularity/conversion rate) \u2014 rather than picking one approach exclusively, hybrid retrieval generally outperforms either alone since they have complementary strengths and failure modes."
+      },
+      {
+        "prompt": "How do you keep the semantic index up to date as products are added, updated, and removed continuously, without periodic full reindexing becoming a bottleneck?",
+        "answer": "Support incremental updates to the vector index (insert new product embeddings, update changed ones, remove discontinued ones) as products change, rather than only supporting full rebuilds \u2014 most modern ANN index structures support this, though some (depending on implementation) periodically benefit from a background reindex/compaction pass to maintain search quality/performance as the index accumulates changes over time, which should be run without blocking live queries."
+      }
+    ],
+    "diagram": "flowchart TD\n    Query[Search Query] --> Semantic[Semantic Search\\nvector similarity]\n    Query --> Keyword[Keyword Search\\ninverted index]\n    Semantic --> Merge[Hybrid Re-ranker]\n    Keyword --> Merge\n    Merge -->|business signals: popularity, conversion| Results[Ranked Results]\n    ProductUpdates[Product Catalog Updates] -->|incremental| VectorIndex[(Vector Index)]\n    ProductUpdates -->|incremental| InvertedIndex[(Inverted Index)]",
+    "id": 44
+  },
+  {
+    "title": "Design an AI Code Review Assistant Backend",
+    "stages": [
+      {
+        "prompt": "Design a backend service that automatically reviews pull requests using an LLM, posting comments on potential bugs, style issues, and suggestions, integrated with GitHub/GitLab.",
+        "answer": "On a PR event (webhook), fetch the diff plus relevant surrounding context (the full changed files, and potentially related files/definitions the diff references), construct a prompt asking the model to review for specific categories (bugs, security issues, style, missed edge cases), and post the model's findings as PR comments via the platform's API, ideally anchored to the specific lines they concern rather than one generic top-level comment."
+      },
+      {
+        "prompt": "Large PRs can exceed the model's context window, and reviewing every single line with equal depth is wasteful. How do you handle this?",
+        "answer": "Chunk large diffs into logical units (per-file, or per-function where changes are large) and review each chunk with enough surrounding context to be useful, rather than trying to fit an entire large PR into one prompt. Prioritize review depth by risk \u2014 changes to core business logic, security-sensitive code, or complex control flow deserve more scrutiny than a documentation-only or purely mechanical formatting change, which can be reviewed lightly or skipped entirely."
+      },
+      {
+        "prompt": "Developers start ignoring the bot's comments because too many are low-value nitpicks or false positives. How do you fix this?",
+        "answer": "Track comment-level feedback (did the developer act on it, dismiss it, or react negatively) as a direct signal, and use it to tune what categories of finding get surfaced \u2014 if a specific type of comment is consistently dismissed, either fix the underlying prompt/logic causing false positives or stop surfacing that category by default. Consider a severity threshold (only post comments above a certain confidence/importance bar) rather than surfacing every possible observation, since comment volume and perceived value are in direct tension \u2014 a bot that comments on everything trains developers to ignore it entirely."
+      }
+    ],
+    "diagram": "flowchart LR\n    PR[Pull Request Event] --> Fetch[Fetch Diff + Context]\n    Fetch --> Chunker[Chunk by File/Function\\nprioritize by risk]\n    Chunker --> LLM[LLM Review]\n    LLM --> Comments[Post PR Comments]\n    Comments -->|developer reaction| Feedback[(Feedback Tracking)]\n    Feedback -.->|tune prompts/thresholds| LLM",
+    "id": 45
+  },
+  {
+    "title": "Design a Model Evaluation & Benchmarking Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform that lets ML teams run standardized evaluations of models (both internal fine-tuned models and third-party LLMs) across multiple benchmark datasets and custom eval sets.",
+        "answer": "Provide a registry of evaluation datasets/tasks (both standard public benchmarks and internal custom eval sets per use case) and a runner that executes a given model against a chosen set of evaluations, computing standardized metrics (accuracy, task-specific scores, latency, cost) and storing results tied to the exact model version evaluated, so results are comparable across models and over time rather than one-off, unreproducible numbers."
+      },
+      {
+        "prompt": "Some evaluations require subjective judgment (is this generated response actually good) rather than exact-match scoring. How do you handle these at scale?",
+        "answer": "Use an LLM-as-judge approach for subjective evaluations \u2014 a strong model scores candidate outputs against a defined rubric \u2014 while explicitly tracking the judge's own reliability (periodically validating LLM-judge scores against human judgment on a sample, since the judge itself can be biased or miscalibrated). For evaluations where correctness really matters, blend automated LLM-judge scoring with periodic human review rather than relying on either exclusively."
+      },
+      {
+        "prompt": "How do you prevent benchmark results from becoming misleading over time (e.g., a model being implicitly 'trained to the test' or benchmarks becoming stale)?",
+        "answer": "Rotate and periodically refresh eval sets (especially ones derived from public data that might leak into future training corpora), keep some held-out evaluation data that's never shared or exposed even internally, and track real-world production performance alongside benchmark scores as a check \u2014 since a model that looks great on a static benchmark but underperforms in actual usage is a signal the benchmark has stopped being representative."
+      }
+    ],
+    "diagram": "flowchart LR\n    Model[Model Under Test] --> Runner[Eval Runner]\n    BenchmarkRegistry[(Benchmark & Eval Set Registry)] --> Runner\n    Runner --> AutoScoring[Automated Scoring\\nexact-match, metrics]\n    Runner --> LLMJudge[LLM-as-Judge Scoring]\n    LLMJudge -.->|periodic validation| HumanReview[Human Review Sample]\n    AutoScoring --> ResultsDB[(Results DB - versioned)]\n    LLMJudge --> ResultsDB",
+    "id": 46
+  },
+  {
+    "title": "Design a Real-Time Personalization Engine for E-commerce",
+    "stages": [
+      {
+        "prompt": "Design a personalization engine that adapts product recommendations and page layout in real time based on a user's current browsing session, not just their historical profile.",
+        "answer": "Maintain a real-time session feature store capturing the user's in-session actions (items viewed, searched, added to cart) as they happen, and combine these fast-changing session signals with the user's longer-term historical profile (from a separate, less frequently updated store) at recommendation time \u2014 session signals capture immediate intent (what are they shopping for right now) that a purely historical profile would miss entirely."
+      },
+      {
+        "prompt": "Computing fresh personalized recommendations on every single page view for every user is expensive. How do you make this performant at scale?",
+        "answer": "Separate candidate generation (a broader, cheaper retrieval step that narrows the full catalog to a manageable candidate set, often precomputable or cacheable per user-segment) from final ranking (a more expensive, personalized model applied only to the smaller candidate set at request time) \u2014 this candidate-generation-then-ranking pattern is the standard way large-scale recommendation systems balance personalization quality against the cost of scoring millions of items per request."
+      },
+      {
+        "prompt": "How do you measure whether the personalization engine is actually improving business outcomes, not just producing recommendations that look reasonable?",
+        "answer": "Run controlled A/B tests comparing the personalized experience against a baseline (non-personalized or previous version), measuring actual business metrics (click-through rate, conversion rate, revenue per session) rather than only offline ranking metrics, since offline metrics can look good while failing to move real user behavior. Continuously experiment with variations (different ranking models, different candidate generation strategies) rather than treating the system as 'done' once launched."
+      }
+    ],
+    "diagram": "flowchart TD\n    SessionEvents[Real-time Session Events] --> SessionStore[(Session Feature Store)]\n    HistoryStore[(Historical Profile Store)] --> Candidates[Candidate Generation]\n    SessionStore --> Candidates\n    Candidates -->|smaller candidate set| Ranker[Personalized Ranking Model]\n    Ranker --> Recommendations[Recommendations Shown]\n    Recommendations -->|A/B test| Metrics[(Business Metrics)]\n    Metrics -.->|iterate| Ranker",
+    "id": 47
+  },
+  {
+    "title": "Design an Agentic Workflow Automation Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform (like Zapier, but AI-powered) that lets non-technical users describe an automation goal in natural language, and the system builds and executes a workflow connecting multiple third-party services (email, calendar, CRM, etc.).",
+        "answer": "An LLM interprets the user's natural-language goal and, using a defined set of available integrations (each exposed as a structured tool with a schema, similar to an agent's tool-calling setup), proposes a workflow (a sequence or DAG of steps connecting specific services) for the user to review and approve before it's activated \u2014 critically, showing the user exactly what the automation will do rather than only executing silently, since users need to trust and verify automations that will run unattended, potentially affecting real data (sending emails, modifying records)."
+      },
+      {
+        "prompt": "An activated workflow runs unattended and something in one of the connected services changes unexpectedly (an API schema change, a permission revoked). How do you handle failures gracefully?",
+        "answer": "Each workflow run should be monitored with clear failure detection (a step's API call fails, returns unexpected data, or the workflow doesn't complete as expected), triggering a notification to the workflow's owner rather than failing silently \u2014 a broken automation nobody knows about is often worse than no automation at all, since the user may be relying on it. Support automatic retries with backoff for transient failures, but distinguish those from failures needing human attention (like a revoked permission) that retrying won't fix."
+      },
+      {
+        "prompt": "How do you let users trust that an AI-generated workflow won't do something harmful or unintended (e.g., accidentally emailing the wrong list, or looping and sending duplicate actions)?",
+        "answer": "Require explicit user review/approval of the generated workflow before activation (never auto-activate an AI-proposed workflow silently), provide a dry-run/test mode that simulates the workflow against sample data without taking real actions, and build in safety rails for high-consequence actions specifically (like requiring extra confirmation for anything that sends communications to an external list, or capping the volume of actions a single workflow run can take to prevent a runaway loop from, say, sending thousands of duplicate emails)."
+      }
+    ],
+    "diagram": "flowchart TD\n    User[User Goal - natural language] --> LLM[LLM Workflow Builder]\n    Integrations[(Available Integrations)] --> LLM\n    LLM -->|proposed workflow| Review[User Review & Approval]\n    Review -->|approved| Activated[Activated Workflow]\n    Activated --> Execution[Scheduled/Triggered Execution]\n    Execution -->|failure| Notify[Notify Owner]\n    Execution -->|safety rail: action cap| Execution",
+    "id": 48
+  },
+  {
+    "title": "Design a Voice Assistant Backend",
+    "stages": [
+      {
+        "prompt": "Design the backend for a voice assistant: audio comes in from a device, and a spoken response comes back, with the assistant able to answer questions and take actions.",
+        "answer": "Pipeline: speech-to-text (STT) converts incoming audio to text, the text is processed by an LLM (with tool-calling access for actions like setting a timer or checking weather), and the response text is converted back to audio via text-to-speech (TTS) and streamed back to the device. Streaming is important at each stage (partial STT results, streaming LLM tokens, streaming TTS audio) to minimize perceived latency \u2014 waiting for each stage to fully complete before starting the next would make the assistant feel sluggish."
+      },
+      {
+        "prompt": "Users expect near-instant responses, but the full STT \u2192 LLM \u2192 TTS pipeline has real latency at each step. How do you minimize perceived response time?",
+        "answer": "Start TTS generation on the first portion of the LLM's streamed output before the full response is generated, rather than waiting for the complete text response (this pipelining across all three stages, not just within one, is what actually gets end-to-end latency down). Use a lightweight, fast wake-word/intent-detection model to start warming up the pipeline (or determine no LLM call is even needed, e.g., for a simple 'what time is it') before the full STT transcription completes, for very common quick interactions."
+      },
+      {
+        "prompt": "How do you handle ambiguous or misheard voice input (STT errors, background noise) gracefully rather than the assistant confidently acting on a wrong transcription?",
+        "answer": "Surface STT confidence scores to the downstream LLM step so genuinely uncertain transcriptions can trigger a clarifying question ('did you mean...') rather than confidently acting on a likely-wrong interpretation, especially before taking any consequential action (like sending a message or making a purchase) based on voice input. For high-stakes actions specifically, consider requiring an explicit confirmation step regardless of transcription confidence, since voice input error rates are inherently higher than typed input."
+      }
+    ],
+    "diagram": "flowchart LR\n    Audio[Incoming Audio] --> STT[Speech-to-Text\\nstreaming]\n    STT --> LLM[LLM + Tool Calling\\nstreaming]\n    LLM --> TTS[Text-to-Speech\\nstreaming]\n    TTS --> Device[Audio Response to Device]\n    STT -->|low confidence| Clarify[Clarifying Question]\n    LLM -->|high-stakes action| Confirm[Explicit Confirmation]",
+    "id": 49
+  },
+  {
+    "title": "Design an LLM Observability & Tracing Platform",
+    "stages": [
+      {
+        "prompt": "Design a platform that gives engineers visibility into what's happening inside LLM-powered applications in production \u2014 every prompt sent, every response, every tool call, latency, and cost \u2014 across potentially many different applications and teams.",
+        "answer": "Instrument every LLM call and tool call as a structured trace event (input, output, latency, token counts, cost, associated metadata like user/session/application), collected centrally and organized so a full multi-step interaction (like an agent's whole run) can be viewed as a connected trace, not just isolated individual calls. Provide both an aggregate dashboard view (cost/latency/error trends across an application) and a detailed per-trace drill-down view for debugging specific problematic interactions."
+      },
+      {
+        "prompt": "The volume of trace data across many high-traffic LLM applications is enormous. How do you keep this observable without the observability system itself becoming prohibitively expensive?",
+        "answer": "Apply sampling for full-detail trace storage (store 100% of aggregate metrics, but only a representative sample \u2014 or all traces matching specific criteria like errors, low-confidence outputs, or user-flagged interactions \u2014 at full detail), similar to how general distributed tracing systems handle high-volume services. Use tiered retention (recent traces fully queryable, older traces compressed/archived), since most debugging happens on recent data."
+      },
+      {
+        "prompt": "How do you help teams actually find problems in this data, rather than just having it available to search through reactively?",
+        "answer": "Build automated alerting on key signals (latency/cost/error-rate anomalies, spikes in a specific failure pattern, degradation in an automated quality score if one is tracked) so teams are proactively notified rather than needing to manually dig through dashboards to notice a problem. Support flagging/annotation so a human reviewer (or a user's own feedback signal, like a thumbs-down) can mark specific traces as notable, building a curated set of interesting failure cases over time that's more useful than an undifferentiated firehose of raw trace data."
+      }
+    ],
+    "diagram": "flowchart TD\n    App[LLM Application] -->|structured trace events| Collector[Trace Collector]\n    Collector --> Sampling[Sampling: full detail on errors/flagged, sampled otherwise]\n    Sampling --> TraceStore[(Trace Store - tiered retention)]\n    TraceStore --> Dashboard[Aggregate Dashboard]\n    TraceStore --> Drilldown[Per-trace Drilldown]\n    TraceStore --> Alerting[Automated Alerting]\n    Alerting -->|anomaly detected| Team[Engineering Team]",
+    "id": 50
+  },
+  {
+    "title": "Design a Payment Gateway",
+    "stages": [
+      {
+        "prompt": "Design a payment gateway (like Stripe) that processes card payments on behalf of merchants, integrating with card networks and banks.",
+        "answer": "Core flow: a merchant's checkout submits payment details to the gateway (ideally via a tokenized/hosted field so raw card data never touches the merchant's own servers, for PCI compliance), the gateway validates and routes the request to the appropriate card network/acquiring bank, receives an authorization response, and returns a result to the merchant \u2014 with the actual fund settlement happening asynchronously afterward. Idempotency keys on every payment request are essential so a network retry from the merchant's side can't accidentally double-charge a customer."
+      },
+      {
+        "prompt": "A payment can fail partway through (authorized but the merchant's confirmation call times out) \u2014 how do you avoid inconsistent state between the gateway and the merchant's system?",
+        "answer": "Design the API around idempotent, retryable operations and webhooks: the gateway is the source of truth for payment state, and the merchant polls or (more commonly) receives webhook notifications of state changes rather than relying solely on the synchronous response to a request that might have timed out despite succeeding server-side. This means a merchant can always ask 'what actually happened to this payment' and get an authoritative answer, rather than being stuck not knowing if a timed-out request actually went through."
+      },
+      {
+        "prompt": "How do you handle the strict compliance and security requirements (PCI-DSS) around handling card data at this scale?",
+        "answer": "Minimize the scope of systems that ever touch raw card data \u2014 use tokenization aggressively (card details are exchanged once for a token, and all subsequent operations use the token, never the raw card number again) and isolate the few systems that must handle raw card data into a tightly audited, separately secured environment, since PCI compliance scope and cost scale with how many systems touch sensitive card data directly."
+      }
+    ],
+    "diagram": "flowchart LR\n    Merchant[Merchant Checkout] -->|tokenized card data| Gateway[Payment Gateway]\n    Gateway -->|idempotency key| AuthEngine[Authorization Engine]\n    AuthEngine --> CardNetwork[Card Network / Acquiring Bank]\n    CardNetwork --> AuthEngine\n    AuthEngine --> Gateway\n    Gateway -->|webhook: payment state change| Merchant\n    Gateway --> Settlement[(Async Settlement)]",
+    "id": 51
+  },
+  {
+    "title": "Design a Multi-Tenant SaaS Platform",
+    "stages": [
+      {
+        "prompt": "Design the data architecture for a B2B SaaS product serving thousands of customer organizations (tenants), where each tenant's data must be strictly isolated from others.",
+        "answer": "Common approaches, in increasing order of isolation (and cost): shared database with a tenant_id column on every table plus row-level filtering enforced in every query (cheapest, but isolation depends entirely on application code never forgetting the filter); shared database with per-tenant schemas; or fully separate databases per tenant (strongest isolation, most operational overhead). The right choice depends on tenant count and size \u2014 thousands of small tenants usually favor the shared-database-with-tenant_id approach with strict enforcement, while a smaller number of large enterprise tenants can justify per-tenant databases."
+      },
+      {
+        "prompt": "With the shared-database-plus-tenant_id approach, a single missed WHERE clause in application code could leak one tenant's data to another. How do you make this class of bug much harder to introduce?",
+        "answer": "Don't rely purely on developer discipline to always include the tenant filter \u2014 enforce it structurally, e.g., via database row-level security policies that make the database itself refuse to return rows outside the current tenant context regardless of the query, or via a data-access layer that automatically injects the tenant filter into every query so it's structurally impossible to forget rather than a convention to remember."
+      },
+      {
+        "prompt": "One large enterprise tenant's heavy usage is causing noisy-neighbor performance problems for other tenants on the same shared infrastructure. How do you address this?",
+        "answer": "Apply per-tenant resource quotas/rate limits so one tenant's load can't degrade others' experience, and consider tiered infrastructure \u2014 moving especially large or performance-sensitive tenants to dedicated infrastructure (a dedicated database, or a separate deployment) while smaller tenants share a pool, which is a common pattern once a SaaS platform has a wide range of tenant sizes."
+      }
+    ],
+    "diagram": "flowchart TD\n    TenantA[Tenant A Request] --> App[Application Layer]\n    TenantB[Tenant B Request] --> App\n    App -->|tenant context enforced| DataLayer[Data Access Layer\\nauto tenant_id filter]\n    DataLayer --> SharedDB[(Shared DB - RLS enforced)]\n    LargeTenant[Large Enterprise Tenant] --> DedicatedDB[(Dedicated DB)]\n    Quotas[Per-tenant Quotas] -.-> App",
+    "id": 52
+  },
+  {
+    "title": "Design a Feature Flag System",
+    "stages": [
+      {
+        "prompt": "Design a feature flag system that lets engineering teams toggle features on/off and roll out changes to a percentage of users, without deploying new code.",
+        "answer": "Store flag definitions (name, targeting rules \u2014 percentage rollout, specific user/org allowlists, environment) in a central config service; application instances fetch and cache the current flag configuration (via SDK, polling, or a push/streaming update), evaluating each flag locally per-request against the current user's context (user ID, org, attributes) without a network call on every single evaluation, since flag checks need to be very low-latency and shouldn't add a request-time dependency on the flag service being available."
+      },
+      {
+        "prompt": "How does a flag change (e.g., turning off a feature during an incident) reach thousands of already-running application instances quickly?",
+        "answer": "Use a push-based update mechanism (a streaming connection, or a pub/sub notification triggering a re-fetch) rather than relying only on periodic polling, so a change can propagate within seconds rather than waiting for the next poll interval \u2014 this matters a lot for the 'emergency kill switch' use case, where an engineer needs to disable a broken feature immediately during an incident, not after an unpredictable polling delay."
+      },
+      {
+        "prompt": "How do you prevent feature flags from accumulating indefinitely and turning the codebase into an unmaintainable maze of conditional logic?",
+        "answer": "Treat flags as having an explicit lifecycle, not permanent fixtures: track flag age and usage, flag ones that have been at 100% rollout (or 0%) for a long time as candidates for cleanup, and make removing a fully-rolled-out flag's conditional code a standard, expected follow-up task rather than an optional nice-to-have that never happens \u2014 the system itself can help by surfacing stale flags rather than leaving this entirely to developer memory."
+      }
+    ],
+    "diagram": "flowchart LR\n    Engineer[Engineer] -->|update flag| ConfigService[(Flag Config Service)]\n    ConfigService -->|push update| App1[App Instance]\n    ConfigService -->|push update| App2[App Instance]\n    App1 -->|local evaluation, no per-request network call| Decision1[Flag Decision]\n    ConfigService --> StaleFlagReport[Stale Flag Report]\n    StaleFlagReport -.-> Engineer",
+    "id": 53
+  },
+  {
+    "title": "Design an API Gateway",
+    "stages": [
+      {
+        "prompt": "Design an API gateway that sits in front of dozens of backend microservices, providing a single entry point that handles routing, authentication, and rate limiting.",
+        "answer": "The gateway terminates incoming requests, authenticates/authorizes them (validating tokens, potentially calling an auth service), applies rate limiting per client, then routes the request to the appropriate backend service based on path/host rules, aggregating or transforming responses if needed before returning to the client. Centralizing these cross-cutting concerns at the gateway means individual backend services don't each need to reimplement authentication and rate limiting themselves."
+      },
+      {
+        "prompt": "The gateway becomes a single point of failure and a potential bottleneck for the entire platform's traffic. How do you address this?",
+        "answer": "Run the gateway as a horizontally-scaled, stateless fleet behind a load balancer (never a single instance), so no individual gateway node is a single point of failure, and any node can handle any request. Keep the gateway's own logic fast and mostly stateless (caching auth decisions briefly rather than calling the auth service on every single request, for instance) since it sits on the critical path of every request to every backend service, making its own latency and reliability a multiplier on the whole platform's."
+      },
+      {
+        "prompt": "How do you handle a scenario where one backend service becomes slow or starts failing, without it dragging down the gateway's ability to serve requests to other, healthy services?",
+        "answer": "Apply per-backend-service circuit breakers and timeouts at the gateway, so a struggling service gets isolated (requests to it fail fast rather than piling up waiting) without consuming gateway resources (connections, threads) that are needed to serve requests to unrelated, healthy backend services \u2014 this bulkhead-style isolation is exactly the kind of cross-cutting resilience concern that's valuable to centralize at the gateway layer rather than reimplementing per-client."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client --> LB[Load Balancer]\n    LB --> GW1[Gateway Node]\n    LB --> GW2[Gateway Node]\n    GW1 -->|authn/authz, rate limit| AuthService[Auth Service]\n    GW1 -->|route + circuit breaker| ServiceA[Backend Service A]\n    GW1 -->|route + circuit breaker| ServiceB[Backend Service B - degraded]\n    ServiceB -.->|isolated failure| GW1",
+    "id": 54
+  },
+  {
+    "title": "Design a Distributed Tracing System",
+    "stages": [
+      {
+        "prompt": "Design a distributed tracing system (like Jaeger or Zipkin) that lets engineers follow a single request's path across dozens of microservices to debug latency and errors.",
+        "answer": "Each service, on receiving a request, propagates a trace context (a trace ID shared across the whole request, plus a span ID for that service's specific unit of work) to any downstream calls it makes, and reports completed spans (service name, operation, start/end time, tags, parent span ID) to a central collector. The collector assembles spans sharing a trace ID into a full trace, letting a UI reconstruct the entire request's call tree with per-hop timing, showing exactly where time was spent or where an error originated."
+      },
+      {
+        "prompt": "Instrumenting every service call adds overhead, and at high request volume, storing every single trace in full detail is expensive. How do you manage this?",
+        "answer": "Apply sampling \u2014 commonly head-based sampling (deciding whether to trace a request at its very start, propagating that decision through the whole call chain so it's consistent) at some percentage of overall traffic, often combined with always sampling traces that hit an error or exceed a latency threshold (since those are exactly the traces engineers most want to inspect), rather than uniformly sampling and potentially missing the interesting cases."
+      },
+      {
+        "prompt": "How do you make it easy for an engineer debugging a specific slow request (reported by a user) to find that exact trace among millions collected?",
+        "answer": "Ensure the trace ID is surfaced somewhere accessible for correlation \u2014 logged alongside application logs, included in error responses/support tooling, or exposed in internal debugging headers \u2014 so a specific user-reported incident can be tied back to its exact trace ID and looked up directly, rather than an engineer having to search through traces by approximate time and hope they find the right one."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client --> ServiceA[Service A - span 1]\n    ServiceA -->|propagate trace ID| ServiceB[Service B - span 2]\n    ServiceB -->|propagate trace ID| ServiceC[Service C - span 3]\n    ServiceA -->|report span| Collector[Trace Collector]\n    ServiceB -->|report span| Collector\n    ServiceC -->|report span| Collector\n    Collector --> TraceStore[(Trace Store)]\n    TraceStore --> UI[Trace Visualization UI]",
+    "id": 55
+  },
+  {
+    "title": "Design a Secrets Management System",
+    "stages": [
+      {
+        "prompt": "Design a secrets management system (like HashiCorp Vault) that lets applications securely retrieve credentials (database passwords, API keys) without secrets being hardcoded or checked into source control.",
+        "answer": "Secrets are stored encrypted at rest in a central service; applications authenticate to the secrets service (via a machine identity mechanism like a cloud IAM role or a short-lived token, not a hardcoded credential \u2014 that would just move the secret-management problem, not solve it) and request the specific secrets they need at startup or runtime, rather than having secrets baked into config files or container images."
+      },
+      {
+        "prompt": "A secret is compromised (leaked in a log, or a credential is suspected stolen). How does the system support fast, safe rotation?",
+        "answer": "Design for short-lived, frequently-rotated credentials as the default rather than long-lived static secrets \u2014 dynamically generating database credentials with a short TTL per application instance, for example, means a leaked credential is only useful for a limited window automatically, and full rotation (immediately invalidating everything) is a supported, tested operation, not a manual scramble across dozens of services that all hardcoded the old value."
+      },
+      {
+        "prompt": "How do you audit and control which applications/teams can access which secrets, given a leak or misuse needs to be traceable?",
+        "answer": "Enforce fine-grained access policies (which identity can read which specific secret path) and log every single secret access (who/what accessed which secret, when) immutably, so any suspected leak or misuse can be traced to its exact source. Treat the secrets service's own access logs as a first-class security signal to monitor, not just an operational nicety \u2014 an unusual access pattern (a service reading a secret it's never accessed before) is a meaningful anomaly worth alerting on."
+      }
+    ],
+    "diagram": "flowchart LR\n    App[Application] -->|machine identity auth| SecretsService[Secrets Service]\n    SecretsService -->|short-lived credential| App\n    SecretsService --> EncryptedStore[(Encrypted Secret Store)]\n    SecretsService --> AuditLog[(Immutable Access Audit Log)]\n    SecretsService -->|dynamic generation| DB[(Database)]\n    Policy[Access Policies] -.-> SecretsService",
+    "id": 56
+  },
+  {
+    "title": "Design a CI/CD Pipeline System",
+    "stages": [
+      {
+        "prompt": "Design a CI/CD system that automatically builds, tests, and deploys code changes across many repositories and teams, at a company with hundreds of engineers.",
+        "answer": "On a code push/PR event, trigger a pipeline (defined as config alongside the code) consisting of stages (build, test, security scan, deploy) executed on a scalable pool of build workers/runners, with each stage's pass/fail gating progression to the next; deployments to production typically require the pipeline to pass all stages plus (for many orgs) an explicit approval gate, and results/status are surfaced back to the PR/commit so developers get fast feedback."
+      },
+      {
+        "prompt": "Build queue times balloon during peak hours as hundreds of engineers push code simultaneously, each triggering pipeline runs. How do you scale the build infrastructure?",
+        "answer": "Run build workers as an autoscaling pool (spinning up more capacity as queue depth grows, scaling down when idle) rather than a fixed-size fleet, and support caching aggressively at every layer (dependency caches, build artifact caches, container layer caches) so most builds don't repeat expensive work from scratch \u2014 caching often has a bigger impact on average build time than raw worker count, since most changes are incremental."
+      },
+      {
+        "prompt": "How do you prevent a bad deployment from causing a production incident, given the whole point of CI/CD is fast, frequent deploys?",
+        "answer": "Combine automated safety with staged rollout: comprehensive automated tests (unit, integration, and ideally some production-like smoke tests) gate the pipeline before deploy, and the deploy itself uses a staged rollout strategy (canary or blue-green) with automated health-check-based rollback \u2014 if error rates or latency spike on the new version during the canary phase, the pipeline automatically halts and rolls back rather than continuing to roll out to 100% of traffic, keeping the human out of the loop for the fast, common case while still allowing manual intervention when needed."
+      }
+    ],
+    "diagram": "flowchart LR\n    Push[Code Push/PR] --> Trigger[Pipeline Trigger]\n    Trigger --> Build[Build Stage - cached]\n    Build --> Test[Test Stage]\n    Test --> Scan[Security Scan]\n    Scan -->|approval gate| Deploy[Staged Deploy - canary]\n    Deploy -->|health checks pass| FullRollout[Full Rollout]\n    Deploy -->|health checks fail| Rollback[Automatic Rollback]\n    Workers[Autoscaling Build Workers] -.-> Build",
+    "id": 57
+  },
+  {
+    "title": "Design a Container Registry",
+    "stages": [
+      {
+        "prompt": "Design a container registry (like Docker Hub or ECR) that lets teams push and pull container images reliably at scale.",
+        "answer": "Store image layers as content-addressed blobs in object storage (deduplicating identical layers shared across images/tags, which is common since many images share a base layer), with a separate metadata layer tracking repositories, tags, and manifests (which layers make up a given tagged image). Pushing an image uploads any layers not already present (skipping ones the registry already has via content hash) and updates the manifest; pulling fetches the manifest, then any layers the client doesn't already have cached locally."
+      },
+      {
+        "prompt": "A popular base image is pulled thousands of times per minute across a company's build infrastructure, particularly during CI pipeline bursts. How do you keep pull latency low and avoid overloading the registry?",
+        "answer": "Put a CDN/caching layer in front of the registry's blob storage for image layer downloads, since layers are immutable once pushed (content-addressed) and therefore perfectly cacheable \u2014 a popular layer only needs to be fetched from origin once per edge location, with all subsequent pulls served from cache. This is the same fundamental caching strategy as any other high-volume immutable content delivery problem."
+      },
+      {
+        "prompt": "How do you handle image vulnerability scanning and prevent teams from deploying images with known critical vulnerabilities?",
+        "answer": "Run automated vulnerability scanning on every pushed image (checking installed packages against known-CVE databases) and integrate the scan result into the deployment pipeline as a gate \u2014 configurable policies can block deployment of images with critical unpatched vulnerabilities while allowing lower-severity findings through with a warning, and scan results should be visible to teams so they can proactively patch base images rather than only discovering issues at deploy time."
+      }
+    ],
+    "diagram": "flowchart LR\n    Push[docker push] --> Registry[Registry API]\n    Registry -->|dedupe by content hash| BlobStore[(Object Storage - layers)]\n    Registry --> Manifests[(Manifest/Tag Metadata)]\n    Pull[docker pull] --> CDN[CDN Cache]\n    CDN -->|cache miss| BlobStore\n    Push --> Scanner[Vulnerability Scanner]\n    Scanner -->|blocks critical CVEs| Deploy[Deployment Gate]",
+    "id": 58
+  },
+  {
+    "title": "Design a Serverless Function Platform",
+    "stages": [
+      {
+        "prompt": "Design the core execution infrastructure for a serverless function platform (like AWS Lambda), where users upload code that runs on-demand without managing servers.",
+        "answer": "On an invocation request, the platform locates or provisions an execution environment (a lightweight, isolated sandbox \u2014 commonly a microVM for strong isolation with fast startup) pre-loaded or quickly loaded with the function's code, runs the function with the provided input, captures the output, and tears down or recycles the environment after execution (or keeps it 'warm' briefly to serve a follow-up request without a fresh cold start). Billing is based on actual execution time and resources consumed, requiring precise per-invocation resource accounting."
+      },
+      {
+        "prompt": "Cold starts (spinning up a fresh execution environment for a function that hasn't run recently) add significant latency, which is bad for latency-sensitive use cases. How do you mitigate this?",
+        "answer": "Keep a pool of 'warm' pre-initialized environments for frequently-invoked functions rather than tearing down every environment immediately after use, reusing them for subsequent invocations within some idle window before finally recycling. For predictable-traffic use cases, support 'provisioned concurrency' (explicitly keeping N environments warm and ready ahead of expected demand) as an opt-in, paid feature \u2014 trading the cost-efficiency of pure on-demand scaling for latency guarantees where that tradeoff matters to the customer."
+      },
+      {
+        "prompt": "How do you ensure strong isolation between different customers' functions running on shared underlying hardware, given the whole platform depends on that isolation being solid?",
+        "answer": "Use hardware-virtualization-backed isolation (microVMs like Firecracker, rather than just OS-level container namespaces, which offer weaker isolation guarantees) so that even if one function's execution environment were somehow compromised, it couldn't access another customer's data or environment on the same physical host. This isolation guarantee is foundational to the entire platform's trust model, since customers are running arbitrary code on shared infrastructure they don't control."
+      }
+    ],
+    "diagram": "flowchart LR\n    Invoke[Function Invocation] --> Router[Invocation Router]\n    Router -->|warm available| WarmPool[Warm Environment Pool]\n    Router -->|cold start needed| Provision[Provision microVM]\n    WarmPool --> Execute[Execute Function]\n    Provision --> Execute\n    Execute -->|output| Caller[Caller]\n    Execute -->|recycle or keep warm| WarmPool\n    Billing[(Per-invocation Billing)] -.-> Execute",
+    "id": 59
+  },
+  {
+    "title": "Design an Object Storage System",
+    "stages": [
+      {
+        "prompt": "Design an object storage system (like S3) that durably stores and serves arbitrarily large binary objects at massive scale, with a simple key-based API.",
+        "answer": "Objects are split and replicated (or erasure-coded, a more storage-efficient alternative to full replication) across multiple physical storage nodes spanning different failure domains (racks, availability zones), with a metadata layer tracking which storage nodes hold which object's data. A PUT writes the object's data to multiple nodes and only acknowledges success once the configured durability requirement (e.g., successfully written to a majority or all replicas) is met; a GET can be served from any node holding a copy."
+      },
+      {
+        "prompt": "How does the system provide the extremely high durability guarantees (like 'eleven nines') that object storage services advertise?",
+        "answer": "Durability comes from redundancy across independent failure domains (so a single disk, node, rack, or even entire availability zone failure doesn't lose data) combined with continuous background integrity checking (periodically verifying stored data against checksums and automatically re-replicating from a healthy copy if corruption or a lost replica is detected) \u2014 durability is a property of ongoing operational vigilance, not just the initial write's redundancy."
+      },
+      {
+        "prompt": "How do you support cost-effective storage for data that's rarely accessed (like old backups or logs) without the customer needing to manage moving it themselves?",
+        "answer": "Offer storage tiers with different cost/latency/access-frequency tradeoffs (a 'hot' tier for frequently accessed data, cheaper 'cold'/archive tiers with higher retrieval latency or cost for rarely accessed data), and support lifecycle policies that automatically transition objects between tiers based on age or access pattern \u2014 this offloads a real cost-optimization problem from every individual customer onto a configurable, automated platform feature."
+      }
+    ],
+    "diagram": "flowchart TD\n    Client -->|PUT object| API[Object Storage API]\n    API -->|replicate/erasure-code| Node1[(Storage Node - AZ1)]\n    API --> Node2[(Storage Node - AZ2)]\n    API --> Node3[(Storage Node - AZ3)]\n    API --> Metadata[(Metadata: key -> node mapping)]\n    IntegrityCheck[Background Integrity Checker] -.-> Node1\n    IntegrityCheck -.->|re-replicate on failure| Node2\n    LifecyclePolicy[Lifecycle Policy] -.->|hot to cold tier| Node1",
+    "id": 60
+  },
+  {
+    "title": "Design a Content Management System",
+    "stages": [
+      {
+        "prompt": "Design a CMS that lets non-technical content teams create, edit, and publish structured content (articles, pages) that gets rendered on a public website, with draft/review/publish workflow states.",
+        "answer": "Model content as structured documents with a defined schema (fields like title, body, images, metadata) stored in a database, with each document carrying a status (draft, in review, published) and a version history so edits are non-destructive and reversible. Publishing a document makes it available to the public-facing rendering layer, typically via a cache/CDN invalidation so the change is visible quickly, while unpublished drafts remain accessible only to authorized editors."
+      },
+      {
+        "prompt": "Multiple editors need to collaborate on the same document without overwriting each other's changes, and content needs to go through an approval workflow before publishing. How do you support this?",
+        "answer": "Support a defined workflow state machine (draft \u2192 in review \u2192 approved \u2192 published, with configurable required approvers) rather than a simple binary published/unpublished flag, and use optimistic concurrency control (each save includes the version it was based on; a conflicting concurrent edit is detected and surfaced to the editor rather than silently overwritten) or real-time collaborative editing (CRDT-based, as in a collaborative document editor) for true simultaneous editing if that's a required use case."
+      },
+      {
+        "prompt": "The public website needs to render content extremely fast globally, but content changes need to appear quickly after publishing. How do you balance caching aggressively with freshness?",
+        "answer": "Serve published content through a CDN with long cache TTLs for performance, but trigger explicit cache invalidation/purge for the specific affected pages the moment content is published, rather than relying on TTL expiry alone \u2014 this gets you both fast global delivery for the common case (unchanged content) and near-immediate freshness for the specific pages that just changed, without needing short TTLs everywhere that would hurt overall cache hit rate."
+      }
+    ],
+    "diagram": "flowchart LR\n    Editor[Content Editor] -->|draft| CMS[CMS - workflow engine]\n    CMS -->|version history| ContentDB[(Content Database)]\n    CMS -->|approval workflow| Reviewer[Reviewer/Approver]\n    Reviewer -->|approved| Publish[Publish Action]\n    Publish -->|cache invalidation| CDN[CDN]\n    CDN --> PublicSite[Public Website]",
+    "id": 61
+  },
+  {
+    "title": "Design a Collaborative Whiteboard",
+    "stages": [
+      {
+        "prompt": "Design a real-time collaborative whiteboard (like Figma or Miro) where multiple users can simultaneously draw, move, and edit shapes on a shared canvas.",
+        "answer": "Each client holds a local copy of the canvas state and sends granular edit operations (add shape, move shape, change property) over a WebSocket connection to a server, which broadcasts operations to all other connected clients editing the same board; each client applies incoming operations to its local state, keeping all clients' views in sync. Use a CRDT-based data structure for shared state specifically so concurrent edits from different users always converge to the same result regardless of the order operations arrive in, without needing a central lock on any single element."
+      },
+      {
+        "prompt": "Two users drag the same shape simultaneously. How do you handle this so both users see a consistent, sensible result rather than the shape jumping erratically?",
+        "answer": "With a CRDT-based approach, define the shape's position as a value with a well-defined merge rule for concurrent updates (e.g., last-writer-wins based on a logical clock, or a more sophisticated merge for continuous properties like position) so simultaneous drags converge deterministically rather than one client's update silently overwriting the other's mid-drag in a way that looks broken. Visually, showing other users' live cursor positions and current selections helps users naturally avoid editing the same element simultaneously, reducing how often true conflicts occur in practice."
+      },
+      {
+        "prompt": "How do you support a very large, complex board (thousands of elements) without every client needing to sync the entire board's state on every connection or edit?",
+        "answer": "Partition the board into regions/tiles and only sync full detail for the regions currently in a given client's viewport (streaming in more detail as the user pans/zooms), similar to how mapping applications handle large-scale spatial data \u2014 a client editing a small corner of a huge board shouldn't need every single element's data pushed to it continuously, only what's relevant to what they can currently see and interact with."
+      }
+    ],
+    "diagram": "flowchart TD\n    ClientA[Client A] <-->|WebSocket: ops| Server[Collab Server]\n    ClientB[Client B] <-->|WebSocket: ops| Server\n    Server -->|CRDT merge| BoardState[(Shared Board State)]\n    Server -->|viewport-based sync| ClientA\n    Server -->|viewport-based sync| ClientB\n    BoardState -->|periodic snapshot| Persist[(Persistent Storage)]",
+    "id": 62
+  },
+  {
+    "title": "Design a Video Conferencing System",
+    "stages": [
+      {
+        "prompt": "Design the core architecture for a video conferencing system (like Zoom) supporting group calls with many participants.",
+        "answer": "For group calls beyond a handful of participants, use an SFU (Selective Forwarding Unit) architecture: each participant sends their audio/video stream once to a central media server, which forwards (routes) each participant's stream to every other participant, rather than every participant sending directly to every other participant (which doesn't scale bandwidth-wise, an approach called mesh/P2P that only works for very small calls). Signaling (call setup, who's in the call, ICE/NAT traversal negotiation) is handled by a separate signaling server, decoupled from the actual media path."
+      },
+      {
+        "prompt": "A participant on a poor network connection experiences choppy video that also seems to affect other participants' experience of them. How do you handle variable network quality per participant?",
+        "answer": "Use simulcast (each sender encodes their video at multiple quality/bitrate levels simultaneously) so the SFU can forward a lower-quality stream to recipients with poor bandwidth without affecting what's sent to recipients with good bandwidth \u2014 a struggling participant's own inbound stream to the SFU can also be adaptively downgraded, but this shouldn't force everyone else's view of unrelated participants to degrade too, since the forwarding decision can be made independently per recipient."
+      },
+      {
+        "prompt": "How do you scale to support a call with hundreds or thousands of participants (like a large webinar), where the SFU's forward-everything-to-everyone approach breaks down?",
+        "answer": "Beyond a certain participant count, shift from a full-mesh SFU model (where every participant potentially receives every other's stream) to a broadcast/webinar model: only a small number of designated presenters' streams are actively forwarded to all viewers, while most participants are receive-only, dramatically reducing the fan-out bandwidth requirement \u2014 this is a fundamentally different architecture for a fundamentally different use case (broadcast vs. interactive small-group call), and the system should support switching between them rather than trying to force one model to handle both scales."
+      }
+    ],
+    "diagram": "flowchart TD\n    ParticipantA[Participant A] -->|send stream once| SFU[SFU Media Server]\n    ParticipantB[Participant B] -->|send stream once| SFU\n    SFU -->|forward, simulcast quality per recipient| ParticipantA\n    SFU -->|forward| ParticipantB\n    SignalingServer[Signaling Server] -.->|call setup, ICE negotiation| ParticipantA\n    SignalingServer -.-> ParticipantB\n    LargeWebinar[Large Webinar Mode] -.->|broadcast, mostly receive-only| SFU",
+    "id": 63
+  },
+  {
+    "title": "Design a Ticket Booking System",
+    "stages": [
+      {
+        "prompt": "Design a ticket booking system (like Ticketmaster) for high-demand events, where thousands of users try to book a limited number of seats simultaneously at on-sale time.",
+        "answer": "Represent seat inventory with strict per-seat state (available, held, sold), and when a user selects seats, place a short-lived hold (e.g., 5-10 minutes) atomically reserving those specific seats for that user while they complete checkout, using an atomic conditional update so two users can never simultaneously hold the same seat. If checkout isn't completed before the hold expires, the seats automatically return to available inventory for others."
+      },
+      {
+        "prompt": "At the exact moment tickets go on sale for a hugely popular event, demand vastly exceeds supply and the system faces an enormous concurrent request spike. How do you handle this without the system falling over or seats being oversold?",
+        "answer": "Use a virtual waiting room that queues excess demand and admits users to the actual booking flow at a controlled rate the backend can handle, rather than letting the full spike hit the booking system directly \u2014 this is the standard pattern for extreme, predictable demand spikes (a known on-sale time), converting an uncontrolled thundering-herd into a controlled, gradual admission rate. For the seat-holding mechanism itself, a fast atomic store (like Redis) handling the hold/release operations avoids the primary database becoming a contention bottleneck at the moment of peak concurrent hold attempts."
+      },
+      {
+        "prompt": "How do you handle payment failures or abandoned checkouts gracefully so held seats don't get stuck unavailable if a user's payment fails or they simply close the tab?",
+        "answer": "The time-bound hold (from stage 1) is exactly the mechanism that handles this \u2014 if checkout doesn't complete (payment fails, or the user abandons) before the hold's TTL expires, the seats are automatically released back to available inventory without requiring any explicit cleanup action, which is important given that relying on catching every possible abandonment scenario explicitly (browser closed, network dropped, etc.) is much less robust than a TTL-based expiry that handles all of them uniformly."
+      }
+    ],
+    "diagram": "flowchart LR\n    OnSale[On-sale Traffic Spike] --> WaitingRoom[Virtual Waiting Room]\n    WaitingRoom -->|controlled admission rate| BookingFlow[Booking Flow]\n    BookingFlow -->|atomic hold, TTL| SeatStore[(Redis Seat Hold Store)]\n    BookingFlow -->|checkout| Payment[Payment Processing]\n    Payment -->|success| ConfirmedDB[(Confirmed Bookings DB)]\n    SeatStore -->|hold expired| SeatStore",
+    "id": 64
+  },
+  {
+    "title": "Design a Food Delivery System",
+    "stages": [
+      {
+        "prompt": "Design a food delivery platform matching customers, restaurants, and delivery drivers, from order placement through delivery.",
+        "answer": "Core flow: customer places an order routed to the restaurant (via the platform's order management, integrated with the restaurant's own order-taking system or a tablet), the restaurant confirms and prepares it, and a dispatch system matches an available nearby driver (using a geospatial index of driver locations, similar to a ride-hailing matching system) to pick up and deliver the order \u2014 with real-time status updates (preparing, out for delivery, delivered) pushed to the customer throughout."
+      },
+      {
+        "prompt": "How do you estimate and display accurate delivery time estimates to customers, given it depends on restaurant prep time, driver availability, and route time, all of which vary?",
+        "answer": "Break the estimate into components computed separately: expected prep time (historically modeled per restaurant and possibly per item, since prep time varies a lot by restaurant and order complexity), expected time to match and dispatch a driver (depends on current driver supply/demand in that area), and expected travel time (from a routing/ETA service, accounting for current traffic) \u2014 summing these gives a more accurate estimate than a single blanket 'typically takes 30-45 minutes' figure, and each component can be refined independently as more data accumulates."
+      },
+      {
+        "prompt": "During a demand surge (e.g., dinner rush in a popular area), driver supply can't keep up with order volume. How does the system respond?",
+        "answer": "Similar to ride-hailing surge dynamics: temporarily increase driver incentive pay in high-demand areas to attract more available drivers to reposition there, and communicate realistic (longer) delivery estimates to customers during the surge rather than under-promising \u2014 some platforms also temporarily pause new orders from restaurants that are clearly overwhelmed, to prevent a backlog that leads to very late, cold food and a bad experience for everyone in the queue."
+      }
+    ],
+    "diagram": "flowchart LR\n    Customer[Customer Order] --> OrderMgmt[Order Management]\n    OrderMgmt --> Restaurant[Restaurant]\n    OrderMgmt --> Dispatch[Driver Dispatch]\n    Dispatch --> GeoIndex[(Driver Geospatial Index)]\n    Dispatch -->|match| Driver[Delivery Driver]\n    ETAService[ETA Service - prep + dispatch + travel] -.-> Customer\n    SurgeEngine[Surge Incentive Engine] -.->|high demand area| Driver",
+    "id": 65
+  },
+  {
+    "title": "Design a Hotel Booking System",
+    "stages": [
+      {
+        "prompt": "Design a hotel booking system that lets users search for available rooms across many hotels by date range and location, and book without double-booking a room.",
+        "answer": "Model room inventory per hotel per room-type per date (a room-type has N total rooms; each booking decrements available count for its date range), and search queries filter hotels by location/dates against this availability data. Booking a room requires an atomic check-and-decrement across the entire requested date range (all nights must be available) \u2014 if any night in the range lacks availability, the whole booking fails, since a partial booking across a date range isn't a valid outcome."
+      },
+      {
+        "prompt": "The system integrates with individual hotels' own property management systems (PMS) for real inventory, which may have latency or occasional inconsistency. How do you prevent double-booking a room the platform thinks is available but the hotel's own system has already sold?",
+        "answer": "Treat the platform's cached availability as provisional, not authoritative \u2014 hold the booking with a short-lived reservation and make a final real-time availability confirmation call to the hotel's PMS before finalizing, so a stale cached view doesn't result in confirming a room that's actually already taken. When a discrepancy is detected, fail gracefully with a clear message and updated availability, rather than confirming an invalid booking that will later need to be canceled after the customer already believes it's confirmed."
+      },
+      {
+        "prompt": "How do you handle cancellation policies and refunds that vary significantly by hotel and rate type (fully refundable vs. non-refundable, free cancellation windows)?",
+        "answer": "Store the specific cancellation policy as structured data tied to the exact rate/booking at the time of purchase (not just a general hotel-level policy, since the same hotel may offer different rates with different policies), so a cancellation request can be evaluated deterministically against the terms the customer actually agreed to, and refund processing can be automated for clear-cut cases (within the free cancellation window) while flagging edge cases for manual review."
+      }
+    ],
+    "diagram": "flowchart TD\n    Search[Search: location + dates] --> AvailabilityIndex[(Cached Availability Index)]\n    AvailabilityIndex --> Results[Search Results]\n    Book[Book Room] -->|provisional hold| ReservationHold[(Reservation Hold)]\n    ReservationHold -->|real-time confirm| HotelPMS[Hotel's PMS]\n    HotelPMS -->|confirmed| Booking[(Confirmed Booking + Policy)]\n    HotelPMS -->|unavailable| Fail[Booking Failed - refresh availability]",
+    "id": 66
+  },
+  {
+    "title": "Design a Stock Trading Platform",
+    "stages": [
+      {
+        "prompt": "Design the core order-matching engine for a stock trading platform that matches buy and sell orders for a given stock.",
+        "answer": "Maintain an order book per stock: a sorted structure of buy orders (bids, highest price first) and sell orders (asks, lowest price first). A new order is matched against the opposite side's best-priced orders first (price-time priority: best price first, and among equal prices, earliest order first); a match executes a trade at the matched price, and any unmatched remainder of the order rests in the book waiting for a future match. This matching logic needs to be extremely fast and deterministic, since correctness (never losing or duplicating an order) and fairness (strict price-time priority) are both non-negotiable requirements."
+      },
+      {
+        "prompt": "The matching engine must process orders with extremely low, consistent latency (microseconds matter to some traders) and must never lose an order even during a crash. How do you design for this?",
+        "answer": "Run the matching engine as a highly optimized, often single-threaded-per-symbol in-memory process (avoiding the overhead and unpredictability of distributed coordination on the hot matching path) with orders processed strictly sequentially per symbol to preserve deterministic price-time priority, while durably logging every order and match event (write-ahead logging) before acknowledging it, so a crash can replay the log to reconstruct exact state rather than losing or reordering trades \u2014 durability and extreme low-latency are both required simultaneously, which is why this differs architecturally from a typical high-throughput web service."
+      },
+      {
+        "prompt": "How do you ensure regulatory compliance and auditability, given every trade must be fully explainable and reportable?",
+        "answer": "Persist an immutable, complete audit trail of every order (submitted, modified, canceled, matched) with precise timestamps, sufficient to reconstruct exactly why any given trade executed at the price and time it did \u2014 this audit log is a hard regulatory requirement in most jurisdictions, not an optional nice-to-have, and needs to be designed in from the start (as a natural byproduct of the write-ahead logging used for durability) rather than bolted on afterward."
+      }
+    ],
+    "diagram": "flowchart LR\n    BuyOrder[Buy Order] --> MatchingEngine[Matching Engine - per symbol]\n    SellOrder[Sell Order] --> MatchingEngine\n    MatchingEngine --> OrderBook[(In-memory Order Book\\nprice-time priority)]\n    MatchingEngine -->|write-ahead log| DurableLog[(Durable Order/Trade Log)]\n    MatchingEngine -->|match| TradeExecution[Trade Execution]\n    DurableLog --> AuditTrail[(Regulatory Audit Trail)]",
+    "id": 67
+  },
+  {
+    "title": "Design a Cryptocurrency Exchange",
+    "stages": [
+      {
+        "prompt": "Design a cryptocurrency exchange that lets users deposit crypto, trade between currency pairs, and withdraw funds.",
+        "answer": "Similar order-matching-engine core as a stock exchange (order book, price-time priority matching) for the trading component, plus a separate wallet/custody system tracking each user's balance per currency (most of which is held in the exchange's own pooled wallets, not literally on-chain per user, for operational efficiency) and processing deposits (crediting a user's balance once an on-chain transaction reaches sufficient confirmations) and withdrawals (debiting balance and initiating an on-chain transaction)."
+      },
+      {
+        "prompt": "Custody of user funds is the single highest-stakes part of the system \u2014 a compromise here means stolen customer funds. How do you architect wallet security?",
+        "answer": "Use a hot/cold wallet split: keep only a small operational fraction of total funds in 'hot' wallets (connected to the internet, needed for processing real-time withdrawals) and the vast majority in 'cold' storage (offline, air-gapped, requiring manual/multi-party authorization to move), so even a full compromise of the hot wallet's systems limits losses to a bounded, small fraction of total customer funds rather than everything. Require multi-signature authorization (multiple independent parties/keys) for any cold-to-hot wallet transfer, so no single compromised credential or insider can unilaterally move large sums."
+      },
+      {
+        "prompt": "How do you handle the fact that on-chain transactions (deposits/withdrawals) are slower and less immediately final than the exchange's own internal ledger updates?",
+        "answer": "Require a currency-specific number of block confirmations before crediting a deposit to a user's tradeable balance (balancing the risk of a blockchain reorg reversing an unconfirmed transaction against not wanting to make users wait unnecessarily long), and process withdrawals as an internal balance debit immediately (for the user's view) while the actual on-chain transaction is queued and broadcast \u2014 clearly communicating that the withdrawal is 'processing' until the on-chain transaction actually confirms, since the internal ledger update and the real on-chain settlement are two distinct events with different timing."
+      }
+    ],
+    "diagram": "flowchart TD\n    User[User] -->|deposit| OnChainMonitor[On-chain Deposit Monitor]\n    OnChainMonitor -->|N confirmations| LedgerService[Internal Ledger Service]\n    User -->|trade| MatchingEngine[Order Matching Engine]\n    MatchingEngine --> LedgerService\n    LedgerService --> HotWallet[(Hot Wallet - small %)]\n    LedgerService --> ColdWallet[(Cold Wallet - majority, multi-sig)]\n    User -->|withdraw| WithdrawalQueue[Withdrawal Queue]\n    WithdrawalQueue --> HotWallet",
+    "id": 68
+  },
+  {
+    "title": "Design a Digital Wallet",
+    "stages": [
+      {
+        "prompt": "Design a digital wallet system (like a mobile payment app) that lets users store a balance, send/receive money to other users, and link external funding sources (bank accounts, cards).",
+        "answer": "Maintain each user's balance as a ledger (following the double-entry bookkeeping principles common to financial systems: every transfer is a debit from one account and a credit to another within a single atomic transaction), support topping up the wallet balance from a linked external funding source (via a payment processor integration) and withdrawing back out, and support instant peer-to-peer transfers between two wallet users as a pure internal ledger operation (fast, since it doesn't need to touch any external payment rail)."
+      },
+      {
+        "prompt": "A user tries to send money they don't actually have (race condition: two simultaneous transfers both check 'sufficient balance' before either completes). How do you prevent overdrafts?",
+        "answer": "Perform the balance check and the debit as a single atomic operation (a conditional update \u2014 decrement balance only if it stays non-negative \u2014 executed within a database transaction, not a separate read-then-write from application code, which is vulnerable to exactly this race condition), so two concurrent transfer attempts against the same balance can't both succeed if their combined total exceeds available funds, regardless of timing."
+      },
+      {
+        "prompt": "How do you handle a transfer to an external bank account, which \u2014 unlike the instant internal peer-to-peer case \u2014 takes real time (often 1-3 business days) to actually settle?",
+        "answer": "Reflect the transfer as an immediate internal ledger debit and a 'pending' external transfer, keeping those two concepts distinct (the user's wallet balance drops immediately as the funds are committed to leaving, but the actual bank transfer is an asynchronous process tracked separately with its own status) \u2014 clearly communicate the pending state to the user, and handle the failure case (a bank transfer that ultimately fails or is rejected) by reversing the internal ledger entry, since the two systems (internal ledger, external bank rail) don't update atomically together and need explicit reconciliation logic for failure scenarios."
+      }
+    ],
+    "diagram": "flowchart LR\n    User[User] -->|top up| ExternalFunding[Linked Bank/Card]\n    ExternalFunding --> Ledger[(Internal Wallet Ledger\\ndouble-entry)]\n    User -->|P2P transfer| Ledger\n    Ledger -->|atomic conditional debit| Ledger\n    User -->|withdraw| PendingTransfer[Pending External Transfer]\n    PendingTransfer --> BankRail[Bank Transfer Rail - 1-3 days]\n    BankRail -->|failure| Reversal[Reverse Ledger Entry]",
+    "id": 69
+  },
+  {
+    "title": "Design a Subscription Billing System",
+    "stages": [
+      {
+        "prompt": "Design a subscription billing system that handles recurring charges for a SaaS product, including plan changes, proration, and failed payment retries.",
+        "answer": "Model each customer's subscription with a defined billing cycle (e.g., monthly), and run a scheduled billing job that, for each subscription due, generates an invoice and attempts to charge the customer's stored payment method via a payment processor, recording the outcome. Plan upgrades/downgrades mid-cycle require proration logic (crediting/charging the difference for the remaining portion of the current billing period) computed based on the exact time remaining in the cycle."
+      },
+      {
+        "prompt": "A recurring charge fails (expired card, insufficient funds). How do you handle this without immediately cutting off the customer's access or losing the revenue unnecessarily?",
+        "answer": "Implement a dunning process: retry the failed charge on a defined schedule (e.g., a few attempts over 1-2 weeks, since many failures are transient \u2014 a card that's temporarily over its limit, for instance) while sending the customer notifications to update their payment method, only suspending or canceling access after retries are exhausted without success \u2014 abrupt immediate cutoff on the first failed attempt loses revenue from what are often easily recoverable, temporary payment issues."
+      },
+      {
+        "prompt": "How do you ensure billing calculations (especially proration across plan changes) are always auditable and correct, given billing mistakes directly cost the company money or damage customer trust?",
+        "answer": "Generate an explicit, itemized invoice for every billing event (showing exactly what was charged and why \u2014 base plan charge, proration credit/charge, any add-ons) rather than just debiting a lump sum, and treat invoices as immutable once issued (corrections happen via a new adjusting invoice/credit note, not by editing history) so there's always a clear, auditable record explaining any charge a customer or support team might question later."
+      }
+    ],
+    "diagram": "flowchart LR\n    Scheduler[Billing Scheduler] -->|cycle due| InvoiceGen[Invoice Generation\\nwith proration]\n    InvoiceGen --> Charge[Charge Attempt]\n    Charge -->|payment processor| PaymentProcessor[Payment Processor]\n    Charge -->|success| Paid[(Paid Invoice)]\n    Charge -->|failure| Dunning[Dunning: retry schedule + notify]\n    Dunning -->|exhausted| Suspend[Suspend Access]\n    Paid --> AuditTrail[(Invoice Audit Trail)]",
+    "id": 70
+  },
+  {
+    "title": "Design a Real-Time Bidding Ad Exchange",
+    "stages": [
+      {
+        "prompt": "Design a real-time bidding (RTB) ad exchange that, when a user loads a page with an ad slot, solicits bids from multiple advertisers and selects a winner, all within roughly 100ms.",
+        "answer": "On an ad request, the exchange broadcasts a bid request (containing anonymized user/context signals) to multiple demand-side platforms (DSPs) simultaneously, each of which must return a bid within a strict timeout (commonly under 100ms total for the whole auction); the exchange runs an auction (commonly second-price: highest bidder wins but pays the second-highest bid) among the responses received in time, and the winning ad is returned to render in the slot \u2014 any DSP that doesn't respond within the timeout is simply excluded from that auction."
+      },
+      {
+        "prompt": "With dozens of DSPs and a hard ~100ms budget, how do you keep the whole system fast even though you're waiting on multiple external network calls?",
+        "answer": "Fan out bid requests to all DSPs in parallel (never sequentially) with a strict per-DSP timeout, and proceed to auction resolution using whichever bids arrived in time rather than waiting for stragglers \u2014 a DSP that's occasionally slow just loses out on that specific auction rather than holding up the entire request. Geographic proximity between the exchange and DSP endpoints (or requiring DSPs to have low-latency endpoints as an integration requirement) also directly determines how many DSPs can realistically participate within the tight budget."
+      },
+      {
+        "prompt": "How do you prevent fraud (fake bid requests, bots inflating impression counts) from undermining trust in the exchange for both advertisers and publishers?",
+        "answer": "Apply bot/fraud detection at multiple points: filtering known bot traffic patterns and non-human signals before even generating a bid request, requiring publishers to be vetted/verified (reducing fake-inventory fraud from malicious publishers), and providing advertisers with post-auction verification/reporting so discrepancies (impressions billed but not verifiably delivered to real users) can be caught, refunded, and used to identify and remove bad actors from the exchange over time."
+      }
+    ],
+    "diagram": "flowchart TD\n    PageLoad[Page Load - Ad Slot] --> Exchange[Ad Exchange]\n    Exchange -->|parallel bid request, ~100ms timeout| DSP1[DSP 1]\n    Exchange -->|parallel| DSP2[DSP 2]\n    Exchange -->|parallel| DSP3[DSP 3]\n    DSP1 --> Auction[Second-Price Auction]\n    DSP2 --> Auction\n    Auction -->|winner| AdRender[Ad Rendered]\n    FraudDetection[Fraud Detection] -.-> Exchange",
+    "id": 71
+  },
+  {
+    "title": "Design a Full-Text Search Engine",
+    "stages": [
+      {
+        "prompt": "Design a full-text search engine (like a simplified Elasticsearch) that indexes documents and supports fast keyword search with relevance ranking.",
+        "answer": "Build an inverted index: for each unique term across all documents, store a list of which documents contain it (and typically term frequency/position information for ranking and phrase queries). A search query is tokenized into terms, the index is looked up for each term to find candidate documents, and results are ranked by a relevance scoring function (commonly TF-IDF or BM25, which weigh how important a term is to a document relative to the whole corpus) rather than just returning unranked matches."
+      },
+      {
+        "prompt": "The document corpus is too large for a single machine's inverted index. How do you shard the index and still return accurate, well-ranked results?",
+        "answer": "Shard the inverted index across multiple nodes (commonly by document, so each shard holds a complete index for its subset of documents), and for each query, fan out to all shards, have each shard return its locally top-ranked results, then merge and re-rank at a coordinating layer \u2014 this is the same scatter-gather pattern used for distributed vector search, and it requires care with global term statistics (like document frequency, used in TF-IDF/BM25 scoring) since a purely per-shard-local calculation can produce ranking that's slightly inconsistent with what a single global index would produce, though this is often an acceptable approximation in practice."
+      },
+      {
+        "prompt": "How do you keep the index up to date as documents are added, updated, and deleted continuously, without full reindexing becoming a bottleneck?",
+        "answer": "Support incremental indexing (new/changed documents are indexed and merged into the existing index structure without rebuilding everything), commonly using a segment-based approach where new documents go into small new index segments that are periodically merged with older segments in the background \u2014 this is the standard technique (used by Lucene/Elasticsearch) for supporting continuous writes without either blocking search availability or requiring disruptive full rebuilds."
+      }
+    ],
+    "diagram": "flowchart LR\n    Document[New/Updated Document] --> Indexer[Indexer]\n    Indexer -->|new segment| Shard1[(Shard 1 - Inverted Index)]\n    Indexer -->|new segment| Shard2[(Shard 2)]\n    BackgroundMerge[Background Segment Merge] -.-> Shard1\n    Query[Search Query] --> Coordinator[Query Coordinator]\n    Coordinator -->|scatter| Shard1\n    Coordinator -->|scatter| Shard2\n    Shard1 -->|local top-k, ranked| Coordinator\n    Coordinator -->|merge + re-rank| Results[Ranked Results]",
+    "id": 72
+  },
+  {
+    "title": "Design a Data Warehouse / ETL Pipeline",
+    "stages": [
+      {
+        "prompt": "Design a data pipeline that extracts data from many operational source systems (databases, event streams, third-party APIs), transforms it, and loads it into a data warehouse for analytics.",
+        "answer": "Extract data from sources (via database change-data-capture for operational DBs, consuming from event streams for real-time data, and scheduled API pulls for third-party sources), land it in raw form in cheap storage first (a 'data lake' staging area), then run transformation jobs that clean, join, and reshape the raw data into well-structured tables optimized for analytical queries in the warehouse \u2014 separating extraction/landing from transformation makes each stage independently debuggable and lets you reprocess historical raw data if a transformation bug is found later."
+      },
+      {
+        "prompt": "A transformation job has a bug that produced incorrect data for the last week, and this has already propagated into downstream dashboards and reports that business stakeholders have been using. How do you handle this?",
+        "answer": "Because raw source data was preserved in the staging/lake layer (not discarded after the first transformation), you can fix the transformation logic and reprocess the affected date range from the preserved raw data to regenerate correct warehouse tables, rather than the bug being unrecoverable. Communicate clearly to downstream consumers about what data was affected and when the correction will be complete, and consider adding automated data-quality checks (row counts, key business metric sanity checks) that would have caught this class of error before it reached dashboards."
+      },
+      {
+        "prompt": "How do you handle schema evolution \u2014 a source system adds a new field, or changes a field's type \u2014 without breaking the pipeline or losing historical data consistency?",
+        "answer": "Design the pipeline to handle schema evolution gracefully (e.g., new fields are additive and don't break existing transformations reading older records, and breaking changes like a field type change are handled via explicit versioning of the schema/transformation logic) rather than assuming the source schema is fixed forever. Validate incoming data against an expected schema at ingestion and alert on unexpected changes, so schema drift is caught and handled deliberately rather than silently corrupting downstream data or causing an opaque pipeline failure."
+      }
+    ],
+    "diagram": "flowchart LR\n    SourceDB[(Operational DB - CDC)] --> Lake[(Raw Data Lake - staging)]\n    EventStream[Event Stream] --> Lake\n    ThirdPartyAPI[Third-party API] --> Lake\n    Lake --> Transform[Transformation Jobs]\n    Transform --> Warehouse[(Data Warehouse)]\n    Warehouse --> Dashboards[BI Dashboards]\n    QualityChecks[Data Quality Checks] -.-> Transform\n    Lake -.->|reprocess on bug fix| Transform",
+    "id": 73
+  },
+  {
+    "title": "Design a Real-Time Analytics Dashboard",
+    "stages": [
+      {
+        "prompt": "Design a dashboard that shows near-real-time metrics (like current active users, orders per minute) for a high-traffic application, updating within seconds of events happening.",
+        "answer": "Stream events into a stream-processing job (Kafka Streams, Flink, or similar) that maintains windowed aggregates (e.g., a rolling count of orders in the last minute) incrementally as events arrive, writing current aggregate values to a fast-read store (like Redis) that the dashboard queries or subscribes to \u2014 this avoids querying and aggregating raw event data on every dashboard refresh, which wouldn't scale to real-time update frequency at high event volume."
+      },
+      {
+        "prompt": "The dashboard needs to support drilling down into different dimensions (metrics by region, by product category) without precomputing every possible combination in advance.",
+        "answer": "Precompute aggregates along the most commonly-needed dimension combinations (based on actual usage patterns) rather than every theoretically possible combination, which grows combinatorially and is usually wasteful \u2014 for less common ad-hoc drill-down needs, fall back to querying a more detailed (but still reasonably fast) store like a columnar analytical database that isn't pre-aggregated but is optimized for scanning and grouping large amounts of raw event data quickly, accepting slightly higher latency for these less-common queries."
+      },
+      {
+        "prompt": "How do you handle the dashboard staying accurate/consistent if the underlying stream processing job restarts or briefly falls behind?",
+        "answer": "Design the streaming aggregation to be resumable from a checkpoint (so a restart continues from where it left off rather than resetting or reprocessing everything) and make the dashboard clearly indicate data freshness/lag (e.g., 'as of 12 seconds ago') so users understand they're looking at near-real-time, not necessarily perfectly-current data \u2014 being transparent about lag is better than presenting stale data as if it were fully current."
+      }
+    ],
+    "diagram": "flowchart LR\n    Events[Application Events] --> StreamProcessor[Stream Processor\\nwindowed aggregation]\n    StreamProcessor -->|checkpointed| FastStore[(Redis - current aggregates)]\n    FastStore --> Dashboard[Real-time Dashboard]\n    Events --> ColumnarDB[(Columnar Analytical DB - raw events)]\n    Dashboard -->|ad-hoc drill-down| ColumnarDB\n    StreamProcessor -.->|freshness indicator| Dashboard",
+    "id": 74
+  },
+  {
+    "title": "Design a Multiplayer Game Leaderboard",
+    "stages": [
+      {
+        "prompt": "Design a leaderboard system for a game with millions of active players, supporting real-time score updates and fast 'get top N' and 'get a specific player's rank' queries.",
+        "answer": "Use a sorted-set data structure (like Redis's ZSET) keyed by score, which natively supports O(log n) score updates and O(log n + k) range queries (top N, or a player's rank via a rank-lookup operation) \u2014 purpose-built for exactly this leaderboard access pattern, far more efficient than running a SQL ORDER BY query against a regular table for every leaderboard request at this scale and update frequency."
+      },
+      {
+        "prompt": "The game has hundreds of millions of players globally. A single sorted set on one Redis instance won't hold this, and global rank queries need to stay fast. How do you scale this?",
+        "answer": "Shard the leaderboard (e.g., by region, or by a hash of player ID if a single global ranking is needed) across multiple Redis instances, and for a true global top-N query, merge the top candidates from each shard at a coordinating layer \u2014 similar to distributed search/vector-index scatter-gather patterns. For 'get a specific player's global rank' at massive scale, an exact real-time global rank across hundreds of millions of sharded entries can be genuinely expensive; consider whether an approximate rank (updated periodically) is an acceptable tradeoff for that specific query, even if top-N and per-shard rank stay exact and real-time."
+      },
+      {
+        "prompt": "How do you support both an all-time leaderboard and a weekly/seasonal leaderboard that resets, without maintaining completely separate score-tracking logic?",
+        "answer": "Maintain separate sorted sets per time window (all-time, current week, current season), updating all relevant ones on every score event rather than trying to derive time-windowed rankings from a single all-time structure after the fact \u2014 this trades a bit of extra write work (updating multiple sorted sets per score event) for very fast, purpose-built reads on each leaderboard variant, which is the right tradeoff given leaderboards are read far more often than scores are updated."
+      }
+    ],
+    "diagram": "flowchart LR\n    ScoreEvent[Player Score Event] --> Update[Update Sorted Sets]\n    Update --> AllTimeLB[(All-time Leaderboard - sharded ZSET)]\n    Update --> WeeklyLB[(Weekly Leaderboard)]\n    Query[Top N / Player Rank] --> Coordinator[Query Coordinator]\n    Coordinator -->|scatter| AllTimeLB\n    Coordinator -->|merge| Result[Leaderboard Result]",
+    "id": 75
+  },
+  {
+    "title": "Design a Social Graph (Friend/Follow) System",
+    "stages": [
+      {
+        "prompt": "Design a system that stores and queries a social graph (who follows whom) for a platform with hundreds of millions of users, supporting queries like 'who does this user follow' and 'who follows this user' efficiently.",
+        "answer": "Store the graph as an adjacency-list structure, typically two indexes (a 'following' list per user and a 'followers' list per user, maintained together on every follow/unfollow event) in a database optimized for this access pattern (a wide-column store or a graph database, depending on query complexity needed) \u2014 since both directions are queried frequently, denormalizing into both indexes trades some write amplification for much faster reads of either direction, which is the right tradeoff given follow relationships are read far more often than they change."
+      },
+      {
+        "prompt": "A small number of users (celebrities) have tens of millions of followers, creating extreme skew \u2014 most users have a normal-sized follower list, a few have an enormous one. How does this affect your design?",
+        "answer": "This is the same skew problem that shows up in feed fan-out design: operations that need to touch every follower of a celebrity account (like fanning out a new post to followers' feeds) become disproportionately expensive for these accounts specifically, so such operations often need special-cased handling for high-follower-count accounts (e.g., pull-based feed merging instead of push-based fan-out, as discussed in feed system design) rather than assuming uniform behavior works for every account regardless of follower count."
+      },
+      {
+        "prompt": "How do you efficiently answer 'mutual friends/followers' or 'people you may know' style queries, which require intersecting large sets?",
+        "answer": "For mutual-connections queries, intersecting two users' follow lists directly can be done efficiently if both lists are stored in a structure supporting fast set intersection (sorted lists allow an efficient merge-based intersection); for 'people you may know' style recommendations at scale, this typically shifts from a live graph query to a precomputed, periodically-refreshed batch job (analyzing the graph offline to generate suggestions, since computing 'friends of friends with the most mutual connections' live for every user on every page load doesn't scale, but a daily/hourly batch recomputation feeding a fast lookup table does)."
+      }
+    ],
+    "diagram": "flowchart LR\n    FollowEvent[Follow/Unfollow Event] --> UpdateBoth[Update Both Indexes]\n    UpdateBoth --> FollowingIdx[(Following Index - per user)]\n    UpdateBoth --> FollowersIdx[(Followers Index - per user)]\n    Query[Who does X follow?] --> FollowingIdx\n    Query2[Who follows X?] --> FollowersIdx\n    BatchJob[Batch Recommendation Job] -.->|offline graph analysis| SuggestionsTable[(People You May Know Table)]\n    CelebrityAccount[Celebrity Account] -.->|special-cased fan-out| UpdateBoth",
+    "id": 76
+  },
+  {
+    "title": "Design a Notification Preference Center",
+    "stages": [
+      {
+        "prompt": "Design a system that lets users configure granular notification preferences (which types of notifications, via which channels \u2014 email/push/SMS \u2014 and how often) that every part of the platform must respect before sending any notification.",
+        "answer": "Store user preferences as structured rules (per notification category, per channel, opted in/out, plus settings like quiet hours or digest frequency) in a central preference service, and require every notification-sending code path across the platform to check this service before actually dispatching \u2014 centralizing this rather than letting each feature team implement their own opt-out logic, which reliably leads to inconsistent behavior and users receiving notifications they explicitly turned off."
+      },
+      {
+        "prompt": "How do you ensure a new feature team adding a new notification type doesn't accidentally bypass the preference system (a common way products end up over-notifying users)?",
+        "answer": "Make respecting preferences structurally difficult to skip rather than a convention to remember \u2014 route all notification sending through a shared notification service/library that enforces the preference check internally, so a team can't trivially call an email API directly and bypass the check; require every new notification type to be registered with a default preference and category as part of onboarding it into the shared system, making the 'right' path also the easy, natural path."
+      },
+      {
+        "prompt": "A user wants to see a clear, understandable settings page rather than an overwhelming grid of every possible notification type \u00d7 channel combination. How do you balance granular control against usability?",
+        "answer": "Group related notification types into sensible categories with reasonable defaults (most users won't want to configure every single individual setting), expose the most commonly-adjusted controls prominently (like a global 'pause all notifications' or per-channel toggles), and offer granular per-type control as a secondary, discoverable but not default-visible option \u2014 the preference *system* underneath can be fully granular even if the *UI* defaults to a simpler, more digestible view for most users."
+      }
+    ],
+    "diagram": "flowchart LR\n    FeatureTeam[Feature Team - new notification] --> NotificationLib[Shared Notification Service]\n    NotificationLib -->|check first| PreferenceService[(Preference Service)]\n    PreferenceService -->|allowed| Dispatch[Dispatch: email/push/SMS]\n    PreferenceService -->|opted out| Skip[Skipped]\n    User[User Settings Page] --> PreferenceService",
+    "id": 77
+  },
+  {
+    "title": "Design an Email Delivery System",
+    "stages": [
+      {
+        "prompt": "Design an email delivery system (like SendGrid) that reliably sends transactional and bulk emails on behalf of customers, at high volume.",
+        "answer": "Accept email send requests via an API, queue them for asynchronous processing (decoupling the customer's request from actual delivery, which can take time and retries), and have worker processes pull from the queue to actually connect to recipient mail servers via SMTP and deliver \u2014 tracking delivery status (sent, bounced, deferred) per message and exposing this back to the customer via webhooks or a status API."
+      },
+      {
+        "prompt": "Email deliverability (avoiding spam folders) depends heavily on sender reputation. How do you protect the platform's overall sending reputation given many different customers are sending through shared infrastructure?",
+        "answer": "Use dedicated or reputation-isolated IP pools segmented by sender trust level/volume (so one customer sending spammy or poorly-targeted email doesn't damage deliverability for other customers sharing the same sending IPs), enforce authentication standards (SPF, DKIM, DMARC) on all outgoing mail, and actively monitor bounce/complaint rates per customer, automatically throttling or suspending senders whose metrics indicate they're likely to trigger spam filters or damage the platform's reputation with mailbox providers."
+      },
+      {
+        "prompt": "How do you handle a large customer sending a bulk campaign to millions of recipients without overwhelming the system or getting the whole batch blocked by a receiving mail provider's rate limits?",
+        "answer": "Rate-limit outbound sending per destination mail provider (since providers like Gmail/Outlook enforce their own receiving rate limits and will start rejecting or throttling a sender that exceeds them), spreading a large batch's delivery over an appropriate time window rather than attempting to blast it all simultaneously, and prioritize or stagger sending intelligently (e.g., warming up sending volume gradually for a new large campaign) to stay within what receiving providers will accept without triggering spam-like sending pattern detection."
+      }
+    ],
+    "diagram": "flowchart LR\n    Customer[Customer API Request] --> Queue[(Send Queue)]\n    Queue --> Worker[Delivery Worker]\n    Worker -->|rate-limited per provider| MailProvider[Recipient Mail Provider]\n    Worker --> StatusTracking[(Delivery Status Tracking)]\n    StatusTracking -->|webhook| Customer\n    ReputationMonitor[Reputation Monitor] -.->|throttle bad senders| Worker\n    IPPools[Segmented IP Pools] -.-> Worker",
+    "id": 78
+  },
+  {
+    "title": "Design a Website Uptime Monitoring System",
+    "stages": [
+      {
+        "prompt": "Design a system (like Pingdom) that monitors thousands of customers' websites/APIs from multiple geographic locations, alerting customers when their site goes down.",
+        "answer": "Run monitoring checks (HTTP requests to configured URLs, checking status code/response time/content) on a schedule from a distributed fleet of checker nodes in multiple geographic regions, since checking from only one location can't distinguish 'the site is actually down' from 'there's a network issue specific to that one location.' Only declare a site down (and alert) once a majority or configurable threshold of checker locations agree it's unreachable, avoiding false alarms from a single location's transient network blip."
+      },
+      {
+        "prompt": "How do you avoid alerting on transient blips (a site that's briefly slow or has one failed check but recovers immediately) while still alerting quickly on a genuine outage?",
+        "answer": "Require a small number of consecutive failures (e.g., 2-3 failed checks in a row, not just one) before declaring an outage and alerting, trading a little detection latency for a big reduction in false-positive alerts \u2014 the exact threshold is a tunable tradeoff customers can often configure themselves based on how sensitive they want alerting to be for their specific service's tolerance for brief blips versus needing fast detection."
+      },
+      {
+        "prompt": "How do you scale the monitoring checker fleet to handle checking hundreds of thousands of URLs at various check frequencies (some every minute, some every 5 minutes) without checks falling behind schedule?",
+        "answer": "Use a distributed scheduling system where checks are queued with their due time, and a pool of checker workers (per region) pull due checks and execute them, autoscaling worker capacity based on the total check volume and desired check frequencies \u2014 treat 'a check ran late' as a monitored operational metric itself (since a monitoring system that silently falls behind on its own checks defeats the purpose), alerting the platform operators if checks are systematically running behind schedule."
+      }
+    ],
+    "diagram": "flowchart LR\n    Scheduler[Check Scheduler] --> RegionA[Checker Fleet - Region A]\n    Scheduler --> RegionB[Checker Fleet - Region B]\n    Scheduler --> RegionC[Checker Fleet - Region C]\n    RegionA -->|check result| Aggregator[Result Aggregator]\n    RegionB --> Aggregator\n    RegionC --> Aggregator\n    Aggregator -->|majority agree down, N consecutive failures| AlertEngine[Alert Engine]\n    AlertEngine --> Customer[Customer Notification]",
+    "id": 79
+  },
+  {
+    "title": "Design a Distributed Task Queue",
+    "stages": [
+      {
+        "prompt": "Design a distributed task queue system (like Celery) that lets application code enqueue background jobs (send an email, process an image) to be executed asynchronously by a pool of worker processes.",
+        "answer": "Producers push serialized task descriptions (function reference plus arguments) onto a durable message broker (like RabbitMQ or Redis); a pool of worker processes consume tasks from the queue, execute them, and report success/failure \u2014 decoupling the requesting code (which just needs to enqueue and move on) from the actual execution timing and capacity, which can scale independently by adding more workers."
+      },
+      {
+        "prompt": "A worker crashes while processing a task (e.g., the machine dies mid-execution). How do you ensure the task isn't silently lost?",
+        "answer": "Use acknowledgment-based delivery: a worker only removes a task from the queue after successfully completing it and explicitly acknowledging (not immediately upon receiving it) \u2014 if a worker dies before acknowledging, the broker redelivers the task to another worker after a visibility timeout, ensuring at-least-once execution. This means task handlers should be designed to be idempotent (safe to run more than once) since a crash right after completing work but before the acknowledgment is received would cause a legitimate redelivery of already-completed work."
+      },
+      {
+        "prompt": "Some tasks are quick (send a notification) and some are slow (process a large video file). How do you prevent slow tasks from starving quick ones behind them in the same queue?",
+        "answer": "Use separate queues per task type/priority (or at least separate 'fast' and 'slow' queues) with dedicated worker pools sized appropriately for each, rather than a single shared queue and worker pool where a burst of slow tasks can back up quick, latency-sensitive tasks behind them \u2014 this is directly analogous to the queueing/prioritization problem in any task-scheduling system, and the fix is the same: don't force fundamentally different workloads to share the same queue and resource pool if their latency requirements differ significantly."
+      }
+    ],
+    "diagram": "flowchart LR\n    Producer[Application] -->|enqueue| FastQueue[(Fast Task Queue)]\n    Producer -->|enqueue| SlowQueue[(Slow Task Queue)]\n    FastQueue --> FastWorkers[Fast Worker Pool]\n    SlowQueue --> SlowWorkers[Slow Worker Pool]\n    FastWorkers -->|ack on completion| FastQueue\n    FastWorkers -.->|crash before ack| Redelivery[Redelivered after timeout]",
+    "id": 80
+  },
+  {
+    "title": "Design a Blue-Green / Canary Deployment System",
+    "stages": [
+      {
+        "prompt": "Design a deployment system that lets teams roll out new application versions with minimal risk, supporting both blue-green and canary deployment strategies.",
+        "answer": "Blue-green: maintain two identical production environments (blue = current live, green = new version), deploy and fully validate the new version in green while blue keeps serving all traffic, then switch traffic to green atomically (via load balancer/DNS cutover) once validated \u2014 giving an instant rollback (switch back to blue) if anything's wrong. Canary: instead of an all-at-once switch, gradually shift a small then increasing percentage of traffic to the new version while monitoring health metrics, only proceeding to full rollout if metrics stay healthy at each step."
+      },
+      {
+        "prompt": "For the canary strategy, how do you decide automatically whether to proceed to the next traffic percentage or roll back, without requiring a human to babysit every deployment?",
+        "answer": "Define explicit health metrics and thresholds up front (error rate, latency percentiles, any business-critical metric) that the deployment system checks automatically at each canary stage, only progressing to the next traffic percentage if metrics stay within acceptable bounds for a defined observation window, and automatically rolling back if they breach the threshold \u2014 this automated gate is what makes frequent, low-risk deployment actually practical at scale, since requiring a human to manually watch every single deployment doesn't scale to a team shipping many times a day."
+      },
+      {
+        "prompt": "Blue-green deployment requires running two full production environments simultaneously during a deploy, which is expensive for large services. How do you address this cost, or is canary strictly better?",
+        "answer": "This is a genuine tradeoff to state explicitly: blue-green gives instant, clean rollback and full pre-switch validation at the cost of doubled infrastructure during the deploy window, while canary uses infrastructure more efficiently (gradually shifting existing capacity rather than doubling it) but has more complex rollback (some users already got the new version) and a longer exposure window before full validation. Many organizations use canary as the default for routine deploys and reserve blue-green for especially risky changes (like a major version upgrade or database migration) where the extra cost of full pre-switch validation and instant rollback is worth paying for."
+      }
+    ],
+    "diagram": "flowchart LR\n    NewVersion[New Version] --> Canary[Canary: 5% traffic]\n    Canary -->|health checks pass| Canary25[25% traffic]\n    Canary25 -->|health checks pass| Canary100[100% traffic]\n    Canary -->|health checks fail| Rollback[Automatic Rollback]\n    BlueGreen[Blue-Green Alt] --> Green[Green Env - full validation]\n    Green -->|validated| Switch[Atomic Traffic Switch]\n    Switch -.->|instant rollback available| Blue[Blue Env - kept warm]",
+    "id": 81
+  },
+  {
+    "title": "Design a Photo/Video Sharing App",
+    "stages": [
+      {
+        "prompt": "Design the core architecture for a photo/video sharing app (like Instagram) supporting uploads, a personalized feed, and stories that expire after 24 hours.",
+        "answer": "Upload flow: media is uploaded to object storage, triggering an async processing pipeline (resizing/transcoding into multiple resolutions, generating thumbnails), with metadata (caption, owner, timestamp) stored in a database. Feed generation uses the hybrid push/pull fan-out pattern discussed in news feed design (push to followers' feed lists for normal accounts, pull-and-merge at read time for high-follower accounts), and stories use a similar storage/delivery path but with a TTL-based expiration (either a scheduled cleanup job or simply filtering expired stories out at read time, with actual deletion happening later via a lower-priority cleanup process)."
+      },
+      {
+        "prompt": "How do you efficiently serve images/videos at the right resolution for each user's specific device and network conditions, given the same photo needs to look good on everything from a small phone to a large tablet?",
+        "answer": "Generate and store multiple resolution variants of each uploaded image/video at upload time (not on-demand per request, which would add latency), and have the client request the appropriate variant based on its screen size and current network conditions (adaptively choosing lower resolution on a poor connection, similar to adaptive bitrate video streaming), served through a CDN for low-latency global delivery of whichever variant is requested."
+      },
+      {
+        "prompt": "How do you handle the write-heavy, bursty nature of 'stories' (many users posting frequently, all expiring on a rolling 24-hour basis) differently from permanent feed posts?",
+        "answer": "Stories can use a simpler storage/retrieval model than the permanent feed specifically because of their short lifespan and typically smaller total viewership per story compared to a viral permanent post \u2014 a lighter-weight, TTL-native store (rather than the more complex, permanently-indexed feed infrastructure) is often sufficient, and the natural expiration means storage costs and index size stay bounded automatically without needing the same long-term archival/cold-storage tiering strategy the permanent feed's media needs."
+      }
+    ],
+    "diagram": "flowchart TD\n    Upload[Media Upload] --> ObjectStore[(Object Storage)]\n    Upload --> ProcessingPipeline[Async Transcode/Resize Pipeline]\n    ProcessingPipeline --> Variants[(Multiple Resolution Variants)]\n    Variants --> CDN[CDN]\n    Upload -->|normal account| FanOut[Push to Follower Feeds]\n    Upload -->|celebrity account| PullMerge[Pull-merge at Read Time]\n    StoryUpload[Story Upload] --> TTLStore[(TTL-based Story Store)]\n    TTLStore -->|24h expiry| Expired[Expired/Cleaned Up]",
+    "id": 82
+  },
+  {
+    "title": "Design a Music Streaming Service",
+    "stages": [
+      {
+        "prompt": "Design a music streaming service (like Spotify) supporting on-demand playback of a huge catalog, playlists, and offline downloads.",
+        "answer": "Store audio files (encoded at multiple bitrates) in object storage, served through a CDN for playback (streaming, not fully downloading, unless offline mode is used); a metadata service tracks the catalog (tracks, albums, artists), user library/playlists, and playback history. Offline downloads store the audio file (encrypted, DRM-protected) locally on the device with playback rights tied to an active subscription, requiring periodic online license/subscription-validity checks even while primarily playing offline."
+      },
+      {
+        "prompt": "How does the system generate personalized recommendations (like a 'Discover Weekly' style playlist) at the scale of hundreds of millions of users and tens of millions of tracks?",
+        "answer": "This follows the standard large-scale recommendation architecture: offline batch jobs compute user and track embeddings (via collaborative filtering on listening behavior, and content-based signals from audio/metadata analysis) periodically, feeding a candidate-generation step (fast approximate retrieval of plausible tracks for a user) followed by a ranking step that scores and orders the smaller candidate set \u2014 generating a full personalized playlist doesn't need to happen in real time on every request, since these are typically precomputed on a schedule (e.g., weekly) rather than needing to reflect the last few seconds of listening."
+      },
+      {
+        "prompt": "How do you handle royalty/rights tracking, given every single play needs to be counted accurately for artist payouts, at massive play volume?",
+        "answer": "Log every playback event (track, user, timestamp, duration listened \u2014 since royalty rules often require a minimum listen duration to count as a 'play') to a durable, high-throughput event pipeline, and run batch aggregation jobs (periodically, e.g., daily) to compute accurate per-track, per-territory play counts feeding into royalty calculations \u2014 this needs to be exactly correct and auditable given it directly determines real payments to rights holders, so the pipeline design prioritizes completeness and auditability of the event log over pure real-time speed for this specific use case."
+      }
+    ],
+    "diagram": "flowchart LR\n    AudioFile[Audio Catalog] --> ObjectStore[(Object Storage - multi-bitrate)]\n    ObjectStore --> CDN[CDN]\n    User[User] -->|stream| CDN\n    User -->|offline download| LocalStorage[Encrypted Local Storage]\n    PlaybackEvent[Playback Events] --> RoyaltyPipeline[(Royalty Event Pipeline)]\n    RoyaltyPipeline --> BatchAgg[Batch Aggregation]\n    ListeningHistory[(Listening History)] --> RecEngine[Offline Recommendation Engine]\n    RecEngine --> DiscoverWeekly[Precomputed Personalized Playlist]",
+    "id": 83
+  },
+  {
+    "title": "Design a Podcast Platform",
+    "stages": [
+      {
+        "prompt": "Design a podcast platform that lets creators publish episodes (via RSS feed ingestion, the podcast industry standard) and listeners stream/download and track playback progress across devices.",
+        "answer": "Ingest podcast content by periodically polling creators' RSS feeds (the standard distribution mechanism in the podcast ecosystem, rather than a proprietary upload-only flow) for new episodes, storing episode metadata and audio file references; serve audio via CDN for streaming, and sync playback position per user per episode across devices (a small, frequently-updated record: user, episode, position, timestamp) so a listener can pause on one device and resume on another seamlessly."
+      },
+      {
+        "prompt": "How do you efficiently check thousands of creators' RSS feeds for new episodes without constantly polling every feed at high frequency, most of which haven't changed?",
+        "answer": "Use conditional HTTP requests (If-Modified-Since / ETag headers) when polling feeds, so a feed that hasn't changed returns a cheap 304 Not Modified response rather than the full feed content, and adapt polling frequency per feed based on its historical publishing pattern (a daily show polled more frequently than a monthly one) rather than polling every feed at the same fixed interval regardless of how often it actually publishes."
+      },
+      {
+        "prompt": "How do you support accurate download/listen analytics for creators, given podcast 'downloads' historically have significant ambiguity (a download isn't necessarily a full listen)?",
+        "answer": "Distinguish between different measurement events explicitly (a file download/stream request vs. actual playback progress reported by the client, which requires the client to report periodic playback position updates, not just the initial request) and be transparent with creators about what each reported metric actually measures, since industry-standard 'downloads' metrics are known to be an imperfect proxy for actual listens \u2014 providing richer, clearly-labeled data (like completion rate, derived from playback position tracking) where available is more useful to creators than only reporting the ambiguous legacy download count."
+      }
+    ],
+    "diagram": "flowchart LR\n    RSSFeed[Creator RSS Feed] -->|conditional poll, adaptive frequency| Ingestion[Feed Ingestion Service]\n    Ingestion --> EpisodeDB[(Episode Metadata)]\n    Ingestion --> ObjectStore[(Audio Storage)]\n    ObjectStore --> CDN[CDN]\n    Listener[Listener] -->|stream| CDN\n    Listener -->|playback position sync| PositionStore[(Cross-device Playback Position)]\n    PlaybackEvents[Playback Progress Events] --> Analytics[(Creator Analytics)]",
+    "id": 84
+  },
+  {
+    "title": "Design a Code Hosting and Collaboration Platform",
+    "stages": [
+      {
+        "prompt": "Design the core architecture for a code hosting platform (like GitHub) supporting Git repository storage, pull requests, and code review at scale.",
+        "answer": "Store Git repositories on a distributed storage layer (sharded across many storage nodes, since a single machine can't hold every repository, with routing logic directing requests for a given repo to the correct shard), exposing the standard Git protocol (push/pull/clone) over that storage. Pull requests and code review are modeled as metadata layered on top of the underlying Git data (tracking the diff between branches, review comments anchored to specific lines/commits, approval status) in a separate application database, rather than being part of Git itself."
+      },
+      {
+        "prompt": "A small number of extremely large or high-traffic repositories (e.g., a huge open-source monorepo) create hotspots that could degrade performance for other repositories sharing infrastructure. How do you handle this?",
+        "answer": "Apply the same noisy-neighbor mitigation used elsewhere in shared multi-tenant infrastructure: per-repository resource limits/rate limiting on operations (clone bandwidth, API request rate) so one very active repository can't degrade service for others, and route or dedicate infrastructure for known especially large/high-traffic repositories separately from the general shared pool, similar to how a large SaaS tenant might get dedicated infrastructure."
+      },
+      {
+        "prompt": "How do you support fast, efficient code search across potentially billions of files in millions of repositories?",
+        "answer": "Build and maintain a separate search index (similar to a full-text search engine's inverted index, adapted for code-specific needs like symbol-aware and syntax-aware search rather than pure keyword matching) that's updated incrementally as repositories change, rather than searching Git repository data directly on every query, since Git's storage format isn't optimized for search access patterns \u2014 this is a similar 'don't query the source-of-truth store directly for a fundamentally different access pattern' principle as maintaining a separate search index in front of any large primary datastore."
+      }
+    ],
+    "diagram": "flowchart TD\n    Push[git push] --> Router[Repo Router]\n    Router --> ShardA[(Storage Shard A)]\n    Router --> ShardB[(Storage Shard B)]\n    PullRequest[Pull Request] --> ReviewDB[(Review Metadata DB)]\n    ReviewDB -.->|references| ShardA\n    ShardA -->|incremental update| SearchIndex[(Code Search Index)]\n    LargeRepo[Very Large/Hot Repo] -.->|dedicated infra| DedicatedShard[(Dedicated Storage)]",
+    "id": 85
+  },
+  {
+    "title": "Design a Package Registry (npm-style)",
+    "stages": [
+      {
+        "prompt": "Design a package registry (like npm) that lets developers publish versioned software packages and other developers/build tools install them, resolving dependency trees.",
+        "answer": "Store published package versions as immutable artifacts (once a specific version is published, it can never be silently changed, only deprecated \u2014 this immutability is critical since builds everywhere depend on a specific version behaving identically forever) in object storage, with a metadata service tracking package names, versions, and dependency declarations. Installing a package requires resolving its full dependency tree (recursively fetching each dependency's declared dependencies) into a consistent set of versions satisfying all version constraints, which client tooling typically does, querying the registry's metadata API."
+      },
+      {
+        "prompt": "A popular package is downloaded millions of times per day by CI systems and developer machines worldwide. How do you serve this efficiently?",
+        "answer": "Since published package versions are immutable, they're perfectly cacheable \u2014 put a CDN in front of package downloads so the vast majority of requests for popular packages are served from edge cache rather than hitting origin storage on every single download, identical in principle to how a container registry caches immutable image layers."
+      },
+      {
+        "prompt": "A malicious actor publishes a package with a name very similar to a popular package (typosquatting) or compromises a legitimate maintainer's account to publish a malicious version. How do you address supply-chain security concerns?",
+        "answer": "Combine several mitigations rather than relying on one: automated scanning of published packages for known malicious patterns, requiring multi-factor authentication for publishing (especially for high-download-count packages), providing provenance/signature verification so consumers can verify a package version actually came from the claimed source, and giving the platform a fast takedown mechanism for confirmed-malicious packages \u2014 supply-chain security for a package registry is an ongoing operational and product concern, not a one-time technical fix, given attackers continuously adapt their techniques."
+      }
+    ],
+    "diagram": "flowchart LR\n    Publish[Package Publish] -->|immutable| ArtifactStore[(Object Storage)]\n    Publish --> MetadataDB[(Package Metadata + Dependencies)]\n    Install[Package Install] --> Resolver[Dependency Resolver]\n    Resolver --> MetadataDB\n    Install -->|download| CDN[CDN]\n    CDN -->|cache miss| ArtifactStore\n    SecurityScanner[Security Scanner] -.->|scan on publish| Publish",
+    "id": 86
+  },
+  {
+    "title": "Design a DNS System",
+    "stages": [
+      {
+        "prompt": "Design a DNS resolution system that translates domain names to IP addresses, explaining the hierarchical lookup process for a globally distributed service.",
+        "answer": "DNS resolution is hierarchical: a client's resolver queries a root nameserver (which knows where to find top-level-domain servers), then the relevant TLD nameserver (e.g., for .com, which knows where to find the authoritative nameserver for the specific domain), then the domain's authoritative nameserver, which returns the actual IP address (or other record) \u2014 each layer delegates to the next more specific layer rather than any single server needing to know every domain in existence."
+      },
+      {
+        "prompt": "This multi-hop lookup process would be slow if performed fully for every single request. How is DNS made fast in practice?",
+        "answer": "Aggressive caching at every layer: resolvers cache results for the duration specified by each record's TTL, so repeated lookups for the same domain within that window are served instantly from cache without repeating the hierarchical lookup; ISPs and organizations run their own caching resolvers shared across many users, and most DNS records use TTLs long enough (minutes to hours) that the vast majority of real-world lookups are served from some layer of cache rather than a fresh full hierarchical resolution."
+      },
+      {
+        "prompt": "How does DNS support directing users to the geographically nearest server for a global service, and what's the tradeoff of using a short TTL to enable fast failover?",
+        "answer": "GeoDNS returns different IP addresses for the same domain based on the requester's geographic location (determined from their resolver's IP), directing users to a nearby data center/CDN edge for lower latency. Short TTLs enable faster failover (a changed DNS record propagates to clients sooner) but increase the load on authoritative nameservers (since caches expire and re-query more often) and mean clients experience slightly more of the full resolution latency more frequently \u2014 this is a genuine tradeoff between failover speed and both server load and average lookup latency, and the right TTL depends on how much you prioritize each."
+      }
+    ],
+    "diagram": "flowchart LR\n    Client[Client Resolver] -->|cache miss| Root[Root Nameserver]\n    Root --> TLD[TLD Nameserver - .com]\n    TLD --> Authoritative[Authoritative Nameserver]\n    Authoritative -->|GeoDNS: nearest IP| Client\n    Client -->|cached, TTL-bound| Cache[(Resolver Cache)]\n    CachingResolver[ISP Caching Resolver] -.->|shared cache| Client",
+    "id": 87
+  },
+  {
+    "title": "Design a Global Load Balancing System",
+    "stages": [
+      {
+        "prompt": "Design a global load balancing system that routes users to the best available data center/region for a service operating in multiple regions worldwide.",
+        "answer": "Combine DNS-based geo-routing (directing users to a nearby region based on their resolver's location, as in GeoDNS) with health-aware routing (excluding a region from receiving new traffic if it's detected as unhealthy/overloaded) and, for finer-grained control than DNS TTLs allow, anycast routing at the network layer (announcing the same IP address from multiple locations, letting internet routing itself direct a user's traffic to the topologically nearest healthy location) \u2014 anycast provides faster failover than DNS-based approaches since it doesn't depend on DNS cache expiry."
+      },
+      {
+        "prompt": "A region goes down entirely (e.g., a cloud provider outage). How does global traffic get rerouted away from it quickly?",
+        "answer": "Continuous health checking of each region (from multiple external vantage points, to avoid a single checker's own connectivity issue causing a false 'region down' determination) feeds into the routing layer's decision-making \u2014 with anycast, withdrawing the BGP route advertisement for the failed region from that location causes internet routing to naturally redirect traffic to the next-nearest healthy location within routing-protocol convergence time (typically fast, seconds to low minutes); with DNS-based routing alone, failover is bounded by DNS TTL, which is why anycast or a hybrid approach is preferred when very fast failover matters."
+      },
+      {
+        "prompt": "How do you avoid overloading a healthy region by suddenly redirecting all of a failed region's traffic to it?",
+        "answer": "Global load balancing decisions should account for each remaining healthy region's current capacity/headroom, not just proximity \u2014 distributing failed-over traffic across multiple healthy regions proportional to their available capacity rather than dumping it all onto the single nearest one, which could turn one region's outage into a second region's overload if that region wasn't provisioned with enough spare capacity to absorb a neighboring region's full failover traffic."
+      }
+    ],
+    "diagram": "flowchart TD\n    User[User] --> Anycast[Anycast IP / GeoDNS]\n    Anycast -->|nearest healthy| RegionA[Region A]\n    Anycast -.->|region A down, reroute| RegionB[Region B]\n    Anycast -.-> RegionC[Region C]\n    HealthChecks[Multi-vantage-point Health Checks] --> Anycast\n    CapacityAware[Capacity-aware Failover Distribution] --> Anycast",
+    "id": 88
+  },
+  {
+    "title": "Design a Multi-Region Active-Active Database",
+    "stages": [
+      {
+        "prompt": "Design a database architecture that accepts both reads and writes in multiple geographic regions simultaneously (active-active), for an application needing low write latency for users worldwide.",
+        "answer": "Each region runs a local database instance accepting writes, with changes replicated asynchronously to other regions \u2014 this gives every region fast local writes (no cross-region round-trip needed to commit), but means the system operates under eventual consistency between regions, since a write in one region takes some time to propagate to others, during which a read in a different region could see stale data."
+      },
+      {
+        "prompt": "Two users in different regions concurrently update the same record before replication catches up. How do you resolve this conflict when the two regions' copies later sync?",
+        "answer": "Conflict resolution needs an explicit strategy since it can't be avoided entirely in active-active \u2014 common approaches include last-writer-wins (based on a synchronized timestamp, simple but can silently lose one update), a CRDT-based data model for fields where merges can be defined automatically and safely (as used in collaborative editors), or application-level conflict resolution (detecting the conflict and either merging semantically or surfacing it for manual/business-logic-driven resolution) \u2014 the right approach depends heavily on the specific data and how costly silently losing an update would be for that use case."
+      },
+      {
+        "prompt": "For data where losing an update or having temporary inconsistency is genuinely unacceptable (e.g., a financial balance), how do you handle it within an otherwise active-active architecture?",
+        "answer": "Not all data needs to be active-active \u2014 for specific data requiring strong consistency, route those particular operations to a single authoritative region (accepting the latency cost of a cross-region write for just that data) rather than trying to force strong consistency guarantees onto the entire system's active-active model. This selective approach (active-active for most data, single-writer for specifically consistency-critical data) is a common and reasonable middle ground rather than an all-or-nothing architectural choice."
+      }
+    ],
+    "diagram": "flowchart LR\n    UserA[User - Region A] -->|local write| DBA[(Region A DB)]\n    UserB[User - Region B] -->|local write| DBB[(Region B DB)]\n    DBA <-.->|async replication| DBB\n    ConflictResolver[Conflict Resolution\\nLWW / CRDT / app-level] -.-> DBA\n    ConflictResolver -.-> DBB\n    CriticalData[Consistency-critical Data] -->|routed to single region| AuthoritativeDB[(Authoritative Region)]",
+    "id": 89
+  },
+  {
+    "title": "Design a GDPR / Data Deletion Compliance Pipeline",
+    "stages": [
+      {
+        "prompt": "Design a system that lets a company reliably fulfill a user's 'right to be forgotten' request (GDPR Article 17), deleting their personal data across all systems within the required timeframe.",
+        "answer": "The hard part isn't deleting from one database \u2014 it's that user data is typically scattered across many systems (primary databases, caches, search indexes, analytics warehouses, backups, third-party processors, log files). A deletion pipeline needs a data inventory/map (knowing every system that stores personal data for a given user) and orchestrates a deletion (or anonymization) request across all of them, tracking completion status per system so the request can be verified as fully complete, not just fired-and-hoped."
+      },
+      {
+        "prompt": "Some data lives in systems that aren't designed for individual-record deletion (like immutable event logs, or backups that can't be selectively edited). How do you handle these?",
+        "answer": "For systems where true deletion isn't practical (like restoring from an old backup that would reintroduce deleted data), common accepted approaches include: ensuring backups have their own expiration/rotation policy so old backups containing the data age out naturally within a bounded time, and for logs/analytics data, replacing personal identifiers with an anonymized/pseudonymized token rather than deleting the whole record, satisfying the intent (the data is no longer personally identifiable) without needing surgical deletion from an append-only structure not built for it."
+      },
+      {
+        "prompt": "How do you prove compliance (to regulators or auditors) that a deletion request was actually fully completed across every relevant system?",
+        "answer": "Maintain an auditable record of every deletion request's full lifecycle \u2014 which systems were identified as needing action, confirmation of completion from each, and a timestamp of when the overall request was fully satisfied \u2014 so compliance can be demonstrated with evidence rather than just an assertion. Treat an incomplete or stalled deletion request (a system that didn't confirm completion) as an alertable operational issue requiring follow-up, not something that silently falls through the cracks."
+      }
+    ],
+    "diagram": "flowchart TD\n    Request[Deletion Request] --> DataMap[Personal Data Inventory/Map]\n    DataMap --> PrimaryDB[(Primary DB - delete)]\n    DataMap --> SearchIndex[(Search Index - delete)]\n    DataMap --> Analytics[(Analytics Warehouse - anonymize)]\n    DataMap --> Backups[(Backups - bounded expiry)]\n    DataMap --> ThirdParty[Third-party Processors]\n    PrimaryDB -->|confirm| AuditLog[(Deletion Audit Log)]\n    SearchIndex -->|confirm| AuditLog\n    AuditLog -->|incomplete| Alert[Alert: Stalled Deletion]",
+    "id": 90
+  },
+  {
+    "title": "Design an Identity and Access Management (IAM) System",
+    "stages": [
+      {
+        "prompt": "Design an IAM system that manages user identities, roles, and permissions across many internal services and resources at a company.",
+        "answer": "Model access via role-based access control (RBAC): users are assigned roles, roles are granted permissions on resources, and an authorization check evaluates whether a user's roles grant the requested permission on the requested resource \u2014 centralizing this logic in an IAM service that other services call (or that issues tokens/claims embedding the relevant permissions) rather than each service independently implementing its own permission logic, which reliably leads to inconsistent enforcement."
+      },
+      {
+        "prompt": "A large organization has thousands of fine-grained permissions and resources, and pure RBAC with a huge flat set of roles becomes unwieldy ('role explosion'). How do you address this?",
+        "answer": "Introduce hierarchy and composition: support role inheritance (a role can include other roles' permissions), and for genuinely fine-grained, contextual access needs, consider attribute-based access control (ABAC) as a complement to RBAC \u2014 where access decisions can depend on attributes of the user, resource, and context (e.g., 'engineers on team X can access resources tagged with team X'), which scales better than trying to enumerate an explicit role for every possible fine-grained access combination."
+      },
+      {
+        "prompt": "How do you handle access review and de-provisioning \u2014 ensuring people don't accumulate excessive access over time (e.g., after changing teams) and that access is revoked promptly when someone leaves?",
+        "answer": "Implement periodic automated access reviews (surfacing each user's current roles/permissions to their manager or a resource owner for re-certification on a schedule, flagging unused or unusually broad access) rather than relying on access grants being manually cleaned up, since access naturally accumulates over time as people change roles and nobody proactively removes now-unneeded grants. Integrate de-provisioning directly with the company's HR/identity lifecycle system so an employee's departure automatically and immediately triggers access revocation across all integrated systems, rather than depending on a manual offboarding checklist step that can be missed."
+      }
+    ],
+    "diagram": "flowchart TD\n    User[User] -->|assigned| Role[Role - RBAC]\n    Role -->|grants| Permission[Permission on Resource]\n    Service[Internal Service] -->|authz check| IAMService[IAM Service]\n    IAMService --> Role\n    HRSystem[HR/Identity Lifecycle] -.->|employee departs| Deprovision[Automatic De-provisioning]\n    AccessReview[Periodic Access Review] -.->|flags stale access| Role",
+    "id": 91
+  },
+  {
+    "title": "Design a Single Sign-On (SSO) System",
+    "stages": [
+      {
+        "prompt": "Design an SSO system that lets a user log in once and gain access to multiple separate applications without re-authenticating for each.",
+        "answer": "A central identity provider (IdP) handles authentication; when a user tries to access an application (service provider), they're redirected to the IdP to log in (if not already authenticated), and upon success, the IdP issues a signed token/assertion (using a standard protocol like SAML or OIDC) that the application verifies to establish the user's identity and grant access \u2014 subsequent applications the user visits in the same session can skip the login prompt entirely since the IdP recognizes the user already has an active session."
+      },
+      {
+        "prompt": "How does the IdP recognize a returning user already has an active session, avoiding a repeated login prompt when they navigate to a second application?",
+        "answer": "The IdP sets its own session cookie (scoped to the IdP's own domain) when the user first authenticates; when redirected back to the IdP for a second application, the browser sends this existing cookie, letting the IdP recognize the active session and skip straight to issuing a new token for the second application without prompting for credentials again \u2014 the user only re-authenticates once the IdP's own session expires or they explicitly log out."
+      },
+      {
+        "prompt": "A user's account is compromised and needs to be locked out of all connected applications immediately. How does SSO make this easier (or harder) compared to each application managing its own separate login?",
+        "answer": "SSO is a significant security improvement here specifically: revoking the user's session/credentials at the central IdP immediately prevents new access to every connected application (since they all depend on the IdP for authentication), rather than needing to separately disable the account in every individual application's own user database \u2014 this centralization is one of SSO's biggest security benefits, though it also means the IdP itself becomes a very high-value target and single point of failure, so its own security needs to be exceptionally robust."
+      }
+    ],
+    "diagram": "flowchart LR\n    User[User] -->|access App A| AppA[Application A]\n    AppA -->|redirect if not authenticated| IdP[Identity Provider]\n    IdP -->|login + session cookie| User\n    IdP -->|signed token| AppA\n    User -->|access App B| AppB[Application B]\n    AppB -->|redirect| IdP\n    IdP -->|existing session, no re-login| AppB\n    Admin[Security Admin] -->|revoke| IdP",
+    "id": 92
+  },
+  {
+    "title": "Design an API Key Management System",
+    "stages": [
+      {
+        "prompt": "Design a system that lets developers generate, manage, and use API keys to authenticate programmatic access to your platform's API.",
+        "answer": "On key generation, create a cryptographically random key, store only a hashed version server-side (never the raw key, following the same principle as password storage \u2014 the raw key is shown to the user once at creation time and never retrievable again), and associate the key with metadata (owner, scopes/permissions, creation date, expiration). Every API request presenting a key looks up the hash to identify the caller and enforce whatever permissions/rate limits are associated with that specific key."
+      },
+      {
+        "prompt": "A developer accidentally commits an API key to a public GitHub repository. How does the system help detect and respond to this quickly?",
+        "answer": "Beyond the affected developer manually noticing and revoking it, proactively scan for the platform's own key patterns appearing in public code repositories (many major platforms partner with GitHub's secret-scanning program, or run their own scanning, specifically for this) and automatically revoke or flag leaked keys the moment they're detected in a public location, notifying the owner \u2014 this dramatically reduces the exposure window compared to relying solely on the developer noticing their own mistake."
+      },
+      {
+        "prompt": "How do you support fine-grained permission scoping so a leaked key does limited damage, rather than every key having full account access?",
+        "answer": "Support scoped keys (a key can be restricted to specific permissions/endpoints/resources at creation time \u2014 read-only, specific API namespaces, specific resource IDs) rather than only offering all-or-nothing full-account keys, so developers can follow least-privilege practice and issue a narrowly-scoped key for each specific integration's actual needs \u2014 meaning a single leaked key exposes only what that key was scoped to, not the entire account."
+      }
+    ],
+    "diagram": "flowchart LR\n    Developer[Developer] -->|generate key| KeyService[Key Management Service]\n    KeyService -->|hash only stored| KeyStore[(Key Store - hashed)]\n    APIRequest[API Request + Key] --> AuthCheck[Auth + Scope Check]\n    AuthCheck --> KeyStore\n    GitHubScan[Public Repo Secret Scanning] -.->|leaked key detected| KeyService\n    KeyService -->|auto-revoke + notify| Developer",
+    "id": 93
+  },
+  {
+    "title": "Design a Web Application Firewall (WAF)",
+    "stages": [
+      {
+        "prompt": "Design a WAF that sits in front of web applications, inspecting incoming HTTP requests and blocking malicious traffic (SQL injection, XSS, common attack patterns) before it reaches the application.",
+        "answer": "Inspect each incoming request (headers, query parameters, body) against a set of rules \u2014 signature-based rules matching known attack patterns (e.g., SQL injection syntax patterns), and potentially anomaly-based detection (flagging requests that deviate significantly from normal traffic patterns for that application) \u2014 blocking or challenging (e.g., a CAPTCHA) requests that match, while passing legitimate traffic through with minimal added latency, since the WAF sits directly on the critical path of every request."
+      },
+      {
+        "prompt": "A new rule incorrectly blocks legitimate traffic (a false positive), causing a production incident for a real customer. How do you prevent and quickly recover from this?",
+        "answer": "Support a 'detection/log-only mode' for new or modified rules before fully enabling blocking \u2014 running the rule against real traffic and logging what it *would* have blocked, letting engineers verify it doesn't false-positive on legitimate traffic before switching it to actively block. When a rule does cause a problem in production, support fast, targeted rollback of that specific rule (not just an all-or-nothing WAF disable) so unrelated protections stay active while the problematic rule is fixed."
+      },
+      {
+        "prompt": "How does the WAF keep up with new, previously-unseen attack techniques, given a purely static signature-based ruleset will always lag behind novel attacks?",
+        "answer": "Combine static signature rules (fast, precise, but reactive \u2014 only catch known patterns) with anomaly/behavioral detection (catching unusual patterns even without a specific matching signature) and maintain a rapid rule-update pipeline (since new attack techniques and vulnerabilities are disclosed constantly, the WAF's ruleset needs to be a living, frequently-updated system, often informed by threat intelligence feeds) rather than treating the ruleset as something configured once and left static."
+      }
+    ],
+    "diagram": "flowchart LR\n    Request[Incoming HTTP Request] --> WAF[WAF]\n    WAF -->|signature match| Block[Block/Challenge]\n    WAF -->|anomaly detected| Flag[Flag/Challenge]\n    WAF -->|clean| App[Application]\n    NewRule[New Rule] -->|log-only mode first| WAF\n    ThreatIntel[Threat Intelligence Feed] -.->|rule updates| WAF",
+    "id": 94
+  },
+  {
+    "title": "Design a Polite Distributed Web Scraper",
+    "stages": [
+      {
+        "prompt": "Design a distributed web scraper that crawls and extracts structured data from many websites at scale, while respecting each site's crawling rules and not overwhelming any individual site.",
+        "answer": "This closely parallels general web crawler design: a URL frontier queue distributes work across many scraper workers, and per-domain rate limiting/politeness delays (respecting each site's robots.txt crawl-delay directive, or a sensible default) ensure no single site receives an overwhelming request rate regardless of how many workers the overall system runs, since aggregate scraper capacity is much larger than what any single target site should have to absorb."
+      },
+      {
+        "prompt": "Many websites detect and block scraping via IP-based rate limiting or bot-detection. How do you scrape reliably (for legitimate, permitted use cases) without your scraper being blocked?",
+        "answer": "Respect the target site's stated policies (robots.txt, terms of service) as the starting point for what's permitted, and for legitimate scraping within those bounds, use a reasonable request rate and identify your scraper honestly via a proper User-Agent string rather than trying to evade detection \u2014 for scraping that requires higher volume, use a distributed pool of request sources (multiple IPs) specifically to stay within a *per-site* reasonable rate from any single source, not to circumvent a site's explicit rate limits, since the goal is being a well-behaved, unobtrusive client, not evading legitimate anti-abuse measures."
+      },
+      {
+        "prompt": "How do you handle the extracted data varying wildly in structure across different websites, given each site's HTML layout is different?",
+        "answer": "Write site-specific extraction logic (parsers/selectors tailored to each target site's actual HTML structure) rather than trying to build one universal extractor that works everywhere, since website structures are too varied and change too unpredictably for a fully generic approach to be reliable \u2014 but centralize the surrounding infrastructure (the frontier queue, rate limiting, scheduling, storage) as shared, reusable components across all site-specific extractors, so adding a new target site means writing a new small parser, not rebuilding the whole pipeline."
+      }
+    ],
+    "diagram": "flowchart LR\n    Frontier[(URL Frontier - per domain)] --> Worker1[Scraper Worker]\n    Frontier --> Worker2[Scraper Worker]\n    Worker1 -->|robots.txt + rate limit per domain| TargetSite[Target Website]\n    Worker1 --> SiteParser[Site-specific Parser]\n    SiteParser --> ExtractedData[(Structured Data Store)]\n    RobotsCheck[robots.txt / Politeness Check] -.-> Worker1",
+    "id": 95
+  },
+  {
+    "title": "Design a Geo-Search Real Estate Listing Platform",
+    "stages": [
+      {
+        "prompt": "Design a real estate platform that lets users search for property listings within a geographic area (drawn on a map, or by radius from a point), combined with filters like price range and number of bedrooms.",
+        "answer": "Store each listing's location as coordinates, indexed using a geospatial indexing structure (like a geohash-based index or an R-tree) that supports efficient 'find all points within this region' queries, combined with standard filtering on structured attributes (price, bedrooms, property type) \u2014 geospatial queries and attribute filters typically both need to apply together, so the index/query engine needs to support combining them efficiently rather than doing a geospatial query and then filtering the (potentially huge) result set in application code."
+      },
+      {
+        "prompt": "A popular metro area has tens of thousands of active listings, and search results need to render on a map without overwhelming the client with too many individual markers. How do you handle this?",
+        "answer": "Implement map clustering: when zoomed out (viewing a large area with many listings), group nearby listings into a single cluster marker showing a count, only rendering individual listing markers once the user zooms in enough that the number of listings in view drops to a manageable count \u2014 this is both a UX necessity (thousands of overlapping pins is unusable) and a performance necessity (the client shouldn't need to render or even receive thousands of individual markers for an overview-level map view)."
+      },
+      {
+        "prompt": "How do you keep search results fresh given listings are added, updated (price changes), and removed (sold/delisted) frequently, without stale listings (like already-sold properties) appearing in search results?",
+        "answer": "Update the geospatial/search index synchronously or near-synchronously with listing state changes (a sold/delisted property should disappear from active search results promptly, not linger for hours due to a batch reindex delay) since showing a user a listing that's no longer actually available is a poor experience that damages trust in the platform \u2014 this generally means an event-driven update to the index on every listing state change, rather than relying on periodic batch reindexing as the primary freshness mechanism."
+      }
+    ],
+    "diagram": "flowchart LR\n    Search[Search: region + filters] --> GeoIndex[(Geospatial Index)]\n    GeoIndex -->|within region| Filter[Attribute Filters\\nprice, bedrooms]\n    Filter --> Results[Search Results]\n    Results -->|zoomed out| Clustering[Map Clustering]\n    ListingUpdate[Listing State Change] -->|near-synchronous| GeoIndex",
+    "id": 96
+  },
+  {
+    "title": "Design a Ride-Hailing ETA Prediction System",
+    "stages": [
+      {
+        "prompt": "Design a system that predicts accurate estimated time of arrival (ETA) for a ride-hailing trip, both for driver-to-pickup and pickup-to-destination legs.",
+        "answer": "Combine a routing engine (computing the shortest/fastest path between two points over a road network graph) with a machine learning model that adjusts the raw routing-based time estimate based on real-world factors the graph alone doesn't capture \u2014 current traffic conditions, time of day/day of week patterns, weather, and historical actual-trip-time data for similar routes \u2014 since a naive distance/speed-limit-based estimate is often significantly wrong compared to real conditions."
+      },
+      {
+        "prompt": "ETA predictions are consistently off in a specific city during certain hours (e.g., systematically underestimating trip time during school pickup/dropoff times). How do you detect and correct this kind of systematic bias?",
+        "answer": "Continuously compare predicted ETAs against actual observed trip times (readily available, since every completed trip provides ground truth) and monitor prediction error broken down by relevant dimensions (city, time of day, route type), which surfaces systematic biases like this one as a clear pattern in the error data rather than requiring someone to manually notice the issue \u2014 feed this error analysis back into model retraining, and for well-understood recurring patterns (a known local event causing regular congestion), consider explicit feature engineering (like a school-hours indicator for that specific area) rather than relying entirely on the model to infer it from raw historical data alone."
+      },
+      {
+        "prompt": "How do you make ETA predictions update dynamically during an active trip as real conditions change (e.g., unexpected traffic building up)?",
+        "answer": "Continuously re-predict the remaining ETA during the trip using the driver's current live location and current real-time traffic conditions (not just the original prediction made at trip start), pushing updated ETAs to both rider and driver apps periodically \u2014 treating the initial ETA as a starting estimate that should be refined throughout the trip as better, more current information becomes available, rather than a single static prediction that goes stale as the trip progresses."
+      }
+    ],
+    "diagram": "flowchart LR\n    TripRequest[Trip Request] --> RoutingEngine[Routing Engine]\n    RoutingEngine -->|base route + time| MLAdjust[ML ETA Adjustment Model]\n    TrafficData[Real-time Traffic] --> MLAdjust\n    HistoricalTrips[(Historical Trip Data)] --> MLAdjust\n    MLAdjust --> ETA[Predicted ETA]\n    ActiveTrip[Active Trip - live location] -->|continuous re-prediction| MLAdjust\n    CompletedTrips[(Completed Trip Outcomes)] -.->|error analysis, retraining| MLAdjust",
+    "id": 97
+  },
+  {
+    "title": "Design an Inventory / Supply Chain Management System",
+    "stages": [
+      {
+        "prompt": "Design an inventory management system for a retailer with multiple warehouses, tracking stock levels accurately and supporting order fulfillment from the right warehouse.",
+        "answer": "Track inventory per SKU per warehouse as a core data model, with every inventory-affecting event (a sale, a warehouse transfer, a restock, a return) recorded as an atomic transaction against the specific warehouse's stock count \u2014 when an order comes in, a fulfillment routing decision picks the best warehouse to fulfill from (considering stock availability, proximity to the customer for shipping cost/speed, and current warehouse load) and reserves that inventory for the order."
+      },
+      {
+        "prompt": "The system shows a SKU as in-stock at a warehouse, but a physical inventory count reveals a discrepancy (theft, damage, a recording error) \u2014 the digital record and physical reality have drifted apart. How do you handle and prevent this?",
+        "answer": "This kind of drift is somewhat inevitable over time in any physical inventory system, so support regular reconciliation processes (periodic physical cycle counts compared against system records, with discrepancies investigated and the system corrected) rather than assuming the digital record is always perfectly accurate. To reduce drift in the first place, ensure every physical inventory movement (receiving, picking, shipping, returns processing) has a corresponding system-of-record transaction at the point it happens (e.g., barcode scanning integrated into warehouse operations) rather than relying on manual, delayed, or batch updates that are more prone to being missed or recorded incorrectly."
+      },
+      {
+        "prompt": "How do you handle demand forecasting to decide how much stock to hold and when to reorder, balancing the cost of excess inventory against the cost of stockouts?",
+        "answer": "Use historical sales data (accounting for seasonality, trends, and promotional effects) to forecast expected demand per SKU per warehouse over the relevant reorder lead time, and set reorder points/quantities based on that forecast plus a safety-stock buffer sized according to forecast uncertainty and the specific cost tradeoff for that product (a fast-moving low-margin item might tolerate a leaner buffer than a slow-moving high-margin one) \u2014 this is fundamentally a statistical forecasting and optimization problem layered on top of the core inventory tracking system, not something the tracking system alone solves."
+      }
+    ],
+    "diagram": "flowchart TD\n    SaleEvent[Sale/Transfer/Restock Event] -->|atomic transaction| WarehouseStock[(Per-warehouse Stock by SKU)]\n    Order[Incoming Order] --> FulfillmentRouter[Fulfillment Routing]\n    FulfillmentRouter --> WarehouseStock\n    FulfillmentRouter -->|reserve stock| BestWarehouse[Chosen Warehouse]\n    CycleCount[Physical Cycle Count] -.->|reconciliation| WarehouseStock\n    HistoricalSales[(Historical Sales Data)] --> ForecastEngine[Demand Forecast Engine]\n    ForecastEngine -->|reorder point/quantity| WarehouseStock",
+    "id": 98
+  },
+  {
+    "title": "Design a HIPAA-Compliant Healthcare Records System",
+    "stages": [
+      {
+        "prompt": "Design a system for storing and sharing electronic health records (EHR) between healthcare providers, meeting HIPAA requirements for protecting patient health information.",
+        "answer": "Encrypt patient health data both at rest and in transit, enforce strict role-based access control (only clinicians with an actual treatment relationship to a patient, or explicit authorization, can access their records \u2014 not blanket access for all staff), and log every single access to patient data (who accessed what record, when, and in what context) in an immutable audit trail, since HIPAA specifically requires the ability to account for disclosures and detect inappropriate access."
+      },
+      {
+        "prompt": "A doctor needs emergency access to a patient's records in a situation where normal authorization workflows (like confirming an active treatment relationship) would be too slow. How do you handle this without either blocking legitimate emergency care or leaving a security hole?",
+        "answer": "Support a 'break-glass' emergency access mechanism: authorized emergency access bypasses normal restrictions but requires the accessing clinician to provide a reason, is heavily logged and flagged for mandatory subsequent review, and triggers an alert to compliance/security staff \u2014 this balances not blocking genuinely urgent patient care against ensuring emergency access provisions aren't quietly used as a routine workaround for normal access controls, since every break-glass access should be scrutinized after the fact even though it wasn't blocked in the moment."
+      },
+      {
+        "prompt": "How do you support data sharing between different healthcare organizations (referrals, specialist consultations) while maintaining the same strict access controls and audit requirements?",
+        "answer": "Use standardized healthcare interoperability protocols (like HL7 FHIR) for structured data exchange between organizations, with explicit, auditable consent/authorization for each specific data-sharing event (a patient's data being shared with a new provider should be a deliberate, logged, ideally patient-consented action, not an open pipe between organizations), and ensure the receiving organization's own system is also held to equivalent security/audit standards, since a compliant sharing mechanism doesn't help if the data ends up in a poorly-secured system on the other end."
+      }
+    ],
+    "diagram": "flowchart LR\n    Clinician[Clinician] -->|RBAC + treatment relationship check| AccessControl[Access Control Layer]\n    AccessControl --> EHR[(Encrypted Patient Records)]\n    AccessControl -->|every access| AuditLog[(Immutable Audit Log)]\n    Clinician -->|urgent, bypass| BreakGlass[Break-glass Emergency Access]\n    BreakGlass -->|flagged for review| ComplianceTeam[Compliance Review]\n    ProviderB[Other Healthcare Org] -->|FHIR, consented| DataSharing[Data Sharing Exchange]\n    DataSharing --> EHR",
+    "id": 99
+  },
+  {
+    "title": "Design an Online Code Execution / Judge System",
+    "stages": [
+      {
+        "prompt": "Design an online code judge system (like LeetCode's own execution backend) that accepts user-submitted code in multiple languages, runs it against test cases, and returns pass/fail results with execution time and memory usage.",
+        "answer": "On submission, queue the code for execution rather than running it synchronously in the request path (execution time varies and shouldn't block the web server), and a worker picks it up and executes it inside an isolated sandbox (container or microVM, no network access, strict CPU/memory/time limits) \u2014 never executing arbitrary user-submitted code directly on a shared host, for the same isolation reasons as an AI agent's code-execution sandbox. Run the code against each test case, capturing output, execution time, and memory usage, and compare actual output against expected output to determine pass/fail."
+      },
+      {
+        "prompt": "A submission contains an infinite loop or attempts a fork-bomb-style resource exhaustion attack. How does the sandbox prevent this from affecting the platform?",
+        "answer": "Enforce hard, non-overridable resource limits at the container/VM level (CPU time limit, memory limit, process/thread count limit, wall-clock timeout) that forcibly terminate the sandboxed execution once exceeded, regardless of what the code inside attempts to do \u2014 this needs to be enforced by the isolation layer itself (not something the executed code could disable or exceed), since the whole point of the sandbox is protecting the platform from arbitrary, potentially malicious or simply buggy user code."
+      },
+      {
+        "prompt": "How do you support many programming languages (each with different compilers/interpreters and startup overhead) while keeping execution fast and the system maintainable?",
+        "answer": "Maintain a set of pre-built, versioned execution images per supported language (with the compiler/interpreter and any standard libraries pre-installed), so spinning up a sandbox for a given language doesn't require installing anything at execution time \u2014 combined with a warm pool of ready sandboxes per language (similar to a serverless platform's warm-start optimization) to minimize the startup latency users experience when submitting code, especially important given users expect near-immediate feedback on a code submission."
+      }
+    ],
+    "diagram": "flowchart LR\n    Submission[Code Submission] --> Queue[(Execution Queue)]\n    Queue --> Worker[Judge Worker]\n    Worker --> SandboxPool[Warm Sandbox Pool - per language]\n    SandboxPool --> Sandbox[Isolated Sandbox\\nresource-limited, no network]\n    Sandbox -->|output, time, memory| Compare[Compare vs Expected Output]\n    Compare --> Result[Pass/Fail Result]\n    Sandbox -->|limits exceeded| Terminate[Forced Termination]",
+    "id": 100
   }
 ]
