@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "category": "Deep Learning",
+    "question": "What is deep learning?",
+    "answer": "Deep learning is machine learning using neural networks with many layers. Each layer learns progressively more abstract features from the previous one, allowing the model to solve extremely complex problems."
+  },
+  {
+    "id": 2,
+    "category": "Deep Learning",
+    "question": "Why do additional layers make neural networks more powerful?",
+    "answer": "Each layer builds on the previous layer. Earlier layers learn simple patterns, while later layers combine those simple patterns into increasingly sophisticated concepts."
+  },
+  {
+    "id": 3,
+    "category": "Deep Learning",
+    "question": "How does an image classifier recognize a dog?",
+    "answer": "Early layers detect edges. Middle layers detect shapes, curves, and textures. Later layers recognize ears, eyes, legs, and fur. The final layers combine these learned features into the concept of 'dog.'"
+  },
+  {
+    "id": 4,
+    "category": "Deep Learning",
+    "question": "How does this idea apply to language models?",
+    "answer": "Early layers recognize tokens and local patterns. Middle layers learn grammar and sentence structure. Later layers capture meaning, relationships, reasoning, and long-range context."
+  },
+  {
+    "id": 5,
+    "category": "Deep Learning",
+    "question": "What is feature learning?",
+    "answer": "Feature learning means the network automatically discovers useful representations instead of humans manually designing them. Modern deep learning largely replaced hand-engineered features."
+  },
+  {
+    "id": 6,
+    "category": "Deep Learning",
+    "question": "Why was deep learning such a breakthrough compared to earlier machine learning?",
+    "answer": "Traditional machine learning relied heavily on human experts designing features. Deep learning learns useful features automatically from raw data, making it far more scalable."
+  },
+  {
+    "id": 7,
+    "category": "Deep Learning",
+    "question": "What is an epoch?",
+    "answer": "An epoch is one complete pass through the entire training dataset."
+  },
+  {
+    "id": 8,
+    "category": "Deep Learning",
+    "question": "What is a batch?",
+    "answer": "A batch is a small subset of the training data processed together before updating the model's weights."
+  },
+  {
+    "id": 9,
+    "category": "Deep Learning",
+    "question": "Why don't we train using the entire dataset at once?",
+    "answer": "Modern datasets are enormous. Processing the entire dataset before every update would require impractical amounts of memory and computation."
+  },
+  {
+    "id": 10,
+    "category": "Deep Learning",
+    "question": "What is a mini-batch?",
+    "answer": "A mini-batch is the standard training approach where gradients are computed using a relatively small number of examples, such as 64 or 256 samples."
+  },
+  {
+    "id": 11,
+    "category": "Deep Learning",
+    "question": "What is overfitting?",
+    "answer": "Overfitting occurs when the model memorizes its training data instead of learning general patterns. It performs extremely well during training but poorly on new data."
+  },
+  {
+    "id": 12,
+    "category": "Deep Learning",
+    "question": "How can you recognize overfitting?",
+    "answer": "Training loss continues improving while validation loss begins getting worse. The model is becoming better at memorization rather than generalization."
+  },
+  {
+    "id": 13,
+    "category": "Deep Learning",
+    "question": "What is underfitting?",
+    "answer": "Underfitting occurs when the model is too simple or insufficiently trained to capture meaningful patterns, resulting in poor performance on both training and validation data."
+  },
+  {
+    "id": 14,
+    "category": "Deep Learning",
+    "question": "What is generalization?",
+    "answer": "Generalization is the model's ability to perform well on examples it has never seen before. This is ultimately what training is trying to achieve."
+  },
+  {
+    "id": 15,
+    "category": "Deep Learning",
+    "question": "Why is memorization different from learning?",
+    "answer": "Memorization stores specific examples. Learning discovers underlying patterns that can be applied to completely new situations."
+  },
+  {
+    "id": 16,
+    "category": "Deep Learning",
+    "question": "What is a validation set?",
+    "answer": "A validation set is data the model does not train on. It is used during training to estimate how well the model generalizes."
+  },
+  {
+    "id": 17,
+    "category": "Deep Learning",
+    "question": "What is a test set?",
+    "answer": "A test set is held back until training is completely finished. It provides an unbiased measurement of the model's final performance."
+  },
+  {
+    "id": 18,
+    "category": "Deep Learning",
+    "question": "Why should the test set never influence training?",
+    "answer": "If the model indirectly learns from the test set, the final evaluation is no longer trustworthy because it has effectively 'seen the answers.'"
+  },
+  {
+    "id": 19,
+    "category": "Deep Learning",
+    "question": "What is regularization?",
+    "answer": "Regularization refers to techniques that discourage memorization and encourage the model to learn more general patterns."
+  },
+  {
+    "id": 20,
+    "category": "Deep Learning",
+    "question": "What is dropout?",
+    "answer": "Dropout randomly disables some neurons during training. This prevents the network from relying too heavily on specific neurons and improves generalization."
+  },
+  {
+    "id": 21,
+    "category": "Deep Learning",
+    "question": "Why does dropout work?",
+    "answer": "Because different neurons cannot assume others will always be available, they learn more robust and independent representations instead of fragile co-dependencies."
+  },
+  {
+    "id": 22,
+    "category": "Deep Learning",
+    "question": "What is batch normalization?",
+    "answer": "Batch normalization stabilizes activations during training, allowing deeper networks to train faster and more reliably."
+  },
+  {
+    "id": 23,
+    "category": "Deep Learning",
+    "question": "What is data augmentation?",
+    "answer": "Data augmentation artificially creates additional training examples by making realistic modifications such as rotating images, cropping them, or changing brightness."
+  },
+  {
+    "id": 24,
+    "category": "Deep Learning",
+    "question": "Why does more data usually improve deep learning?",
+    "answer": "More high-quality data exposes the model to a wider variety of situations, allowing it to learn richer and more general patterns instead of memorizing a limited dataset."
+  },
+  {
+    "id": 25,
+    "category": "Deep Learning",
+    "question": "What are model capacity and model size?",
+    "answer": "Capacity refers to how much complexity a model can learn. Increasing parameters generally increases capacity, but also increases computational cost and the risk of overfitting."
+  },
+  {
+    "id": 26,
+    "category": "Deep Learning",
+    "question": "Why are modern LLMs so large?",
+    "answer": "Language contains extraordinarily complex statistical relationships. Billions of parameters give the model enough capacity to capture those relationships."
+  },
+  {
+    "id": 27,
+    "category": "Deep Learning",
+    "question": "Can a model simply keep getting larger forever?",
+    "answer": "No. Larger models require dramatically more data, compute, memory, and energy. Beyond a certain point, the improvement per additional parameter begins to diminish."
+  },
+  {
+    "id": 28,
+    "category": "Deep Learning",
+    "question": "What is transfer learning?",
+    "answer": "Transfer learning starts with a model that has already learned useful representations and adapts it to a new task instead of training from scratch."
+  },
+  {
+    "id": 29,
+    "category": "Deep Learning",
+    "question": "Why don't companies train every model from scratch?",
+    "answer": "Training frontier models costs millions of dollars and enormous compute resources. Fine-tuning or adapting existing models is usually dramatically cheaper."
+  },
+  {
+    "id": 30,
+    "category": "Deep Learning",
+    "question": "What is the biggest conceptual shift deep learning introduced?",
+    "answer": "Instead of humans manually programming intelligence, humans design architectures and training procedures that allow the model to discover its own internal representations from data."
+  }
+]

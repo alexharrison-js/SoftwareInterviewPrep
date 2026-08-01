@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "category": "Neural Network Mathematics",
+    "question": "Do I need advanced mathematics to become an AI engineer?",
+    "answer": "No. Most AI engineers build systems rather than invent new learning algorithms. You should understand the intuition behind vectors, matrices, gradients, probability, and optimization. Deep mathematical proofs are mainly required for ML researchers."
+  },
+  {
+    "id": 2,
+    "category": "Neural Network Mathematics",
+    "question": "Why does everything in machine learning become numbers?",
+    "answer": "Computers only understand numbers. Images become pixel values. Words become token IDs and embeddings. Audio becomes waveforms. Training is ultimately about finding mathematical relationships between numbers."
+  },
+  {
+    "id": 3,
+    "category": "Neural Network Mathematics",
+    "question": "What is a scalar?",
+    "answer": "A scalar is a single number. For example: 7, 3.14, or a single model weight."
+  },
+  {
+    "id": 4,
+    "category": "Neural Network Mathematics",
+    "question": "What is a vector?",
+    "answer": "A vector is simply an ordered list of numbers. You can think of it as one object with many features. An embedding is just a very large vector."
+  },
+  {
+    "id": 5,
+    "category": "Neural Network Mathematics",
+    "question": "What is a matrix?",
+    "answer": "A matrix is a table of numbers. Neural networks use matrices because thousands or millions of calculations can be performed simultaneously using highly optimized GPU operations."
+  },
+  {
+    "id": 6,
+    "category": "Neural Network Mathematics",
+    "question": "Why are GPUs so much faster than CPUs for AI?",
+    "answer": "CPUs excel at sequential logic. GPUs excel at performing the same mathematical operation across enormous matrices simultaneously. Deep learning consists almost entirely of these massive parallel matrix operations."
+  },
+  {
+    "id": 7,
+    "category": "Neural Network Mathematics",
+    "question": "What is matrix multiplication intuitively?",
+    "answer": "Imagine every neuron receiving information from every neuron in the previous layer. Matrix multiplication computes all of those weighted connections at once instead of calculating them individually."
+  },
+  {
+    "id": 8,
+    "category": "Neural Network Mathematics",
+    "question": "What is a dot product?",
+    "answer": "A dot product measures how similar two vectors are. Large positive values indicate strong alignment. Transformers use dot products constantly to determine how much one token should pay attention to another."
+  },
+  {
+    "id": 9,
+    "category": "Neural Network Mathematics",
+    "question": "Why are dot products so important in transformers?",
+    "answer": "Attention begins by comparing query vectors against key vectors using dot products. The larger the score, the more relevant another token is considered."
+  },
+  {
+    "id": 10,
+    "category": "Neural Network Mathematics",
+    "question": "What is a function?",
+    "answer": "A function simply transforms inputs into outputs. A neural network is just an incredibly large function composed of many smaller functions chained together."
+  },
+  {
+    "id": 11,
+    "category": "Neural Network Mathematics",
+    "question": "What is a derivative?",
+    "answer": "A derivative measures how quickly something changes. During training, derivatives tell us how much changing a weight would affect the model's error."
+  },
+  {
+    "id": 12,
+    "category": "Neural Network Mathematics",
+    "question": "Why do people say gradients are derivatives?",
+    "answer": "A gradient is simply a collection of derivatives—one derivative for every trainable parameter in the model."
+  },
+  {
+    "id": 13,
+    "category": "Neural Network Mathematics",
+    "question": "What is the chain rule, intuitively?",
+    "answer": "The chain rule lets us determine how changing one early calculation affects the final output through many intermediate calculations. Backpropagation is essentially repeated application of the chain rule."
+  },
+  {
+    "id": 14,
+    "category": "Neural Network Mathematics",
+    "question": "What is an activation function?",
+    "answer": "An activation function introduces non-linearity into the network. Without it, no matter how many layers you stacked together, the entire network would behave like one giant linear equation."
+  },
+  {
+    "id": 15,
+    "category": "Neural Network Mathematics",
+    "question": "Why can't we build useful neural networks using only linear equations?",
+    "answer": "Real-world relationships are rarely linear. Language, vision, and reasoning require models capable of representing highly complex, nonlinear patterns."
+  },
+  {
+    "id": 16,
+    "category": "Neural Network Mathematics",
+    "question": "What are logits?",
+    "answer": "Logits are the raw scores produced by the model before converting them into probabilities. Higher logits indicate the model currently favors those predictions."
+  },
+  {
+    "id": 17,
+    "category": "Neural Network Mathematics",
+    "question": "What is Softmax?",
+    "answer": "Softmax converts logits into probabilities that sum to 100%. It turns arbitrary scores into something that can be interpreted as the model's confidence."
+  },
+  {
+    "id": 18,
+    "category": "Neural Network Mathematics",
+    "question": "Why doesn't the model output probabilities directly?",
+    "answer": "Raw computations are easier during training. Softmax is simply the final step that converts those raw scores into meaningful probabilities."
+  },
+  {
+    "id": 19,
+    "category": "Neural Network Mathematics",
+    "question": "What is cross-entropy loss?",
+    "answer": "Cross-entropy measures how surprised the model should be by the correct answer. If the model confidently predicts the wrong token, the loss becomes very large. If it confidently predicts the correct token, the loss becomes very small."
+  },
+  {
+    "id": 20,
+    "category": "Neural Network Mathematics",
+    "question": "Why do people describe training as 'descending a loss landscape'?",
+    "answer": "Imagine every possible combination of weights as a location on a giant landscape. Height represents loss. Training is simply trying to walk downhill until reaching a valley where the model makes accurate predictions."
+  },
+  {
+    "id": 21,
+    "category": "Neural Network Mathematics",
+    "question": "What is a local minimum?",
+    "answer": "A local minimum is a valley that is lower than its immediate surroundings but not necessarily the lowest point on the entire landscape. Training algorithms try to find good minima, even if they aren't the absolute best."
+  },
+  {
+    "id": 22,
+    "category": "Neural Network Mathematics",
+    "question": "What is convergence?",
+    "answer": "A model has converged when additional training produces only tiny improvements because the optimizer has reached a good region of the loss landscape."
+  },
+  {
+    "id": 23,
+    "category": "Neural Network Mathematics",
+    "question": "What is stochastic gradient descent (SGD)?",
+    "answer": "Instead of computing gradients using the entire training dataset—which would be extremely slow—SGD estimates the gradient using small batches of examples, making training vastly more efficient."
+  },
+  {
+    "id": 24,
+    "category": "Neural Network Mathematics",
+    "question": "Why is Adam usually preferred over plain SGD?",
+    "answer": "Adam remembers previous gradients and adapts the learning rate independently for every parameter. This usually results in faster, more stable convergence with minimal tuning."
+  },
+  {
+    "id": 25,
+    "category": "Neural Network Mathematics",
+    "question": "What mathematical operations dominate modern deep learning?",
+    "answer": "Matrix multiplication overwhelmingly dominates computation. This is why specialized hardware like GPUs and TPUs deliver such dramatic performance improvements."
+  }
+]

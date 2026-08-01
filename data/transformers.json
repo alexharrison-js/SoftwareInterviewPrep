@@ -1,0 +1,182 @@
+[
+  {
+    "id": "tr-001",
+    "category": "Transformers",
+    "question": "What problem were Transformers originally designed to solve?",
+    "answer": "Transformers were created to replace recurrent neural networks (RNNs) for sequence modeling. They allow every token to directly attend to every other token, making training far more parallelizable and enabling much larger models."
+  },
+  {
+    "id": "tr-002",
+    "category": "History",
+    "question": "What paper introduced the Transformer architecture?",
+    "answer": "Attention Is All You Need (Vaswani et al., 2017). Nearly every modern LLM—including GPT, Claude, Gemini and Llama—is built on this architecture."
+  },
+  {
+    "id": "tr-003",
+    "category": "Transformers",
+    "question": "Why were RNNs difficult to scale?",
+    "answer": "RNNs process one token at a time, so token N cannot begin until token N-1 finishes. This sequential dependency prevents efficient GPU parallelization."
+  },
+  {
+    "id": "tr-004",
+    "category": "Attention",
+    "question": "What is attention?",
+    "answer": "Attention is a mechanism that lets the model decide which other tokens are most relevant when computing the representation of the current token."
+  },
+  {
+    "id": "tr-005",
+    "category": "Attention",
+    "question": "Give an intuitive analogy for attention.",
+    "answer": "Imagine reading a sentence while highlighting the words most relevant to understanding the current word. Attention is the model automatically learning which words deserve the brightest highlights."
+  },
+  {
+    "id": "tr-006",
+    "category": "Attention",
+    "question": "Why is attention powerful?",
+    "answer": "Instead of compressing an entire sentence into one hidden state like an RNN, every token can directly look at every other token."
+  },
+  {
+    "id": "tr-007",
+    "category": "Self Attention",
+    "question": "What is self-attention?",
+    "answer": "Self-attention means every token attends to other tokens within the same sequence to build its representation."
+  },
+  {
+    "id": "tr-008",
+    "category": "Self Attention",
+    "question": "Why is it called self-attention?",
+    "answer": "Because the model is attending to the same sequence it is currently processing rather than attending to another sequence."
+  },
+  {
+    "id": "tr-009",
+    "category": "Embeddings",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a dense vector representation of a token. Instead of representing words as IDs, the model represents them as points in a high-dimensional space."
+  },
+  {
+    "id": "tr-010",
+    "category": "Embeddings",
+    "question": "Why don't LLMs operate directly on words?",
+    "answer": "Neural networks operate on numbers. Tokens are converted into vectors so mathematical operations like matrix multiplication can be performed."
+  },
+  {
+    "id": "tr-011",
+    "category": "Embeddings",
+    "question": "What property makes embeddings useful?",
+    "answer": "Semantically similar concepts tend to appear near each other in vector space."
+  },
+  {
+    "id": "tr-012",
+    "category": "Attention",
+    "question": "What are Queries (Q)?",
+    "answer": "Queries represent what a token is currently looking for."
+  },
+  {
+    "id": "tr-013",
+    "category": "Attention",
+    "question": "What are Keys (K)?",
+    "answer": "Keys describe what information each token has available."
+  },
+  {
+    "id": "tr-014",
+    "category": "Attention",
+    "question": "What are Values (V)?",
+    "answer": "Values contain the actual information that gets transferred after attention scores are computed."
+  },
+  {
+    "id": "tr-015",
+    "category": "Attention",
+    "question": "Give an analogy for Query, Key and Value.",
+    "answer": "Query is the question you're asking. Keys are the labels on filing cabinets. Values are the documents inside the matching cabinet."
+  },
+  {
+    "id": "tr-016",
+    "category": "Attention",
+    "question": "How are attention scores computed?",
+    "answer": "The query vector is compared against every key vector using a dot product. Larger scores indicate stronger relevance."
+  },
+  {
+    "id": "tr-017",
+    "category": "Attention",
+    "question": "Why is Softmax applied to attention scores?",
+    "answer": "Softmax converts arbitrary attention scores into probabilities that sum to one."
+  },
+  {
+    "id": "tr-018",
+    "category": "Attention",
+    "question": "What happens after Softmax?",
+    "answer": "The probabilities weight the Value vectors. The weighted sum becomes the new representation for the token."
+  },
+  {
+    "id": "tr-019",
+    "category": "Architecture",
+    "question": "What is multi-head attention?",
+    "answer": "Instead of learning one attention pattern, the model learns several independent attention mechanisms simultaneously."
+  },
+  {
+    "id": "tr-020",
+    "category": "Architecture",
+    "question": "Why is multi-head attention useful?",
+    "answer": "Different heads can specialize. One head might learn grammar, another coreference, another long-range dependencies, and another punctuation."
+  },
+  {
+    "id": "tr-021",
+    "category": "Architecture",
+    "question": "What is positional encoding?",
+    "answer": "Because attention itself has no notion of order, positional encoding tells the model where each token appears in the sequence."
+  },
+  {
+    "id": "tr-022",
+    "category": "Architecture",
+    "question": "Why do Transformers need positional information?",
+    "answer": "Without it, the sentence 'Dog bites man' would look identical to 'Man bites dog.'"
+  },
+  {
+    "id": "tr-023",
+    "category": "Architecture",
+    "question": "What is a Transformer block?",
+    "answer": "A Transformer block consists of multi-head attention followed by a feed-forward neural network, with residual connections and layer normalization."
+  },
+  {
+    "id": "tr-024",
+    "category": "Architecture",
+    "question": "Why are Transformer blocks stacked?",
+    "answer": "Each layer builds increasingly abstract representations, allowing higher layers to reason about more complex relationships."
+  },
+  {
+    "id": "tr-025",
+    "category": "Architecture",
+    "question": "What is the feed-forward network inside a Transformer?",
+    "answer": "After attention mixes information between tokens, the feed-forward network independently transforms each token's representation using learned nonlinear functions."
+  },
+  {
+    "id": "tr-026",
+    "category": "Architecture",
+    "question": "What are residual connections?",
+    "answer": "Residual connections allow information to bypass layers, making very deep networks much easier to train."
+  },
+  {
+    "id": "tr-027",
+    "category": "Architecture",
+    "question": "Why are residual connections important?",
+    "answer": "They help gradients flow through many layers, reducing vanishing-gradient problems and enabling extremely deep models."
+  },
+  {
+    "id": "tr-028",
+    "category": "Architecture",
+    "question": "What is layer normalization?",
+    "answer": "Layer normalization keeps activations numerically stable during training, improving convergence."
+  },
+  {
+    "id": "tr-029",
+    "category": "Inference",
+    "question": "During inference, what happens after the model predicts the next token?",
+    "answer": "The predicted token is appended to the sequence and the entire Transformer runs again to predict the following token."
+  },
+  {
+    "id": "tr-030",
+    "category": "Mental Models",
+    "question": "What is the best mental model for a Transformer?",
+    "answer": "Imagine a room full of experts discussing every word in a sentence. Each expert decides which previous words matter most, exchanges information with the others, and together they gradually build a richer understanding before predicting the next token."
+  }
+]

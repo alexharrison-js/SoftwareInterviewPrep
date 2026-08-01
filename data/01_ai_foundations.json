@@ -1,0 +1,254 @@
+[
+  {
+    "id": "af-034",
+    "category": "Learning",
+    "question": "What is a training example?",
+    "answer": "One piece of data presented to the model during training. Examples include one sentence, one image, one question/answer pair, or one code snippet. A training dataset is simply millions or billions of these examples."
+  },
+  {
+    "id": "af-035",
+    "category": "Learning",
+    "question": "What is an epoch?",
+    "answer": "One complete pass through the entire training dataset. If you have one billion training examples and process every one exactly once, you've completed one epoch."
+  },
+  {
+    "id": "af-036",
+    "category": "Learning",
+    "question": "Why don't giant LLMs train for hundreds of epochs?",
+    "answer": "Because the datasets are enormous. Modern LLMs often see most data only once or a few times. Processing trillions of tokens is already extremely expensive."
+  },
+  {
+    "id": "af-037",
+    "category": "Learning",
+    "question": "What is a batch?",
+    "answer": "Instead of updating the model after one example, we process many examples together. That group is called a batch. GPUs are dramatically more efficient when processing batches."
+  },
+  {
+    "id": "af-038",
+    "category": "Learning",
+    "question": "What is batch size?",
+    "answer": "The number of training examples processed before performing one weight update. Larger batches are more efficient but require more GPU memory."
+  },
+  {
+    "id": "af-039",
+    "category": "Learning",
+    "question": "What is a gradient descent step?",
+    "answer": "One complete training cycle: make predictions → calculate loss → compute gradients → update every weight slightly. Millions of these tiny steps eventually produce a capable model."
+  },
+  {
+    "id": "af-040",
+    "category": "Learning",
+    "question": "Why are weights only adjusted a tiny amount each step?",
+    "answer": "Large adjustments would overshoot the optimal solution and make training unstable. Tiny adjustments allow the model to gradually move toward lower loss."
+  },
+  {
+    "id": "af-041",
+    "category": "Optimization",
+    "question": "What is the learning rate?",
+    "answer": "The learning rate determines how large each weight update is during training. Too large causes instability. Too small makes learning painfully slow."
+  },
+  {
+    "id": "af-042",
+    "category": "Optimization",
+    "question": "What happens if the learning rate is too high?",
+    "answer": "Training repeatedly overshoots the best solution. Loss may oscillate wildly or even increase instead of decreasing."
+  },
+  {
+    "id": "af-043",
+    "category": "Optimization",
+    "question": "What happens if the learning rate is too low?",
+    "answer": "Training is stable but extremely slow. It may take many more GPU-hours to reach similar model quality."
+  },
+  {
+    "id": "af-044",
+    "category": "Optimization",
+    "question": "What is gradient descent trying to accomplish?",
+    "answer": "Gradient descent searches for the set of weights that minimizes the loss function by repeatedly moving each weight in the direction that most reduces prediction error."
+  },
+  {
+    "id": "af-045",
+    "category": "Optimization",
+    "question": "Mountain analogy for gradient descent",
+    "answer": "Imagine standing somewhere on a mountain in thick fog. You can't see the valley, but you can feel which direction slopes downhill. Taking many tiny downhill steps eventually gets you near the bottom. The slope you're following is the gradient."
+  },
+  {
+    "id": "af-046",
+    "category": "Optimization",
+    "question": "Why isn't the loss landscape just a simple bowl?",
+    "answer": "Modern neural networks have millions or billions of weights. Each weight adds another dimension, creating an unimaginably high-dimensional optimization landscape filled with valleys, ridges, plateaus, and saddle points."
+  },
+  {
+    "id": "af-047",
+    "category": "Optimization",
+    "question": "What is the difference between a local minimum and a global minimum?",
+    "answer": "A local minimum is lower than nearby points but may not be the best possible solution. A global minimum is the lowest possible loss across the entire optimization landscape."
+  },
+  {
+    "id": "af-048",
+    "category": "Optimization",
+    "question": "Why do neural networks still train successfully despite such a complicated loss landscape?",
+    "answer": "Although the optimization problem is enormous, stochastic gradient descent and adaptive optimizers like Adam reliably find solutions with excellent performance even if they never reach the mathematically perfect minimum."
+  },
+  {
+    "id": "af-049",
+    "category": "Optimization",
+    "question": "What problem does Adam optimizer solve?",
+    "answer": "Different weights often need different learning speeds. Adam automatically adapts the learning rate for every individual weight using statistics gathered from previous gradients, making training faster and more stable."
+  },
+  {
+    "id": "af-050",
+    "category": "Optimization",
+    "question": "Senior software engineer analogy for Adam optimizer",
+    "answer": "Imagine managing a team where every engineer works at a different pace. Instead of assigning identical workloads to everyone each sprint, you learn each engineer's strengths and dynamically adjust assignments. Adam does the same thing for every weight in the neural network."
+  },
+  {
+    "id": "af-051",
+    "category": "Neural Networks",
+    "question": "What is an artificial neuron?",
+    "answer": "An artificial neuron is a tiny mathematical function. It receives several numbers as input, multiplies each input by a weight, adds them together, optionally adds a bias, passes the result through an activation function, and outputs a new number."
+  },
+  {
+    "id": "af-052",
+    "category": "Neural Networks",
+    "question": "Why is it called a neuron?",
+    "answer": "It was inspired by biological neurons, but the similarity is very loose. Artificial neurons are simply mathematical functions connected together into large computation graphs."
+  },
+  {
+    "id": "af-053",
+    "category": "Neural Networks",
+    "question": "What does one neuron actually compute?",
+    "answer": "A neuron computes a weighted sum of its inputs, adds a bias, applies an activation function, and produces one output value that becomes input for later neurons."
+  },
+  {
+    "id": "af-054",
+    "category": "Neural Networks",
+    "question": "What are the inputs to a neuron?",
+    "answer": "The inputs are numbers coming either directly from the data (such as pixels or token embeddings) or from the outputs of neurons in a previous layer."
+  },
+  {
+    "id": "af-055",
+    "category": "Neural Networks",
+    "question": "Why does every input have its own weight?",
+    "answer": "Each weight represents how important that input is. During training, useful inputs tend to receive larger or more influential weights while less useful inputs receive smaller ones."
+  },
+  {
+    "id": "af-056",
+    "category": "Neural Networks",
+    "question": "What is a bias?",
+    "answer": "A bias is an additional learned number added before the activation function. It lets a neuron shift its output independently of its inputs, giving the network greater flexibility."
+  },
+  {
+    "id": "af-057",
+    "category": "Neural Networks",
+    "question": "Senior engineer analogy for a neuron",
+    "answer": "Imagine a Java method that receives several parameters, multiplies each by a configurable coefficient, adds everything together, applies some business logic, and returns one value. A neuron is essentially that method."
+  },
+  {
+    "id": "af-058",
+    "category": "Neural Networks",
+    "question": "What is a neural network?",
+    "answer": "A neural network is simply many neurons connected together in layers. The output of one layer becomes the input to the next, allowing increasingly complex computations."
+  },
+  {
+    "id": "af-059",
+    "category": "Neural Networks",
+    "question": "What is the input layer?",
+    "answer": "The input layer receives the raw numerical representation of the data, such as pixels, audio samples, or token embeddings. It performs no learning itself."
+  },
+  {
+    "id": "af-060",
+    "category": "Neural Networks",
+    "question": "What are hidden layers?",
+    "answer": "Hidden layers are all the layers between the input and output. They gradually transform raw information into increasingly useful representations."
+  },
+  {
+    "id": "af-061",
+    "category": "Neural Networks",
+    "question": "Why are they called hidden layers?",
+    "answer": "Because we don't directly observe or supervise their outputs. Only the final output layer is compared against the correct answer during training."
+  },
+  {
+    "id": "af-062",
+    "category": "Neural Networks",
+    "question": "What is the output layer?",
+    "answer": "The output layer produces the model's final prediction, such as the next token, an image class, or a numerical value."
+  },
+  {
+    "id": "af-063",
+    "category": "Forward Pass",
+    "question": "What is the forward pass?",
+    "answer": "The forward pass is running the network from input to output. Inputs move through every layer until the model produces its prediction."
+  },
+  {
+    "id": "af-064",
+    "category": "Forward Pass",
+    "question": "Does learning happen during the forward pass?",
+    "answer": "No. During the forward pass the network only performs calculations using its current weights. No weights change yet."
+  },
+  {
+    "id": "af-065",
+    "category": "Forward Pass",
+    "question": "What happens immediately after the forward pass?",
+    "answer": "The prediction is compared with the correct answer to compute the loss. That loss is then used to calculate gradients during backpropagation."
+  },
+  {
+    "id": "af-066",
+    "category": "Forward Pass",
+    "question": "Senior engineer analogy for the forward pass",
+    "answer": "Imagine deploying your current backend code and running an integration test suite. The tests execute using today's code exactly as written. Nothing changes yet—you simply observe the results."
+  },
+  {
+    "id": "af-067",
+    "category": "Activation Functions",
+    "question": "Why can't we just stack lots of linear layers together?",
+    "answer": "Because multiple linear transformations collapse into a single linear transformation. Without activation functions, adding more layers provides no additional expressive power."
+  },
+  {
+    "id": "af-068",
+    "category": "Activation Functions",
+    "question": "What is an activation function?",
+    "answer": "An activation function applies a nonlinear transformation to a neuron's output. This allows neural networks to learn complex relationships rather than only straight-line functions."
+  },
+  {
+    "id": "af-069",
+    "category": "Activation Functions",
+    "question": "Why is nonlinearity so important?",
+    "answer": "Real-world relationships are rarely linear. Language, images, speech, and human behavior contain highly nonlinear patterns that cannot be modeled using only straight-line equations."
+  },
+  {
+    "id": "af-070",
+    "category": "Activation Functions",
+    "question": "Senior engineer analogy for activation functions",
+    "answer": "Imagine a service where every request always follows exactly one straight path regardless of input. Adding more identical services changes nothing. Activation functions introduce conditional behavior, making the system capable of much richer decision making."
+  },
+  {
+    "id": "af-071",
+    "category": "Activation Functions",
+    "question": "What is ReLU?",
+    "answer": "ReLU (Rectified Linear Unit) outputs zero for negative values and leaves positive values unchanged. It is simple, fast, and the most commonly used activation function in modern neural networks."
+  },
+  {
+    "id": "af-072",
+    "category": "Activation Functions",
+    "question": "Why is ReLU so popular?",
+    "answer": "ReLU is computationally cheap, helps gradients flow during training, and works well across many different neural network architectures."
+  },
+  {
+    "id": "af-073",
+    "category": "Activation Functions",
+    "question": "What is the 'dying ReLU' problem?",
+    "answer": "If a neuron's output becomes permanently negative, ReLU always outputs zero and the neuron may stop learning because its gradient also becomes zero."
+  },
+  {
+    "id": "af-074",
+    "category": "Activation Functions",
+    "question": "What is sigmoid?",
+    "answer": "Sigmoid maps any number into the range from 0 to 1. It was popular in early neural networks but is used much less today because it suffers from vanishing gradients."
+  },
+  {
+    "id": "af-075",
+    "category": "Activation Functions",
+    "question": "What is tanh?",
+    "answer": "Tanh maps values into the range from -1 to 1. It is centered around zero, making optimization somewhat easier than sigmoid in many situations."
+  }
+]

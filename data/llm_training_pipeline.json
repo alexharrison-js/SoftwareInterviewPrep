@@ -1,0 +1,182 @@
+[
+  {
+    "id": "llm-001",
+    "category": "Training Pipeline",
+    "question": "What are the major stages of building an LLM?",
+    "answer": "A typical pipeline is: (1) collect data, (2) clean and filter it, (3) tokenize it, (4) pretrain the transformer with next-token prediction, (5) instruction fine-tune, (6) align using RLHF or Constitutional AI, (7) evaluate, (8) deploy for inference."
+  },
+  {
+    "id": "llm-002",
+    "category": "Datasets",
+    "question": "Where does pretraining data come from?",
+    "answer": "Large datasets are assembled from sources such as Common Crawl, Wikipedia, books, academic papers, code repositories, public forums, documentation, and licensed datasets."
+  },
+  {
+    "id": "llm-003",
+    "category": "Datasets",
+    "question": "Why can't we simply train on the raw internet?",
+    "answer": "The internet contains spam, duplicated pages, misinformation, malware, low-quality writing, personally identifiable information, and copyrighted material. Extensive filtering and deduplication are required."
+  },
+  {
+    "id": "llm-004",
+    "category": "Datasets",
+    "question": "What is data deduplication?",
+    "answer": "Deduplication removes identical or nearly identical documents so the model does not waste compute memorizing repeated content."
+  },
+  {
+    "id": "llm-005",
+    "category": "Datasets",
+    "question": "Why is data quality often more important than data quantity?",
+    "answer": "A trillion tokens of noisy text can produce a worse model than a smaller corpus of carefully filtered, high-quality text."
+  },
+  {
+    "id": "llm-006",
+    "category": "Tokenization",
+    "question": "What is tokenization?",
+    "answer": "Tokenization converts raw text into tokens that the neural network can process. Tokens are usually words, subwords, or pieces of words rather than individual characters."
+  },
+  {
+    "id": "llm-007",
+    "category": "Tokenization",
+    "question": "Why don't LLMs work directly with characters?",
+    "answer": "Character-level models require much longer sequences and make learning language structure significantly more difficult. Subword tokenization is far more efficient."
+  },
+  {
+    "id": "llm-008",
+    "category": "Tokenization",
+    "question": "What is Byte Pair Encoding (BPE)?",
+    "answer": "BPE builds a vocabulary by repeatedly merging frequently occurring character sequences into larger tokens."
+  },
+  {
+    "id": "llm-009",
+    "category": "Pretraining",
+    "question": "What is pretraining?",
+    "answer": "Pretraining is the massive unsupervised learning stage where the model learns language by predicting the next token across enormous text corpora."
+  },
+  {
+    "id": "llm-010",
+    "category": "Pretraining",
+    "question": "What does the model actually learn during pretraining?",
+    "answer": "It learns grammar, reasoning patterns, facts, coding syntax, language structure, world knowledge, and statistical relationships between concepts."
+  },
+  {
+    "id": "llm-011",
+    "category": "Pretraining",
+    "question": "What is next-token prediction?",
+    "answer": "Given a sequence of previous tokens, the model predicts the probability distribution of the next token. This simple objective teaches surprisingly rich language understanding."
+  },
+  {
+    "id": "llm-012",
+    "category": "Pretraining",
+    "question": "Why does predicting the next token produce intelligence-like behavior?",
+    "answer": "Accurate prediction requires understanding grammar, facts, causality, programming, reasoning, and context. To minimize prediction error, the model learns all of these representations implicitly."
+  },
+  {
+    "id": "llm-013",
+    "category": "Compute",
+    "question": "Why does pretraining require enormous GPU clusters?",
+    "answer": "Modern models contain hundreds of billions of parameters and are trained on trillions of tokens, requiring massive amounts of matrix multiplication."
+  },
+  {
+    "id": "llm-014",
+    "category": "Checkpoints",
+    "question": "What is a checkpoint?",
+    "answer": "A checkpoint is a saved snapshot of all learned weights during training, allowing training to resume later or different versions of the model to be evaluated."
+  },
+  {
+    "id": "llm-015",
+    "category": "Checkpoints",
+    "question": "Why are checkpoints saved frequently?",
+    "answer": "Training runs can last months. Losing a cluster failure without checkpoints would waste enormous compute and money."
+  },
+  {
+    "id": "llm-016",
+    "category": "Instruction Tuning",
+    "question": "After pretraining finishes, is the model ready for ChatGPT-style conversations?",
+    "answer": "No. Pretraining teaches language prediction, not how to follow instructions. Instruction tuning comes next."
+  },
+  {
+    "id": "llm-017",
+    "category": "Instruction Tuning",
+    "question": "What is supervised fine-tuning (SFT)?",
+    "answer": "SFT trains the pretrained model on high-quality prompt-response pairs written by humans so it learns how to behave like a helpful assistant."
+  },
+  {
+    "id": "llm-018",
+    "category": "Instruction Tuning",
+    "question": "How is SFT different from pretraining?",
+    "answer": "Pretraining learns language from raw text. SFT teaches the model how humans expect it to answer questions."
+  },
+  {
+    "id": "llm-019",
+    "category": "Alignment",
+    "question": "Why isn't SFT alone enough?",
+    "answer": "Multiple answers may be correct, but some are safer, clearer, more honest, or more helpful. Alignment methods teach these preferences."
+  },
+  {
+    "id": "llm-020",
+    "category": "Alignment",
+    "question": "What is RLHF?",
+    "answer": "Reinforcement Learning from Human Feedback trains a reward model from human preference rankings, then optimizes the language model to produce responses humans consistently prefer."
+  },
+  {
+    "id": "llm-021",
+    "category": "Alignment",
+    "question": "How does RLHF work at a high level?",
+    "answer": "Humans compare model outputs, a reward model learns those preferences, then reinforcement learning adjusts the LLM to maximize predicted reward."
+  },
+  {
+    "id": "llm-022",
+    "category": "Alignment",
+    "question": "What is Constitutional AI?",
+    "answer": "Instead of relying primarily on human preference labels, Constitutional AI uses a written constitution of principles that models use to critique and improve their own responses."
+  },
+  {
+    "id": "llm-023",
+    "category": "Alignment",
+    "question": "Why did Anthropic develop Constitutional AI?",
+    "answer": "To reduce dependence on expensive human labeling while producing models that are more helpful, harmless, and honest."
+  },
+  {
+    "id": "llm-024",
+    "category": "Evaluation",
+    "question": "How do researchers know whether a new model is better?",
+    "answer": "They evaluate it on benchmark datasets, coding tasks, reasoning problems, factual accuracy, safety evaluations, human preference tests, and internal capability benchmarks."
+  },
+  {
+    "id": "llm-025",
+    "category": "Inference",
+    "question": "What is inference?",
+    "answer": "Inference is using a trained model to generate predictions. Unlike training, the weights are frozen and only forward passes are performed."
+  },
+  {
+    "id": "llm-026",
+    "category": "Inference",
+    "question": "Why is inference much cheaper than training?",
+    "answer": "Inference only performs forward passes. Training requires both forward and backward passes, gradient computation, optimizer updates, and checkpointing."
+  },
+  {
+    "id": "llm-027",
+    "category": "Optimization",
+    "question": "What is quantization?",
+    "answer": "Quantization reduces the numerical precision of model weights (for example, from FP16 to INT8 or 4-bit), greatly reducing memory usage and inference cost."
+  },
+  {
+    "id": "llm-028",
+    "category": "Deployment",
+    "question": "What happens after a model is deployed?",
+    "answer": "Teams continuously monitor latency, reliability, hallucinations, safety metrics, user feedback, GPU utilization, costs, and benchmark performance while developing improved model versions."
+  },
+  {
+    "id": "llm-029",
+    "category": "Mental Models",
+    "question": "What is the best mental model for the entire LLM training pipeline?",
+    "answer": "Think of educating a student. Pretraining is reading every book in the world's libraries. Instruction tuning is learning how to answer exam questions. RLHF or Constitutional AI is learning good manners and judgment. Inference is taking the final exam repeatedly for users."
+  },
+  {
+    "id": "llm-030",
+    "category": "Big Picture",
+    "question": "If someone asks 'How is ChatGPT built?' what is the 30-second answer?",
+    "answer": "Collect and clean enormous text datasets, tokenize them, train a Transformer with next-token prediction until the weights encode language knowledge, instruction-tune it with human-written examples, align it using RLHF or Constitutional AI, evaluate it extensively, then deploy it for inference on GPU clusters."
+  }
+]

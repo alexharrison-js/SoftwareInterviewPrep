@@ -1,0 +1,182 @@
+[
+  {
+    "id": "nn-001",
+    "category": "Neural Networks",
+    "question": "What is a neuron in a neural network?",
+    "answer": "A neuron is a tiny mathematical function. It receives numbers as inputs, multiplies each by a weight, adds a bias, applies an activation function, and outputs a new number. Thousands or billions of these connected together form a neural network."
+  },
+  {
+    "id": "nn-002",
+    "category": "Neural Networks",
+    "question": "What does a neuron actually compute?",
+    "answer": "It computes: output = activation(w1*x1 + w2*x2 + ... + wn*xn + bias). Everything in deep learning ultimately reduces to repeated matrix multiplication followed by nonlinear activation functions."
+  },
+  {
+    "id": "nn-003",
+    "category": "Neural Networks",
+    "question": "Why can't we just stack linear layers forever?",
+    "answer": "Because multiple linear transformations collapse into one larger linear transformation. Without nonlinear activation functions, an arbitrarily deep network is mathematically equivalent to a single layer."
+  },
+  {
+    "id": "nn-004",
+    "category": "Activation Functions",
+    "question": "Why do neural networks need activation functions?",
+    "answer": "Activation functions introduce nonlinearity, allowing networks to learn complicated relationships. Without them, deep networks could only learn straight-line relationships regardless of depth."
+  },
+  {
+    "id": "nn-005",
+    "category": "Activation Functions",
+    "question": "Why is ReLU so commonly used?",
+    "answer": "ReLU(x)=max(0,x). It's computationally cheap, avoids many vanishing-gradient problems, and allows gradients to flow efficiently through deep networks."
+  },
+  {
+    "id": "nn-006",
+    "category": "Activation Functions",
+    "question": "What is the vanishing gradient problem?",
+    "answer": "During backpropagation, gradients can become extremely small after passing through many layers. Earlier layers stop learning because their weight updates become nearly zero."
+  },
+  {
+    "id": "nn-007",
+    "category": "Activation Functions",
+    "question": "What is the exploding gradient problem?",
+    "answer": "Gradients become extremely large during backpropagation, causing unstable weight updates and preventing convergence."
+  },
+  {
+    "id": "nn-008",
+    "category": "Architecture",
+    "question": "What is an input layer?",
+    "answer": "The input layer simply represents the input data. It performs no computation—it just feeds values into the first hidden layer."
+  },
+  {
+    "id": "nn-009",
+    "category": "Architecture",
+    "question": "What is a hidden layer?",
+    "answer": "Hidden layers perform learned transformations on the data. Modern LLMs contain dozens to hundreds of hidden layers."
+  },
+  {
+    "id": "nn-010",
+    "category": "Architecture",
+    "question": "What is the output layer?",
+    "answer": "The output layer produces the network's final prediction. For an LLM, this is typically a probability distribution over the vocabulary."
+  },
+  {
+    "id": "nn-011",
+    "category": "Representation Learning",
+    "question": "What does each hidden layer learn?",
+    "answer": "Lower layers usually learn simple features. Middle layers combine them into more complex concepts. Higher layers learn abstract semantic representations."
+  },
+  {
+    "id": "nn-012",
+    "category": "Representation Learning",
+    "question": "Why is deep learning called 'representation learning'?",
+    "answer": "Each layer builds increasingly useful internal representations of the input. The network automatically learns features rather than requiring humans to engineer them."
+  },
+  {
+    "id": "nn-013",
+    "category": "Matrices",
+    "question": "Why is matrix multiplication everywhere in deep learning?",
+    "answer": "An entire neural-network layer can be computed as a single matrix multiplication instead of evaluating every neuron individually. GPUs are extremely efficient at matrix multiplication."
+  },
+  {
+    "id": "nn-014",
+    "category": "Matrices",
+    "question": "Why are GPUs ideal for deep learning?",
+    "answer": "GPUs contain thousands of small cores capable of performing huge numbers of matrix multiplications simultaneously, which dominate neural-network computation."
+  },
+  {
+    "id": "nn-015",
+    "category": "Training",
+    "question": "What is a forward pass?",
+    "answer": "A forward pass runs the input through every layer of the network to produce predictions."
+  },
+  {
+    "id": "nn-016",
+    "category": "Training",
+    "question": "What is a backward pass?",
+    "answer": "The backward pass computes gradients using backpropagation and updates every weight to reduce future error."
+  },
+  {
+    "id": "nn-017",
+    "category": "Training",
+    "question": "Why is the backward pass usually slower than the forward pass?",
+    "answer": "Backpropagation must compute gradients for every parameter while traversing the network in reverse, making it computationally more expensive."
+  },
+  {
+    "id": "nn-018",
+    "category": "Optimization",
+    "question": "What is stochastic gradient descent (SGD)?",
+    "answer": "SGD updates weights using gradients computed from small batches of training examples instead of the entire dataset."
+  },
+  {
+    "id": "nn-019",
+    "category": "Optimization",
+    "question": "Why do we use mini-batches instead of the entire dataset?",
+    "answer": "Mini-batches dramatically reduce memory requirements, allow GPU parallelism, and introduce helpful randomness that often improves optimization."
+  },
+  {
+    "id": "nn-020",
+    "category": "Optimization",
+    "question": "What is an optimizer?",
+    "answer": "An optimizer is the algorithm that converts gradients into actual weight updates. Examples include SGD, Momentum, RMSProp, and Adam."
+  },
+  {
+    "id": "nn-021",
+    "category": "Optimization",
+    "question": "Why is Adam so popular?",
+    "answer": "Adam automatically adapts learning rates for each parameter using estimates of gradient magnitude and momentum, usually converging faster than plain SGD."
+  },
+  {
+    "id": "nn-022",
+    "category": "Regularization",
+    "question": "What is overfitting?",
+    "answer": "Overfitting occurs when a model memorizes the training data instead of learning general patterns, causing poor performance on unseen data."
+  },
+  {
+    "id": "nn-023",
+    "category": "Regularization",
+    "question": "What is underfitting?",
+    "answer": "Underfitting occurs when a model is too simple or insufficiently trained to capture meaningful patterns in the data."
+  },
+  {
+    "id": "nn-024",
+    "category": "Regularization",
+    "question": "What is dropout?",
+    "answer": "Dropout randomly disables neurons during training, forcing the network to avoid relying too heavily on any one neuron and improving generalization."
+  },
+  {
+    "id": "nn-025",
+    "category": "Regularization",
+    "question": "Why does dropout improve generalization?",
+    "answer": "Because neurons cannot depend on specific neighboring neurons always existing, they learn more robust representations that transfer better to unseen data."
+  },
+  {
+    "id": "nn-026",
+    "category": "Training",
+    "question": "What is batch normalization?",
+    "answer": "Batch normalization normalizes activations during training, improving stability, allowing larger learning rates, and speeding convergence."
+  },
+  {
+    "id": "nn-027",
+    "category": "Training",
+    "question": "What is an epoch?",
+    "answer": "One epoch means the model has processed every training example once."
+  },
+  {
+    "id": "nn-028",
+    "category": "Training",
+    "question": "What is an iteration?",
+    "answer": "One iteration is a single optimizer update, typically after processing one mini-batch."
+  },
+  {
+    "id": "nn-029",
+    "category": "Scaling",
+    "question": "Why do larger neural networks usually perform better?",
+    "answer": "Larger networks have more parameters and therefore greater capacity to represent complex functions, provided sufficient training data and compute."
+  },
+  {
+    "id": "nn-030",
+    "category": "Mental Models",
+    "question": "What is the best mental model for a neural network?",
+    "answer": "Think of it as billions of tiny calculators connected together. Each calculator learns one incredibly small transformation. Training teaches every calculator how to cooperate to solve a much larger problem."
+  }
+]

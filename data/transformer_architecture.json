@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1,
+    "category": "Transformer Architecture",
+    "question": "Why did transformers replace previous neural network architectures for language?",
+    "answer": "Previous architectures like RNNs processed words one at a time, making them slow and poor at remembering distant context. Transformers process every token simultaneously and can directly connect any word to any other word using attention."
+  },
+  {
+    "id": 2,
+    "category": "Transformer Architecture",
+    "question": "What problem does attention solve?",
+    "answer": "Attention allows the model to decide which previous words are relevant to understanding the current word. Instead of treating every earlier token equally, it dynamically focuses on the most important ones."
+  },
+  {
+    "id": 3,
+    "category": "Transformer Architecture",
+    "question": "What is a token?",
+    "answer": "A token is the basic unit processed by an LLM. It is not always a word. It may be a whole word, part of a word, punctuation, whitespace, or even a single character depending on the tokenizer."
+  },
+  {
+    "id": 4,
+    "category": "Transformer Architecture",
+    "question": "Why don't LLMs operate directly on words?",
+    "answer": "There are too many possible words across all languages. Breaking text into reusable tokens gives better vocabulary coverage while keeping the vocabulary manageable."
+  },
+  {
+    "id": 5,
+    "category": "Transformer Architecture",
+    "question": "What happens immediately after tokenization?",
+    "answer": "Each token ID is converted into an embedding—a dense vector of numbers that represents its learned meaning."
+  },
+  {
+    "id": 6,
+    "category": "Transformer Architecture",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a learned vector that places similar concepts close together in high-dimensional space. The model learns these vectors during training."
+  },
+  {
+    "id": 7,
+    "category": "Transformer Architecture",
+    "question": "Why are embeddings so powerful?",
+    "answer": "Because mathematical distance begins to represent semantic similarity. Words like 'doctor' and 'physician' naturally end up near one another even though nobody explicitly programmed that relationship."
+  },
+  {
+    "id": 8,
+    "category": "Transformer Architecture",
+    "question": "If embeddings capture meaning, what information is still missing?",
+    "answer": "Order. The embeddings for 'dog bites man' and 'man bites dog' would otherwise be identical. The transformer needs positional information."
+  },
+  {
+    "id": 9,
+    "category": "Transformer Architecture",
+    "question": "What is positional encoding?",
+    "answer": "Positional encoding tells the model where each token appears in the sequence so it can distinguish different word orders."
+  },
+  {
+    "id": 10,
+    "category": "Transformer Architecture",
+    "question": "What is self-attention?",
+    "answer": "Self-attention allows every token to examine every other token in the sequence and decide how much each one should influence its representation."
+  },
+  {
+    "id": 11,
+    "category": "Transformer Architecture",
+    "question": "Why is it called self-attention?",
+    "answer": "Because every token attends to other tokens within the same input sequence rather than attending to information from somewhere else."
+  },
+  {
+    "id": 12,
+    "category": "Transformer Architecture",
+    "question": "What is the intuition behind queries, keys, and values?",
+    "answer": "Imagine a search engine. The query is what you're looking for. Keys describe what every token contains. Values contain the information that can be retrieved. Attention compares queries against keys to decide which values matter."
+  },
+  {
+    "id": 13,
+    "category": "Transformer Architecture",
+    "question": "What is the query vector?",
+    "answer": "The query represents what the current token is looking for in the rest of the sentence."
+  },
+  {
+    "id": 14,
+    "category": "Transformer Architecture",
+    "question": "What is the key vector?",
+    "answer": "The key represents what information a token offers to other tokens."
+  },
+  {
+    "id": 15,
+    "category": "Transformer Architecture",
+    "question": "What is the value vector?",
+    "answer": "The value is the information that actually gets passed forward if attention determines that token is relevant."
+  },
+  {
+    "id": 16,
+    "category": "Transformer Architecture",
+    "question": "How does attention actually work?",
+    "answer": "Each query is compared with every key using dot products. Larger scores mean greater relevance. Softmax converts those scores into probabilities, which are used to compute a weighted average of the value vectors."
+  },
+  {
+    "id": 17,
+    "category": "Transformer Architecture",
+    "question": "Why do we use Softmax in attention?",
+    "answer": "Softmax converts attention scores into probabilities that sum to one, allowing the model to distribute its attention across multiple tokens."
+  },
+  {
+    "id": 18,
+    "category": "Transformer Architecture",
+    "question": "Why can transformers capture long-range relationships so well?",
+    "answer": "Because every token can directly attend to every other token regardless of distance. The first word can immediately use information from the last word."
+  },
+  {
+    "id": 19,
+    "category": "Transformer Architecture",
+    "question": "What is multi-head attention?",
+    "answer": "Instead of computing one attention pattern, the transformer computes many attention patterns simultaneously. Different heads learn different kinds of relationships, such as grammar, syntax, or semantic meaning."
+  },
+  {
+    "id": 20,
+    "category": "Transformer Architecture",
+    "question": "Why have multiple attention heads?",
+    "answer": "Different relationships matter simultaneously. One head may track pronouns, another punctuation, another subject-verb agreement, and another long-term context."
+  },
+  {
+    "id": 21,
+    "category": "Transformer Architecture",
+    "question": "What is the feed-forward network (FFN)?",
+    "answer": "After attention combines information from other tokens, each token passes through a small neural network that performs additional computation independently."
+  },
+  {
+    "id": 22,
+    "category": "Transformer Architecture",
+    "question": "What is a residual connection?",
+    "answer": "A residual connection adds the original input back into the output of a layer. This helps information and gradients flow through extremely deep networks."
+  },
+  {
+    "id": 23,
+    "category": "Transformer Architecture",
+    "question": "Why are residual connections important?",
+    "answer": "Without them, very deep networks become difficult to train because useful information and gradients gradually disappear as they pass through many layers."
+  },
+  {
+    "id": 24,
+    "category": "Transformer Architecture",
+    "question": "Why are transformers so parallelizable?",
+    "answer": "Unlike RNNs, transformers process all tokens in a sequence simultaneously. This maps extremely well onto GPUs and dramatically accelerates training."
+  },
+  {
+    "id": 25,
+    "category": "Transformer Architecture",
+    "question": "What does a transformer block consist of?",
+    "answer": "A transformer block contains multi-head self-attention, residual connections, layer normalization, and a feed-forward network. Modern LLMs stack dozens or even hundreds of these blocks."
+  },
+  {
+    "id": 26,
+    "category": "Transformer Architecture",
+    "question": "What is the biggest conceptual insight behind transformers?",
+    "answer": "Instead of compressing everything into a single hidden state, every token continuously decides which other tokens matter. Intelligence emerges from dynamically routing information through attention."
+  }
+]

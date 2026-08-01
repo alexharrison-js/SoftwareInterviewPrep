@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "category": "Neural Network Foundations",
+    "question": "What is a neural network, really?",
+    "answer": "A neural network is simply a gigantic mathematical function. It takes numbers as input, performs millions or billions of calculations using learned parameters called weights, and produces numbers as output. Everything—from image recognition to ChatGPT—is just different architectures built from this idea."
+  },
+  {
+    "id": 2,
+    "category": "Neural Network Foundations",
+    "question": "What problem is machine learning actually trying to solve?",
+    "answer": "Instead of a programmer writing explicit rules ('if X then Y'), machine learning automatically discovers the rules from data. Training is simply the process of finding parameters that produce useful predictions."
+  },
+  {
+    "id": 3,
+    "category": "Neural Network Foundations",
+    "question": "What is a parameter (weight)?",
+    "answer": "A weight is just a number inside the model. Imagine every connection between neurons has a tiny volume knob. Training turns billions of those knobs until the network produces useful answers."
+  },
+  {
+    "id": 4,
+    "category": "Neural Network Foundations",
+    "question": "Do weights store facts?",
+    "answer": "No. A weight is just a number. Knowledge emerges from the interaction of billions of weights working together. There is no single 'Paris is the capital of France' weight."
+  },
+  {
+    "id": 5,
+    "category": "Neural Network Foundations",
+    "question": "What is an activation?",
+    "answer": "An activation is the output produced by a neuron after it receives its inputs. Think of it as the neuron saying 'based on what I saw, here's how strongly I think this feature is present.'"
+  },
+  {
+    "id": 6,
+    "category": "Neural Network Foundations",
+    "question": "What is a neuron?",
+    "answer": "A neuron receives numbers, multiplies each by a weight, adds them together, applies an activation function, and outputs a new number. Modern neural networks simply contain billions of these tiny mathematical units."
+  },
+  {
+    "id": 7,
+    "category": "Neural Network Foundations",
+    "question": "Why are neural networks called 'deep'?",
+    "answer": "Depth refers to the number of layers. A shallow network may have only one hidden layer, while a deep network may have dozens or hundreds. Each layer learns increasingly abstract features."
+  },
+  {
+    "id": 8,
+    "category": "Neural Network Foundations",
+    "question": "Why are weights initialized randomly instead of all being zero?",
+    "answer": "If every neuron started with identical weights, every neuron would learn exactly the same thing forever. Random initialization breaks this symmetry so different neurons can specialize."
+  },
+  {
+    "id": 9,
+    "category": "Neural Network Foundations",
+    "question": "What is inference?",
+    "answer": "Inference is simply running the model after training. Inputs flow through the network using fixed weights to produce an answer. No learning occurs."
+  },
+  {
+    "id": 10,
+    "category": "Neural Network Foundations",
+    "question": "What is training?",
+    "answer": "Training is repeatedly showing the network examples, measuring how wrong it is, adjusting the weights slightly, and repeating this process millions or billions of times."
+  },
+  {
+    "id": 11,
+    "category": "Neural Network Foundations",
+    "question": "Why does training require so much compute while inference is much cheaper?",
+    "answer": "Inference performs one forward pass. Training performs a forward pass, computes the error, performs backpropagation, computes gradients, updates every parameter, and repeats this for enormous datasets."
+  },
+  {
+    "id": 12,
+    "category": "Neural Network Foundations",
+    "question": "What is a forward pass?",
+    "answer": "The forward pass is the model making a prediction. Data flows from the input layer through every hidden layer until an output is produced."
+  },
+  {
+    "id": 13,
+    "category": "Neural Network Foundations",
+    "question": "What is a loss function?",
+    "answer": "The loss function measures how wrong the model's prediction was. Training tries to make this number as small as possible."
+  },
+  {
+    "id": 14,
+    "category": "Neural Network Foundations",
+    "question": "What is a gradient?",
+    "answer": "A gradient tells us how changing a weight would affect the loss. Positive means increasing the weight makes things worse. Negative means increasing it improves the model."
+  },
+  {
+    "id": 15,
+    "category": "Neural Network Foundations",
+    "question": "Why are gradients so important?",
+    "answer": "Without gradients we'd know a prediction was wrong but have no idea which of billions of weights should change or by how much."
+  },
+  {
+    "id": 16,
+    "category": "Neural Network Foundations",
+    "question": "What is gradient descent?",
+    "answer": "Gradient descent adjusts every weight in the direction that most reduces the loss. Imagine standing on a mountain in thick fog. The gradient tells you which direction points downhill."
+  },
+  {
+    "id": 17,
+    "category": "Neural Network Foundations",
+    "question": "What is a learning rate?",
+    "answer": "The learning rate controls how large each weight update is. Too small means training is painfully slow. Too large means the model overshoots good solutions and may never converge."
+  },
+  {
+    "id": 18,
+    "category": "Neural Network Foundations",
+    "question": "What is backpropagation?",
+    "answer": "Backpropagation is the algorithm that efficiently computes gradients for every weight in the network by working backwards from the loss."
+  },
+  {
+    "id": 19,
+    "category": "Neural Network Foundations",
+    "question": "What is an optimizer?",
+    "answer": "An optimizer decides exactly how to update the weights using the gradients. SGD, Momentum, RMSProp, and Adam are all different optimization algorithms."
+  },
+  {
+    "id": 20,
+    "category": "Neural Network Foundations",
+    "question": "How does training actually work from start to finish?",
+    "answer": "Initialize random weights → run a forward pass → compute loss → backpropagate gradients → optimizer updates weights → repeat over millions or billions of examples until the model converges."
+  }
+]
