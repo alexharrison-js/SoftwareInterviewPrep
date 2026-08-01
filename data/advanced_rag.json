@@ -1,0 +1,242 @@
+[
+  {
+    "id": "arag-001",
+    "category": "Advanced Retrieval",
+    "question": "Why is a single vector search often insufficient in production RAG systems?",
+    "answer": "Real user questions are ambiguous, incomplete, or poorly phrased. Production systems frequently rewrite queries, perform multiple retrieval passes, rerank results, and merge evidence before calling the LLM."
+  },
+  {
+    "id": "arag-002",
+    "category": "Query Rewriting",
+    "question": "What is query rewriting?",
+    "answer": "Using an LLM or heuristic to transform a user's question into a clearer search query before retrieval."
+  },
+  {
+    "id": "arag-003",
+    "category": "Query Rewriting",
+    "question": "Why can query rewriting improve retrieval quality?",
+    "answer": "Users often ask vague questions. Rewriting expands abbreviations, clarifies intent, and adds context that better matches indexed documents."
+  },
+  {
+    "id": "arag-004",
+    "category": "Multi-Query Retrieval",
+    "question": "What is multi-query retrieval?",
+    "answer": "Generating several alternative search queries for the same question and combining the retrieved results."
+  },
+  {
+    "id": "arag-005",
+    "category": "Multi-Query Retrieval",
+    "question": "Why does multi-query retrieval work?",
+    "answer": "Different phrasings retrieve different documents. Combining them increases recall."
+  },
+  {
+    "id": "arag-006",
+    "category": "HyDE",
+    "question": "What is HyDE (Hypothetical Document Embeddings)?",
+    "answer": "Instead of embedding the user's question, an LLM first generates a hypothetical answer. That answer is embedded and used for retrieval, often producing better semantic matches."
+  },
+  {
+    "id": "arag-007",
+    "category": "HyDE",
+    "question": "Why can HyDE outperform normal retrieval?",
+    "answer": "Generated answers contain richer vocabulary and context than short user questions, leading to better embedding similarity."
+  },
+  {
+    "id": "arag-008",
+    "category": "Parent/Child Retrieval",
+    "question": "What is parent-child retrieval?",
+    "answer": "Small chunks are embedded for precise retrieval, but once matched, the larger parent document is returned to preserve context."
+  },
+  {
+    "id": "arag-009",
+    "category": "Parent/Child Retrieval",
+    "question": "Why is parent-child retrieval useful?",
+    "answer": "Small chunks improve search accuracy while larger parent sections provide enough context for generation."
+  },
+  {
+    "id": "arag-010",
+    "category": "Context Compression",
+    "question": "What is contextual compression?",
+    "answer": "Reducing retrieved documents to only the portions relevant to the user's question before sending them to the LLM."
+  },
+  {
+    "id": "arag-011",
+    "category": "Context Compression",
+    "question": "Why compress retrieved context?",
+    "answer": "Context windows are limited and expensive. Irrelevant text wastes tokens and distracts the model."
+  },
+  {
+    "id": "arag-012",
+    "category": "Reranking",
+    "question": "Why are rerankers usually cross-encoders instead of embedding models?",
+    "answer": "Cross-encoders jointly process the query and candidate document, producing much more accurate relevance scores."
+  },
+  {
+    "id": "arag-013",
+    "category": "Reranking",
+    "question": "Why isn't a cross-encoder used for every document in the database?",
+    "answer": "It is too computationally expensive. Vector search narrows candidates first, then reranking refines them."
+  },
+  {
+    "id": "arag-014",
+    "category": "Hybrid Retrieval",
+    "question": "When is keyword search better than embeddings?",
+    "answer": "Exact identifiers such as product IDs, API names, version numbers, error codes, and filenames."
+  },
+  {
+    "id": "arag-015",
+    "category": "Hybrid Retrieval",
+    "question": "When are embeddings better than keyword search?",
+    "answer": "When semantic meaning matters more than exact wording."
+  },
+  {
+    "id": "arag-016",
+    "category": "GraphRAG",
+    "question": "What is GraphRAG?",
+    "answer": "A retrieval system that combines vector search with graph relationships between entities, allowing retrieval across connected concepts rather than isolated chunks."
+  },
+  {
+    "id": "arag-017",
+    "category": "GraphRAG",
+    "question": "Why can GraphRAG outperform standard RAG?",
+    "answer": "Many questions require understanding relationships between entities rather than retrieving isolated paragraphs."
+  },
+  {
+    "id": "arag-018",
+    "category": "Knowledge Graphs",
+    "question": "How does a knowledge graph differ from a vector database?",
+    "answer": "A vector database stores semantic similarity. A knowledge graph stores explicit relationships between entities."
+  },
+  {
+    "id": "arag-019",
+    "category": "Agentic Retrieval",
+    "question": "What is agentic retrieval?",
+    "answer": "An AI agent decides dynamically which tools, searches, databases, APIs, or documents should be consulted before answering."
+  },
+  {
+    "id": "arag-020",
+    "category": "Agentic Retrieval",
+    "question": "How is agentic retrieval different from standard RAG?",
+    "answer": "Standard RAG follows a fixed pipeline. Agentic retrieval chooses retrieval strategies dynamically."
+  },
+  {
+    "id": "arag-021",
+    "category": "Citation",
+    "question": "Why are citations valuable in enterprise RAG?",
+    "answer": "Users can verify the source of an answer, increasing trust and making hallucinations easier to detect."
+  },
+  {
+    "id": "arag-022",
+    "category": "Evaluation",
+    "question": "What is retrieval recall?",
+    "answer": "The percentage of relevant documents that were successfully retrieved."
+  },
+  {
+    "id": "arag-023",
+    "category": "Evaluation",
+    "question": "What is retrieval precision?",
+    "answer": "The percentage of retrieved documents that are actually relevant."
+  },
+  {
+    "id": "arag-024",
+    "category": "Evaluation",
+    "question": "Why is high recall alone not sufficient?",
+    "answer": "Returning many irrelevant documents increases prompt size and reduces answer quality."
+  },
+  {
+    "id": "arag-025",
+    "category": "Evaluation",
+    "question": "What is groundedness?",
+    "answer": "A measure of whether the generated answer is supported by retrieved evidence."
+  },
+  {
+    "id": "arag-026",
+    "category": "Caching",
+    "question": "Why cache retrieval results?",
+    "answer": "Popular questions often retrieve the same documents repeatedly. Caching reduces latency and compute cost."
+  },
+  {
+    "id": "arag-027",
+    "category": "Caching",
+    "question": "Why must retrieval caches sometimes expire?",
+    "answer": "Underlying documents may change, making cached retrieval results stale."
+  },
+  {
+    "id": "arag-028",
+    "category": "Failure Modes",
+    "question": "Name a common RAG failure mode.",
+    "answer": "Retrieving irrelevant documents because embeddings capture superficial similarity instead of true intent."
+  },
+  {
+    "id": "arag-029",
+    "category": "Failure Modes",
+    "question": "What is retrieval drift?",
+    "answer": "Retrieval quality gradually degrades as new documents are added or the document distribution changes."
+  },
+  {
+    "id": "arag-030",
+    "category": "Failure Modes",
+    "question": "Why can duplicate documents hurt RAG?",
+    "answer": "Duplicates consume context window space and reduce information diversity."
+  },
+  {
+    "id": "arag-031",
+    "category": "Security",
+    "question": "What is prompt injection in RAG?",
+    "answer": "A retrieved document contains malicious instructions attempting to manipulate the model instead of serving as factual context."
+  },
+  {
+    "id": "arag-032",
+    "category": "Security",
+    "question": "Why is prompt injection difficult to defend against?",
+    "answer": "The malicious content arrives through retrieved documents that appear trustworthy to the language model."
+  },
+  {
+    "id": "arag-033",
+    "category": "Security",
+    "question": "How can prompt injection risks be reduced?",
+    "answer": "Document validation, metadata filtering, sandboxing tools, instruction separation, retrieval auditing, and model-side safeguards."
+  },
+  {
+    "id": "arag-034",
+    "category": "Architecture",
+    "question": "Why do production RAG systems usually separate ingestion from serving?",
+    "answer": "Document processing is expensive and asynchronous, while retrieval must be fast and low-latency."
+  },
+  {
+    "id": "arag-035",
+    "category": "Architecture",
+    "question": "What typically happens during document ingestion?",
+    "answer": "Cleaning, parsing, OCR, chunking, metadata extraction, embedding generation, indexing, and validation."
+  },
+  {
+    "id": "arag-036",
+    "category": "Architecture",
+    "question": "What happens during serving?",
+    "answer": "Query rewriting, embedding, retrieval, reranking, prompt assembly, LLM generation, and optional citation generation."
+  },
+  {
+    "id": "arag-037",
+    "category": "Interview",
+    "question": "A larger LLM did not improve answer quality in production. What should you investigate first?",
+    "answer": "Evaluate retrieval quality before changing models. Poor retrieval often limits performance more than model capability."
+  },
+  {
+    "id": "arag-038",
+    "category": "Interview",
+    "question": "Your RAG system suddenly becomes twice as expensive. What areas would you inspect?",
+    "answer": "Prompt length, retrieval count, chunk size, duplicate documents, reranker cost, cache hit rate, embedding requests, and context window usage."
+  },
+  {
+    "id": "arag-039",
+    "category": "Analogy",
+    "question": "Explain advanced RAG using a research assistant analogy.",
+    "answer": "Basic RAG is like asking one librarian for one stack of books. Advanced RAG employs several researchers who search different libraries, compare findings, remove duplicates, rank the best evidence, summarize it, and only then hand it to the expert."
+  },
+  {
+    "id": "arag-040",
+    "category": "Senior AI Engineering",
+    "question": "What distinguishes production RAG engineering from tutorial RAG?",
+    "answer": "Production systems focus on retrieval quality, evaluation, observability, caching, security, latency, cost optimization, indexing pipelines, and continuous improvement rather than simply connecting an LLM to a vector database."
+  }
+]

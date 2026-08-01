@@ -61,7 +61,8 @@
           <p class="eyebrow">Interview drills · senior engineering track</p>
           <h1>Pick a deck.</h1>
           <p class="home-sub">
-            Five drills, one goal: pattern recognition under pressure.
+            Eight interview tracks, one goal: senior-level engineering judgment
+            under pressure.
           </p>
         </div>
 
@@ -88,10 +89,10 @@
 
           <button class="deck-card" data-target="ml">
             <span class="deck-tab">03</span>
-            <span class="deck-title">AI &amp; ML Concepts</span>
+            <span class="deck-title">Machine Learning Concepts</span>
             <span class="deck-desc"
-              >Core ML theory, LLM internals, applied AI-engineering practice,
-              and the milestones that shaped the field.</span
+              >Core ML theory, algorithms, training concepts, and the
+              foundations behind modern machine learning systems.</span
             >
             <span class="deck-meta" id="stat-ml"></span>
           </button>
@@ -138,6 +139,16 @@
               to check first, then follow the trail.</span
             >
             <span class="deck-meta" id="stat-debugging"></span>
+          </button>
+
+          <button class="deck-card" data-target="aiStudies">
+            <span class="deck-tab">08</span>
+            <span class="deck-title">AI Studies</span>
+            <span class="deck-desc">
+              Deep AI engineering curriculum: foundations → neural networks →
+              transformers → LLM systems → RAG → agents → inference → safety.
+            </span>
+            <span class="deck-meta" id="stat-aiStudies"></span>
           </button>
         </nav>
 
@@ -343,6 +354,49 @@
             Retry later
           </button>
           <button class="btn btn-primary" id="mlNextBtn" hidden>
+            Next card →
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ AI STUDIES VIEW ============ -->
+      <section class="view view-drill" id="view-aiStudies" hidden>
+        <div class="deck-header">
+          <button class="back-btn" data-back>← Decks</button>
+          <div class="deck-header-title">AI Studies</div>
+          <span class="stage-pill" id="aiStudiesCategoryPill">
+            Foundations
+          </span>
+        </div>
+
+        <div class="card-stack" id="aiStudiesStack">
+          <article class="card" id="aiStudiesCard">
+            <div class="card-tab">AI</div>
+
+            <div class="card-scroll">
+              <p class="q-desc q-desc-large" id="aiStudiesQuestion">Question</p>
+
+              <div class="solution-zone" id="aiStudiesAnswerZone" hidden>
+                <div class="solution-head">
+                  <span class="solution-label"> Answer </span>
+                </div>
+
+                <p class="answer-text" id="aiStudiesAnswer"></p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn btn-secondary" id="aiStudiesShowAnswerBtn">
+            Show answer
+          </button>
+
+          <button class="btn btn-ghost" id="aiStudiesRetryBtn" hidden>
+            Retry later
+          </button>
+
+          <button class="btn btn-primary" id="aiStudiesNextBtn" hidden>
             Next card →
           </button>
         </div>

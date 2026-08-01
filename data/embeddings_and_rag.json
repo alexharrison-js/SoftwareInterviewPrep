@@ -1,0 +1,86 @@
+[
+  {
+    "id": "embeddings_001",
+    "category": "Embeddings Fundamentals",
+    "question": "What is an embedding and why is it useful?",
+    "answer": "An embedding is a vector representation of data (text, images, audio, etc.) where the position in vector space captures semantic meaning. Similar concepts end up near each other. Instead of matching exact words, systems can compare meaning. For example, 'dog' and 'puppy' have different characters but similar embeddings."
+  },
+  {
+    "id": "embeddings_002",
+    "category": "Embeddings Fundamentals",
+    "question": "What is the intuition behind an embedding vector?",
+    "answer": "Think of an embedding as converting something humans understand into coordinates a machine can compare. A word or document is transformed into a list of numbers. The individual dimensions usually do not have human meanings, but together they encode patterns learned during training."
+  },
+  {
+    "id": "embeddings_003",
+    "category": "Embeddings Fundamentals",
+    "question": "How does a neural network learn useful embeddings?",
+    "answer": "During training, the model adjusts weights so inputs that should be related produce similar vector representations. The network discovers useful features automatically by optimizing an objective function. The embedding space becomes a compressed representation of learned relationships."
+  },
+  {
+    "id": "embeddings_004",
+    "category": "Embeddings Fundamentals",
+    "question": "What is cosine similarity and why is it commonly used with embeddings?",
+    "answer": "Cosine similarity measures the angle between two vectors rather than their absolute magnitude. If two embeddings point in similar directions, they are considered semantically similar. This works well because embedding magnitude is often less important than the pattern of dimensions."
+  },
+  {
+    "id": "rag_001",
+    "category": "Retrieval Augmented Generation",
+    "question": "What problem does RAG solve?",
+    "answer": "RAG solves the problem that LLMs only know information contained in their training data and may hallucinate when asked about unknown information. Instead of retraining the model, RAG retrieves relevant external information at runtime and provides it as context before generation."
+  },
+  {
+    "id": "rag_002",
+    "category": "Retrieval Augmented Generation",
+    "question": "Describe the basic RAG pipeline.",
+    "answer": "A typical RAG pipeline has these steps: 1) ingest documents, 2) split documents into chunks, 3) create embeddings for chunks, 4) store vectors in a vector database, 5) embed the user query, 6) retrieve similar chunks, 7) place retrieved context into the prompt, 8) generate the answer with an LLM."
+  },
+  {
+    "id": "rag_003",
+    "category": "Retrieval Augmented Generation",
+    "question": "Why do RAG systems chunk documents instead of embedding entire documents?",
+    "answer": "Large documents contain many unrelated topics. Chunking creates smaller searchable units so retrieval can find the specific relevant section. The challenge is choosing chunk size: too small loses context, too large introduces irrelevant information."
+  },
+  {
+    "id": "rag_004",
+    "category": "Retrieval Augmented Generation",
+    "question": "What is the difference between a vector database and a traditional relational database?",
+    "answer": "A relational database is optimized for exact structured queries using indexes and relationships. A vector database is optimized for nearest-neighbor search over high-dimensional vectors. Instead of asking 'find rows where name equals X', you ask 'find items whose meaning is closest to this query'."
+  },
+  {
+    "id": "rag_005",
+    "category": "Retrieval Augmented Generation",
+    "question": "Why can a RAG system still hallucinate even when retrieval works?",
+    "answer": "Retrieval only provides information. The LLM still has to correctly interpret and use that information. Hallucinations can happen if retrieved context is irrelevant, incomplete, contradictory, too long, or if the model ignores constraints in the prompt."
+  },
+  {
+    "id": "rag_006",
+    "category": "Retrieval Augmented Generation",
+    "question": "What are common strategies to improve RAG retrieval quality?",
+    "answer": "Common improvements include better chunking, metadata filtering, hybrid search (keyword + vector), query rewriting, reranking retrieved documents, improving embeddings, adding domain-specific retrieval logic, and evaluating retrieval separately from generation."
+  },
+  {
+    "id": "rag_007",
+    "category": "Retrieval Augmented Generation",
+    "question": "What is reranking in a RAG pipeline?",
+    "answer": "Reranking is a second-stage model that takes initially retrieved documents and scores them more precisely for relevance. Vector search is fast but approximate. A reranker is slower but can use deeper language understanding to reorder results."
+  },
+  {
+    "id": "rag_008",
+    "category": "Production AI Engineering",
+    "question": "How would you debug a RAG system that gives incorrect answers?",
+    "answer": "Separate the pipeline into stages: check document ingestion, chunk quality, embedding generation, retrieval accuracy, reranking, prompt construction, context length, and final generation. Do not immediately blame the LLM; many failures originate in retrieval."
+  },
+  {
+    "id": "rag_009",
+    "category": "Production AI Engineering",
+    "question": "What metrics should you evaluate in a RAG system?",
+    "answer": "Evaluate retrieval metrics such as recall@K and precision of retrieved documents, and generation metrics such as faithfulness, answer relevance, and correctness. Production systems also track latency, cost per query, failure rates, and user feedback."
+  },
+  {
+    "id": "rag_010",
+    "category": "Production AI Engineering",
+    "question": "What is the analogy between RAG and human memory?",
+    "answer": "An LLM is like a person with broad general knowledge but imperfect recall. RAG is like giving that person a searchable notebook before answering. The model does not permanently learn the notebook; it uses retrieved information temporarily during reasoning."
+  }
+]

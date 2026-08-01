@@ -1,0 +1,182 @@
+[
+  {
+    "id": "align_001",
+    "category": "Alignment",
+    "question": "What is AI alignment?",
+    "answer": "AI alignment is the field of ensuring AI systems behave according to human intentions and values. The goal is not merely making models capable, but making capable models behave in ways humans actually want."
+  },
+  {
+    "id": "align_002",
+    "category": "Alignment",
+    "question": "Capability and alignment are often described as orthogonal. What does that mean?",
+    "answer": "A model can become more capable without becoming safer. Increasing intelligence alone does not guarantee better alignment with human goals."
+  },
+  {
+    "id": "align_003",
+    "category": "Motivation",
+    "question": "Why has alignment become a major research area?",
+    "answer": "As models become increasingly capable, mistakes become more consequential. Researchers want systems that remain helpful, honest and harmless even as their abilities improve."
+  },
+  {
+    "id": "align_004",
+    "category": "Objectives",
+    "question": "What are the three H's often used to summarize aligned AI?",
+    "answer": "Helpful, Honest and Harmless."
+  },
+  {
+    "id": "align_005",
+    "category": "Training",
+    "question": "Why isn't predicting the next token enough to produce aligned behavior?",
+    "answer": "Next-token prediction only teaches statistical language patterns. It does not directly optimize for truthful, safe or helpful responses."
+  },
+  {
+    "id": "align_006",
+    "category": "RLHF",
+    "question": "What problem does Reinforcement Learning from Human Feedback solve?",
+    "answer": "RLHF fine-tunes models toward responses humans consistently prefer instead of merely statistically likely responses."
+  },
+  {
+    "id": "align_007",
+    "category": "RLHF",
+    "question": "How is human preference data collected?",
+    "answer": "Humans compare multiple model responses and rank which answer is better."
+  },
+  {
+    "id": "align_008",
+    "category": "RLHF",
+    "question": "What is a reward model?",
+    "answer": "A neural network trained to predict which responses humans would prefer."
+  },
+  {
+    "id": "align_009",
+    "category": "RLHF",
+    "question": "Why use a reward model instead of humans for every training step?",
+    "answer": "Human labeling is extremely slow and expensive. The reward model approximates human judgments during reinforcement learning."
+  },
+  {
+    "id": "align_010",
+    "category": "RLHF",
+    "question": "What does PPO optimize during RLHF?",
+    "answer": "It updates the language model to maximize reward while preventing the model from drifting too far from its original behavior."
+  },
+  {
+    "id": "align_011",
+    "category": "Constitutional AI",
+    "question": "What is Constitutional AI?",
+    "answer": "Anthropic's alignment approach in which models critique and revise their own answers according to a written constitution of principles instead of relying solely on human preference labels."
+  },
+  {
+    "id": "align_012",
+    "category": "Constitutional AI",
+    "question": "Why is Constitutional AI attractive?",
+    "answer": "It greatly reduces dependence on large amounts of human feedback while producing more consistent safety behavior."
+  },
+  {
+    "id": "align_013",
+    "category": "Constitutional AI",
+    "question": "How does Constitutional AI work at a high level?",
+    "answer": "Generate an answer → critique the answer using constitutional principles → revise the answer → train the model on the improved response."
+  },
+  {
+    "id": "align_014",
+    "category": "Self-Critique",
+    "question": "Why is self-critique useful?",
+    "answer": "The model learns to recognize weaknesses in its own reasoning before producing the final answer."
+  },
+  {
+    "id": "align_015",
+    "category": "Interpretability",
+    "question": "What is mechanistic interpretability?",
+    "answer": "The study of understanding exactly how neural networks represent information internally rather than treating them as black boxes."
+  },
+  {
+    "id": "align_016",
+    "category": "Interpretability",
+    "question": "Why is interpretability difficult?",
+    "answer": "Large language models contain billions of parameters whose computations are distributed across many neurons rather than isolated components."
+  },
+  {
+    "id": "align_017",
+    "category": "Interpretability",
+    "question": "What is a feature in mechanistic interpretability?",
+    "answer": "A concept represented internally by many neurons working together."
+  },
+  {
+    "id": "align_018",
+    "category": "Interpretability",
+    "question": "What is polysemanticity?",
+    "answer": "A single neuron representing multiple unrelated concepts depending on context."
+  },
+  {
+    "id": "align_019",
+    "category": "Safety",
+    "question": "What is red teaming?",
+    "answer": "Systematically attempting to make models fail so weaknesses can be discovered before deployment."
+  },
+  {
+    "id": "align_020",
+    "category": "Safety",
+    "question": "Why do frontier labs invest heavily in red teaming?",
+    "answer": "Users inevitably discover unexpected behaviors. Labs prefer finding those failures internally first."
+  },
+  {
+    "id": "align_021",
+    "category": "Evaluations",
+    "question": "What are AI evaluations?",
+    "answer": "Benchmarks designed to measure model capability, safety and reliability under standardized conditions."
+  },
+  {
+    "id": "align_022",
+    "category": "Evaluations",
+    "question": "Why aren't benchmark scores sufficient?",
+    "answer": "Models often perform well on benchmarks while still failing on real-world tasks."
+  },
+  {
+    "id": "align_023",
+    "category": "Hallucinations",
+    "question": "What causes hallucinations?",
+    "answer": "The model predicts plausible continuations rather than verifying factual correctness."
+  },
+  {
+    "id": "align_024",
+    "category": "Hallucinations",
+    "question": "Can alignment completely eliminate hallucinations?",
+    "answer": "No. Alignment can reduce hallucinations but cannot completely remove them."
+  },
+  {
+    "id": "align_025",
+    "category": "Truthfulness",
+    "question": "Why is uncertainty calibration important?",
+    "answer": "Good models should express uncertainty instead of confidently inventing answers."
+  },
+  {
+    "id": "align_026",
+    "category": "Scaling",
+    "question": "Why does alignment become harder as models grow?",
+    "answer": "More capable systems develop increasingly complex behaviors that are harder to predict and evaluate."
+  },
+  {
+    "id": "align_027",
+    "category": "Deployment",
+    "question": "Why are safety layers often added after model training?",
+    "answer": "Deployment environments introduce new risks that were impossible to anticipate during training."
+  },
+  {
+    "id": "align_028",
+    "category": "Monitoring",
+    "question": "Why monitor models after deployment?",
+    "answer": "Real-world usage exposes failure modes that internal testing cannot fully predict."
+  },
+  {
+    "id": "align_029",
+    "category": "Anthropic",
+    "question": "What distinguishes Anthropic's research priorities from many other AI companies?",
+    "answer": "Anthropic places unusually strong emphasis on alignment, interpretability, Constitutional AI and responsible deployment alongside capability improvements."
+  },
+  {
+    "id": "align_030",
+    "category": "Interview",
+    "question": "If asked 'What is alignment?' in an interview, what is a good concise answer?",
+    "answer": "Alignment is ensuring increasingly capable AI systems reliably pursue human intentions, remain truthful, avoid harmful behavior, and behave safely even in situations not explicitly encountered during training."
+  }
+]

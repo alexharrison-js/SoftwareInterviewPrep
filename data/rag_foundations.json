@@ -1,0 +1,230 @@
+[
+  {
+    "id": "rag-001",
+    "category": "RAG Foundations",
+    "question": "What problem does Retrieval-Augmented Generation (RAG) solve?",
+    "answer": "LLMs only know what was learned during training. RAG allows a model to retrieve external knowledge at inference time, making answers more accurate, current, and grounded in company-specific data."
+  },
+  {
+    "id": "rag-002",
+    "category": "RAG Foundations",
+    "question": "Explain RAG using an analogy.",
+    "answer": "Imagine taking an open-book exam instead of a closed-book exam. The student's intelligence doesn't change—they simply have access to reference material while answering."
+  },
+  {
+    "id": "rag-003",
+    "category": "RAG Foundations",
+    "question": "What are the four major stages of a RAG system?",
+    "answer": "Document ingestion, embedding/indexing, retrieval, and generation."
+  },
+  {
+    "id": "rag-004",
+    "category": "RAG Foundations",
+    "question": "Describe the RAG pipeline end-to-end.",
+    "answer": "Documents are collected, cleaned, chunked, embedded into vectors, stored in a vector database, retrieved for a user query, inserted into the prompt, and finally answered by the LLM."
+  },
+  {
+    "id": "rag-005",
+    "category": "RAG Foundations",
+    "question": "Why doesn't RAG require retraining the LLM?",
+    "answer": "The model weights never change. Instead, relevant information is supplied inside the prompt at inference time."
+  },
+  {
+    "id": "rag-006",
+    "category": "Embeddings",
+    "question": "Why are embeddings fundamental to RAG?",
+    "answer": "Embeddings convert text into vectors where semantically similar concepts are close together, enabling similarity search."
+  },
+  {
+    "id": "rag-007",
+    "category": "Embeddings",
+    "question": "Why can't keyword search replace embeddings?",
+    "answer": "Keyword search only matches exact words. Embeddings capture semantic meaning, allowing 'automobile' and 'car' to be considered similar."
+  },
+  {
+    "id": "rag-008",
+    "category": "Embeddings",
+    "question": "Explain embedding similarity with an analogy.",
+    "answer": "Imagine a world map where similar ideas live in neighboring cities. Finding related documents becomes finding nearby locations."
+  },
+  {
+    "id": "rag-009",
+    "category": "Chunking",
+    "question": "Why do documents need to be chunked?",
+    "answer": "Entire documents are usually too large for retrieval. Smaller chunks improve retrieval precision and fit within context windows."
+  },
+  {
+    "id": "rag-010",
+    "category": "Chunking",
+    "question": "What happens if chunks are too large?",
+    "answer": "Retrieval becomes noisy because unrelated information is returned together."
+  },
+  {
+    "id": "rag-011",
+    "category": "Chunking",
+    "question": "What happens if chunks are too small?",
+    "answer": "Important context gets split apart, making retrieved passages incomplete."
+  },
+  {
+    "id": "rag-012",
+    "category": "Chunking",
+    "question": "Why do many systems use overlapping chunks?",
+    "answer": "Overlap preserves context across chunk boundaries so important information isn't accidentally split."
+  },
+  {
+    "id": "rag-013",
+    "category": "Vector Databases",
+    "question": "What is a vector database?",
+    "answer": "A database optimized for storing and efficiently searching embedding vectors."
+  },
+  {
+    "id": "rag-014",
+    "category": "Vector Databases",
+    "question": "Why not use a relational database?",
+    "answer": "Traditional SQL databases excel at exact matches, not nearest-neighbor searches in high-dimensional vector space."
+  },
+  {
+    "id": "rag-015",
+    "category": "Retrieval",
+    "question": "What is nearest-neighbor search?",
+    "answer": "Finding the stored embeddings that are closest to the query embedding."
+  },
+  {
+    "id": "rag-016",
+    "category": "Retrieval",
+    "question": "Why is exact nearest-neighbor search often avoided?",
+    "answer": "It becomes computationally expensive for millions or billions of vectors."
+  },
+  {
+    "id": "rag-017",
+    "category": "Retrieval",
+    "question": "What is Approximate Nearest Neighbor (ANN) search?",
+    "answer": "ANN sacrifices a tiny amount of accuracy to achieve dramatically faster retrieval."
+  },
+  {
+    "id": "rag-018",
+    "category": "Retrieval",
+    "question": "Why is ANN acceptable?",
+    "answer": "Finding the exact nearest vector usually isn't necessary—the top few highly similar vectors are sufficient."
+  },
+  {
+    "id": "rag-019",
+    "category": "Similarity",
+    "question": "What is cosine similarity?",
+    "answer": "A metric measuring the angle between vectors rather than their absolute magnitude."
+  },
+  {
+    "id": "rag-020",
+    "category": "Similarity",
+    "question": "Why is cosine similarity commonly used?",
+    "answer": "It measures semantic direction rather than vector length, making it robust for embeddings."
+  },
+  {
+    "id": "rag-021",
+    "category": "Generation",
+    "question": "After retrieval, what happens next?",
+    "answer": "Retrieved chunks are inserted into the prompt so the LLM can answer using grounded information."
+  },
+  {
+    "id": "rag-022",
+    "category": "Generation",
+    "question": "Why does retrieved context reduce hallucinations?",
+    "answer": "The model can reference factual information instead of relying entirely on memorized knowledge."
+  },
+  {
+    "id": "rag-023",
+    "category": "Grounding",
+    "question": "What does 'grounding' mean?",
+    "answer": "Grounding means generating answers based on supplied evidence rather than internal memory alone."
+  },
+  {
+    "id": "rag-024",
+    "category": "Grounding",
+    "question": "Why is grounding important for enterprises?",
+    "answer": "Enterprise documents constantly change and are not part of model training."
+  },
+  {
+    "id": "rag-025",
+    "category": "Metadata",
+    "question": "What is metadata filtering?",
+    "answer": "Restricting retrieval based on attributes such as department, language, document type, customer, or access permissions."
+  },
+  {
+    "id": "rag-026",
+    "category": "Metadata",
+    "question": "Why is metadata filtering important?",
+    "answer": "It reduces irrelevant retrievals and enforces security boundaries."
+  },
+  {
+    "id": "rag-027",
+    "category": "Hybrid Search",
+    "question": "What is hybrid search?",
+    "answer": "Hybrid search combines semantic vector retrieval with traditional keyword search."
+  },
+  {
+    "id": "rag-028",
+    "category": "Hybrid Search",
+    "question": "Why does hybrid search outperform either method alone?",
+    "answer": "Keyword search captures exact identifiers while embeddings capture semantic meaning."
+  },
+  {
+    "id": "rag-029",
+    "category": "Reranking",
+    "question": "What is reranking?",
+    "answer": "A second model scores retrieved documents more accurately before sending them to the LLM."
+  },
+  {
+    "id": "rag-030",
+    "category": "Reranking",
+    "question": "Why use a reranker?",
+    "answer": "Initial retrieval is optimized for speed. Rerankers improve final relevance."
+  },
+  {
+    "id": "rag-031",
+    "category": "Prompt Construction",
+    "question": "Why can't you retrieve hundreds of documents?",
+    "answer": "LLMs have limited context windows, so only the most relevant documents should be included."
+  },
+  {
+    "id": "rag-032",
+    "category": "Prompt Construction",
+    "question": "How many retrieved chunks are commonly included?",
+    "answer": "Typically between 3 and 10 high-quality chunks, depending on chunk size and context window."
+  },
+  {
+    "id": "rag-033",
+    "category": "Evaluation",
+    "question": "How is a RAG system evaluated?",
+    "answer": "Using retrieval precision, recall, groundedness, answer correctness, latency, and user satisfaction."
+  },
+  {
+    "id": "rag-034",
+    "category": "Evaluation",
+    "question": "Why isn't LLM answer quality enough to evaluate RAG?",
+    "answer": "A poor answer may be caused by retrieval failure rather than generation failure."
+  },
+  {
+    "id": "rag-035",
+    "category": "Production",
+    "question": "What is the biggest bottleneck in most production RAG systems?",
+    "answer": "Retrieval quality—not the LLM itself. Better retrieval often improves answers more than a larger model."
+  },
+  {
+    "id": "rag-036",
+    "category": "Production",
+    "question": "What do senior AI engineers spend most of their time improving in RAG?",
+    "answer": "Chunking strategies, embedding quality, metadata, retrieval pipelines, reranking, evaluation, caching, and prompt construction."
+  },
+  {
+    "id": "rag-037",
+    "category": "Analogy",
+    "question": "Explain RAG with a librarian analogy.",
+    "answer": "The LLM is the expert answering questions. The retriever is the librarian who finds the right books first. Better librarians usually produce better answers."
+  },
+  {
+    "id": "rag-038",
+    "category": "Interview",
+    "question": "If a company's RAG system suddenly starts giving incorrect answers after adding new documents, what areas would you investigate?",
+    "answer": "Check document ingestion, chunking, embedding generation, indexing, metadata filtering, retrieval ranking, reranking, prompt formatting, and whether stale embeddings or duplicate chunks were introduced."
+  }
+]

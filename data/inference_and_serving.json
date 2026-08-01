@@ -1,0 +1,122 @@
+[
+  {
+    "id": "infer_001",
+    "category": "Inference Fundamentals",
+    "question": "What is inference?",
+    "answer": "Inference is the process of using a trained model to make predictions. For LLMs, inference means generating tokens one at a time in response to a prompt. Training changes the model's weights; inference uses those weights without modifying them."
+  },
+  {
+    "id": "infer_002",
+    "category": "Inference Fundamentals",
+    "question": "Why is inference usually much cheaper than training?",
+    "answer": "Training requires running billions or trillions of examples through the model while repeatedly updating weights. Inference simply performs forward passes through an already-trained model."
+  },
+  {
+    "id": "infer_003",
+    "category": "Inference Fundamentals",
+    "question": "Why are LLMs slower than traditional software?",
+    "answer": "Traditional software executes deterministic instructions. LLMs perform billions of floating-point operations for every generated token, requiring repeated matrix multiplications across massive neural networks."
+  },
+  {
+    "id": "infer_004",
+    "category": "Token Generation",
+    "question": "Why are LLMs autoregressive?",
+    "answer": "Autoregressive models generate one token at a time. Each newly generated token becomes part of the input for predicting the next token, so generation cannot simply produce the entire answer simultaneously."
+  },
+  {
+    "id": "infer_005",
+    "category": "Token Generation",
+    "question": "Why can't all output tokens be generated in parallel?",
+    "answer": "The model cannot predict token N until tokens 1 through N−1 are known. This sequential dependency is why output generation is fundamentally slower than prompt processing."
+  },
+  {
+    "id": "infer_006",
+    "category": "Latency",
+    "question": "Why is the first generated token usually the slowest?",
+    "answer": "Before generating the first token, the model must process the entire input prompt, build internal attention representations, allocate memory, and initialize caches. After that, only one additional token needs to be processed at each step."
+  },
+  {
+    "id": "infer_007",
+    "category": "KV Cache",
+    "question": "What problem does the KV Cache solve?",
+    "answer": "Without a KV Cache, the transformer would recompute attention for the entire conversation every time a new token is generated. The KV Cache stores previously computed keys and values so only the newest token must be processed."
+  },
+  {
+    "id": "infer_008",
+    "category": "KV Cache",
+    "question": "Give an analogy for the KV Cache.",
+    "answer": "Imagine rereading an entire book every time you wanted to write the next sentence. The KV Cache is like keeping detailed notes so you only read the newest page instead of starting over."
+  },
+  {
+    "id": "infer_009",
+    "category": "KV Cache",
+    "question": "Why does a long conversation consume more GPU memory?",
+    "answer": "Every generated token adds another entry to the KV Cache. Longer contexts require storing more cached attention information, increasing memory usage even though the model weights stay the same."
+  },
+  {
+    "id": "infer_010",
+    "category": "Context Windows",
+    "question": "What is a context window?",
+    "answer": "The context window is the maximum number of tokens the model can consider simultaneously. It includes the prompt, retrieved context, previous conversation, and generated response."
+  },
+  {
+    "id": "infer_011",
+    "category": "Context Windows",
+    "question": "Why aren't context windows infinite?",
+    "answer": "Attention computation and KV Cache memory both grow with context length. Extremely large contexts become prohibitively expensive in computation, memory, and latency."
+  },
+  {
+    "id": "infer_012",
+    "category": "Batching",
+    "question": "What is inference batching?",
+    "answer": "Inference batching groups multiple user requests together so the GPU processes them in a single computation. This improves throughput by utilizing GPU parallelism more effectively."
+  },
+  {
+    "id": "infer_013",
+    "category": "Batching",
+    "question": "What is the tradeoff of batching?",
+    "answer": "Larger batches improve throughput and reduce cost per request but increase waiting time before processing begins, leading to higher latency."
+  },
+  {
+    "id": "infer_014",
+    "category": "Continuous Batching",
+    "question": "What is continuous batching?",
+    "answer": "Continuous batching dynamically adds and removes requests from GPU execution as they finish rather than waiting for an entire fixed batch. This keeps GPU utilization high while reducing latency."
+  },
+  {
+    "id": "infer_015",
+    "category": "Continuous Batching",
+    "question": "Why is continuous batching widely used for LLM serving?",
+    "answer": "Different users generate responses of different lengths. Continuous batching prevents short requests from waiting behind much longer ones and maximizes GPU efficiency."
+  },
+  {
+    "id": "infer_016",
+    "category": "Throughput vs Latency",
+    "question": "What is throughput?",
+    "answer": "Throughput measures how much work a system completes over time, such as requests per second or generated tokens per second."
+  },
+  {
+    "id": "infer_017",
+    "category": "Throughput vs Latency",
+    "question": "What is latency?",
+    "answer": "Latency measures how long a single request takes from submission until completion."
+  },
+  {
+    "id": "infer_018",
+    "category": "Throughput vs Latency",
+    "question": "Why are throughput and latency often competing goals?",
+    "answer": "Improving throughput usually involves batching and maximizing hardware utilization, which can delay individual requests. Minimizing latency often requires processing requests immediately, reducing overall efficiency."
+  },
+  {
+    "id": "infer_019",
+    "category": "Prefix Caching",
+    "question": "What is prefix caching?",
+    "answer": "Prefix caching stores computations for prompts that begin with identical text. When many users share the same system prompt or instructions, the shared computation only needs to happen once."
+  },
+  {
+    "id": "infer_020",
+    "category": "Production Inference",
+    "question": "What mindset distinguishes engineers who build LLM APIs from engineers who build LLM infrastructure?",
+    "answer": "Application engineers think about prompts and user features. Infrastructure engineers think about GPU utilization, batching strategies, KV cache efficiency, latency distributions, memory bandwidth, cost per generated token, and serving millions of requests reliably."
+  }
+]

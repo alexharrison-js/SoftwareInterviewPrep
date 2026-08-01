@@ -1,0 +1,182 @@
+[
+  {
+    "id": "serving-001",
+    "category": "Inference",
+    "question": "Training and inference are very different workloads. Explain the difference.",
+    "answer": "Training is about updating weights using backpropagation. It requires storing activations, gradients and optimizer state, making it extremely memory intensive. Inference performs only a forward pass using fixed weights, so it is much cheaper. AI companies often have separate clusters optimized for each."
+  },
+  {
+    "id": "serving-002",
+    "category": "Inference",
+    "question": "Why is inference latency such a critical metric for LLM applications?",
+    "answer": "Unlike training, inference happens while a user waits. Every additional 100-200ms affects perceived responsiveness. Good serving systems optimize latency without sacrificing throughput."
+  },
+  {
+    "id": "serving-003",
+    "category": "Inference",
+    "question": "What is throughput?",
+    "answer": "Throughput is how many requests a system can process per unit time, usually requests/sec or tokens/sec."
+  },
+  {
+    "id": "serving-004",
+    "category": "Inference",
+    "question": "Explain the latency vs throughput tradeoff.",
+    "answer": "Batching many requests together increases GPU utilization and throughput, but every request waits longer before execution, increasing latency."
+  },
+  {
+    "id": "serving-005",
+    "category": "Inference",
+    "question": "Why are GPUs often underutilized without batching?",
+    "answer": "One user prompt rarely fills thousands of GPU cores. Batching combines multiple requests so the GPU performs useful work on many sequences simultaneously."
+  },
+  {
+    "id": "serving-006",
+    "category": "Inference",
+    "question": "What is request batching?",
+    "answer": "Request batching combines multiple independent prompts into one GPU forward pass. This dramatically improves throughput."
+  },
+  {
+    "id": "serving-007",
+    "category": "Inference",
+    "question": "Why can't batching grow indefinitely?",
+    "answer": "Larger batches require more memory, increase latency, and eventually exceed GPU memory limits."
+  },
+  {
+    "id": "serving-008",
+    "category": "Inference",
+    "question": "What is continuous batching?",
+    "answer": "Instead of waiting for an entire batch to finish, continuous batching allows completed requests to leave while new requests immediately enter, maximizing GPU utilization."
+  },
+  {
+    "id": "serving-009",
+    "category": "Inference",
+    "question": "Why do modern inference engines use continuous batching?",
+    "answer": "Different prompts finish at different times. Continuous batching prevents idle GPU time and significantly increases throughput."
+  },
+  {
+    "id": "serving-010",
+    "category": "Inference",
+    "question": "What is KV Cache?",
+    "answer": "Transformer attention repeatedly needs previous keys and values. KV Cache stores them so each new generated token only computes attention against cached values instead of recomputing everything."
+  },
+  {
+    "id": "serving-011",
+    "category": "Inference",
+    "question": "Analogy: Explain KV Cache.",
+    "answer": "Imagine writing notes during a lecture instead of re-reading the entire textbook after every sentence. KV Cache stores previous work instead of repeating it."
+  },
+  {
+    "id": "serving-012",
+    "category": "Inference",
+    "question": "Why does KV Cache consume so much GPU memory?",
+    "answer": "Every generated token stores keys and values for every transformer layer. Long conversations accumulate enormous caches."
+  },
+  {
+    "id": "serving-013",
+    "category": "Inference",
+    "question": "Why do long conversations become expensive?",
+    "answer": "The KV Cache continually grows with every generated token, increasing memory requirements."
+  },
+  {
+    "id": "serving-014",
+    "category": "Inference",
+    "question": "What happens when GPU memory becomes full?",
+    "answer": "The inference server must reject requests, evict cache entries, spill to slower memory, or reduce concurrency."
+  },
+  {
+    "id": "serving-015",
+    "category": "Inference",
+    "question": "What is speculative decoding?",
+    "answer": "A smaller model predicts several future tokens. The larger model verifies them. Correct predictions allow multiple tokens to be generated at once, increasing speed."
+  },
+  {
+    "id": "serving-016",
+    "category": "Inference",
+    "question": "Why does speculative decoding work?",
+    "answer": "Small models frequently predict the same next tokens as large models. Verifying several tokens is cheaper than generating each individually."
+  },
+  {
+    "id": "serving-017",
+    "category": "Inference",
+    "question": "What is quantization?",
+    "answer": "Quantization stores weights using fewer bits (such as 8-bit or 4-bit instead of FP16), reducing memory usage and increasing inference speed."
+  },
+  {
+    "id": "serving-018",
+    "category": "Inference",
+    "question": "Why does quantization help inference?",
+    "answer": "Smaller weights require less memory bandwidth and fit into GPU memory more efficiently."
+  },
+  {
+    "id": "serving-019",
+    "category": "Inference",
+    "question": "What is model sharding?",
+    "answer": "Large models are split across multiple GPUs because one GPU cannot hold all parameters."
+  },
+  {
+    "id": "serving-020",
+    "category": "Inference",
+    "question": "Why is serving a 400B parameter model difficult?",
+    "answer": "The model requires enormous GPU memory, high-bandwidth networking, sophisticated scheduling, and efficient KV cache management."
+  },
+  {
+    "id": "serving-021",
+    "category": "Inference",
+    "question": "What is tensor parallelism during inference?",
+    "answer": "Each GPU stores part of every layer and collaborates during each forward pass."
+  },
+  {
+    "id": "serving-022",
+    "category": "Inference",
+    "question": "What is pipeline parallelism?",
+    "answer": "Different GPUs execute different layers sequentially, similar to an assembly line."
+  },
+  {
+    "id": "serving-023",
+    "category": "Inference",
+    "question": "Why are communication costs important in multi-GPU inference?",
+    "answer": "Every GPU synchronization adds latency. Poor communication can dominate runtime."
+  },
+  {
+    "id": "serving-024",
+    "category": "Inference",
+    "question": "What is vLLM?",
+    "answer": "vLLM is a high-performance LLM inference engine that introduced PagedAttention, continuous batching, and efficient KV cache management."
+  },
+  {
+    "id": "serving-025",
+    "category": "Inference",
+    "question": "Why has vLLM become widely adopted?",
+    "answer": "It dramatically improves throughput and GPU utilization while reducing memory fragmentation."
+  },
+  {
+    "id": "serving-026",
+    "category": "Inference",
+    "question": "What is PagedAttention?",
+    "answer": "PagedAttention manages KV Cache using virtual-memory-inspired paging, reducing wasted GPU memory."
+  },
+  {
+    "id": "serving-027",
+    "category": "Inference",
+    "question": "Analogy: Explain PagedAttention.",
+    "answer": "Instead of renting one enormous hotel room for every guest, the hotel allocates only the rooms each guest actually needs."
+  },
+  {
+    "id": "serving-028",
+    "category": "Inference",
+    "question": "What limits inference speed more than raw FLOPs?",
+    "answer": "Memory bandwidth frequently becomes the bottleneck because GPUs spend significant time moving weights rather than computing."
+  },
+  {
+    "id": "serving-029",
+    "category": "Inference",
+    "question": "Why do AI engineers carefully monitor tokens/sec?",
+    "answer": "Tokens/sec directly measures inference efficiency and hardware utilization."
+  },
+  {
+    "id": "serving-030",
+    "category": "Inference",
+    "question": "What should a senior AI engineer understand about inference systems?",
+    "answer": "Inference is fundamentally a systems engineering problem involving GPU scheduling, memory bandwidth, networking, batching, caching, and latency optimization—not just machine learning."
+  }
+]

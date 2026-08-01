@@ -1,0 +1,242 @@
+[
+  {
+    "id": "embed-001",
+    "category": "Embeddings",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a dense numerical vector that represents the semantic meaning of an object—such as text, an image, or code—so that similar objects end up close together in vector space."
+  },
+  {
+    "id": "embed-002",
+    "category": "Embeddings",
+    "question": "Why don't LLMs operate directly on words?",
+    "answer": "Neural networks can only perform mathematical operations on numbers. Words must first be converted into vectors that encode meaning."
+  },
+  {
+    "id": "embed-003",
+    "category": "Embeddings",
+    "question": "Explain embeddings using a map analogy.",
+    "answer": "Imagine every concept in the world placed on a giant map. Similar ideas live in neighboring cities, while unrelated ideas are far apart. An embedding is simply the coordinate of one concept on that map."
+  },
+  {
+    "id": "embed-004",
+    "category": "Embeddings",
+    "question": "What does it mean for two embeddings to be 'close'?",
+    "answer": "Their vectors point in similar directions or occupy nearby positions in vector space, indicating semantic similarity."
+  },
+  {
+    "id": "embed-005",
+    "category": "Embeddings",
+    "question": "What information does an embedding capture?",
+    "answer": "Semantic meaning, contextual usage, and relationships learned from large amounts of training data rather than simple keyword overlap."
+  },
+  {
+    "id": "embed-006",
+    "category": "Embeddings",
+    "question": "Why are embeddings called 'dense' vectors?",
+    "answer": "Unlike sparse one-hot vectors, nearly every dimension contains meaningful numerical information."
+  },
+  {
+    "id": "embed-007",
+    "category": "Embeddings",
+    "question": "Why is one-hot encoding unsuitable for modern language models?",
+    "answer": "One-hot vectors treat every word as completely unrelated, become extremely large as vocabularies grow, and contain no notion of semantic similarity."
+  },
+  {
+    "id": "embed-008",
+    "category": "Embeddings",
+    "question": "How do embeddings solve the limitations of one-hot encoding?",
+    "answer": "Words with similar meanings naturally learn similar vector representations, allowing neural networks to generalize."
+  },
+  {
+    "id": "embed-009",
+    "category": "Latent Space",
+    "question": "What is latent space?",
+    "answer": "Latent space is the high-dimensional mathematical space where embeddings live. Distances and directions in this space represent learned relationships between concepts."
+  },
+  {
+    "id": "embed-010",
+    "category": "Latent Space",
+    "question": "Why is latent space difficult to visualize?",
+    "answer": "Modern embeddings often have hundreds or thousands of dimensions, while humans can only directly visualize two or three."
+  },
+  {
+    "id": "embed-011",
+    "category": "Latent Space",
+    "question": "What does each dimension of an embedding represent?",
+    "answer": "Usually nothing directly interpretable. Unlike manually engineered features, neural networks learn abstract dimensions automatically during training."
+  },
+  {
+    "id": "embed-012",
+    "category": "Latent Space",
+    "question": "Why don't engineers manually design embedding dimensions?",
+    "answer": "Modern models learn representations automatically from data. Learned features consistently outperform manually engineered semantic features."
+  },
+  {
+    "id": "embed-013",
+    "category": "Similarity",
+    "question": "How do we determine whether two embeddings are similar?",
+    "answer": "By computing a similarity metric such as cosine similarity, dot product, or Euclidean distance."
+  },
+  {
+    "id": "embed-014",
+    "category": "Similarity",
+    "question": "What is cosine similarity?",
+    "answer": "Cosine similarity measures the angle between two vectors. A smaller angle means the vectors point in similar directions and therefore represent similar meanings."
+  },
+  {
+    "id": "embed-015",
+    "category": "Similarity",
+    "question": "Why is cosine similarity preferred for many embedding models?",
+    "answer": "It focuses on semantic direction rather than vector magnitude, making it robust when embeddings have different lengths."
+  },
+  {
+    "id": "embed-016",
+    "category": "Similarity",
+    "question": "What cosine similarity score indicates identical vector direction?",
+    "answer": "A cosine similarity of 1.0 means the vectors point in exactly the same direction."
+  },
+  {
+    "id": "embed-017",
+    "category": "Similarity",
+    "question": "What cosine similarity score indicates orthogonal vectors?",
+    "answer": "A cosine similarity of 0 means the vectors are perpendicular and share no directional similarity."
+  },
+  {
+    "id": "embed-018",
+    "category": "Similarity",
+    "question": "What does a cosine similarity of -1 represent?",
+    "answer": "The vectors point in opposite directions."
+  },
+  {
+    "id": "embed-019",
+    "category": "Similarity",
+    "question": "Explain cosine similarity using an analogy.",
+    "answer": "Imagine two people walking. Cosine similarity ignores how fast they're walking and only measures whether they're heading in the same direction."
+  },
+  {
+    "id": "embed-020",
+    "category": "Similarity",
+    "question": "What is Euclidean distance?",
+    "answer": "Euclidean distance measures the straight-line distance between two vectors in space."
+  },
+  {
+    "id": "embed-021",
+    "category": "Similarity",
+    "question": "Why is Euclidean distance sometimes less useful than cosine similarity for embeddings?",
+    "answer": "Two vectors can represent similar concepts while having different magnitudes. Euclidean distance penalizes those magnitude differences."
+  },
+  {
+    "id": "embed-022",
+    "category": "Similarity",
+    "question": "What is the dot product?",
+    "answer": "The dot product measures how aligned two vectors are while also incorporating their magnitudes."
+  },
+  {
+    "id": "embed-023",
+    "category": "Similarity",
+    "question": "When does dot product become equivalent to cosine similarity?",
+    "answer": "When all vectors are normalized to have unit length."
+  },
+  {
+    "id": "embed-024",
+    "category": "Normalization",
+    "question": "What is vector normalization?",
+    "answer": "Scaling a vector so its length becomes exactly one while preserving its direction."
+  },
+  {
+    "id": "embed-025",
+    "category": "Normalization",
+    "question": "Why are embeddings frequently normalized?",
+    "answer": "Normalization removes magnitude differences, allowing similarity metrics to focus entirely on semantic direction."
+  },
+  {
+    "id": "embed-026",
+    "category": "Vector Search",
+    "question": "Suppose you have one billion embeddings. Why can't you compare every vector against every other vector?",
+    "answer": "An exhaustive comparison would require billions of similarity calculations per query, making latency far too high for production systems."
+  },
+  {
+    "id": "embed-027",
+    "category": "Vector Search",
+    "question": "What is nearest-neighbor search?",
+    "answer": "Finding the stored vectors that are most similar to a query vector."
+  },
+  {
+    "id": "embed-028",
+    "category": "Vector Search",
+    "question": "What is exact nearest-neighbor search?",
+    "answer": "Comparing the query against every vector in the database to guarantee finding the true nearest neighbors."
+  },
+  {
+    "id": "embed-029",
+    "category": "Vector Search",
+    "question": "Why is exact nearest-neighbor search rarely used in production?",
+    "answer": "Its computational cost grows linearly with the number of vectors, making it too slow for very large databases."
+  },
+  {
+    "id": "embed-030",
+    "category": "ANN",
+    "question": "What is Approximate Nearest Neighbor (ANN) search?",
+    "answer": "ANN algorithms trade a very small amount of accuracy for orders-of-magnitude faster search performance."
+  },
+  {
+    "id": "embed-031",
+    "category": "ANN",
+    "question": "Why is ANN usually acceptable?",
+    "answer": "Applications rarely require the mathematically perfect nearest vector. A nearly identical result is typically indistinguishable while being much faster."
+  },
+  {
+    "id": "embed-032",
+    "category": "ANN",
+    "question": "Explain ANN using an analogy.",
+    "answer": "Instead of searching every house in a city for your friend, you first go to the correct neighborhood. You may not search every house, but you'll almost always find them much faster."
+  },
+  {
+    "id": "embed-033",
+    "category": "HNSW",
+    "question": "What does HNSW stand for?",
+    "answer": "Hierarchical Navigable Small World."
+  },
+  {
+    "id": "embed-034",
+    "category": "HNSW",
+    "question": "What is the core idea behind HNSW?",
+    "answer": "Embeddings are organized into a multi-level graph that allows search to quickly navigate toward nearby vectors instead of examining every vector."
+  },
+  {
+    "id": "embed-035",
+    "category": "HNSW",
+    "question": "Why is HNSW so effective?",
+    "answer": "It dramatically reduces the number of vectors examined while still finding extremely accurate nearest neighbors."
+  },
+  {
+    "id": "embed-036",
+    "category": "HNSW",
+    "question": "Explain HNSW using a road analogy.",
+    "answer": "Finding a nearby restaurant doesn't require driving every residential street. You first take highways, then major roads, then neighborhood streets. HNSW performs a similar hierarchical search."
+  },
+  {
+    "id": "embed-037",
+    "category": "Production",
+    "question": "What is recall in ANN search?",
+    "answer": "Recall measures how often the approximate search successfully finds the same nearest neighbors that an exact search would have found."
+  },
+  {
+    "id": "embed-038",
+    "category": "Production",
+    "question": "Why do engineers tune ANN parameters?",
+    "answer": "To balance recall, search latency, memory usage, and indexing time according to production requirements."
+  },
+  {
+    "id": "embed-039",
+    "category": "Interview",
+    "question": "A vector database suddenly becomes much slower after growing from one million to one hundred million embeddings. What would you investigate?",
+    "answer": "Index type, ANN parameters, graph construction, memory usage, sharding strategy, cache hit rate, hardware limits, and whether exact search is accidentally being used."
+  },
+  {
+    "id": "embed-040",
+    "category": "Interview",
+    "question": "What should every senior AI engineer understand about embeddings?",
+    "answer": "Embeddings are learned representations that enable semantic search. Production performance depends as much on indexing algorithms, ANN search, memory layout, and retrieval engineering as on the embedding model itself."
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "01_ai_foundations",
+    "title": "AI Foundations",
+    "file": "data/01_ai_foundations.json"
+  },
+  {
+    "id": "neural_network_foundations",
+    "title": "Neural Network Foundations",
+    "file": "data/neural_network_foundations.json"
+  },
+  {
+    "id": "neural_network_math",
+    "title": "Neural Network Math",
+    "file": "data/neural_network_math.json"
+  },
+  {
+    "id": "deep_learning",
+    "title": "Deep Learning",
+    "file": "data/deep_learning.json"
+  },
+  {
+    "id": "transformers",
+    "title": "Transformers",
+    "file": "data/transformers.json"
+  },
+  {
+    "id": "transformer_architecture",
+    "title": "Transformer Architecture",
+    "file": "data/transformer_architecture.json"
+  },
+  {
+    "id": "llm_training_pipeline",
+    "title": "LLM Training Pipeline",
+    "file": "data/llm_training_pipeline.json"
+  },
+  {
+    "id": "embeddings_vector_search",
+    "title": "Embeddings & Vector Search",
+    "file": "data/embeddings_and_vector_search.json"
+  },
+  {
+    "id": "rag_foundations",
+    "title": "RAG Foundations",
+    "file": "data/rag_foundations.json"
+  },
+  {
+    "id": "advanced_rag",
+    "title": "Advanced RAG",
+    "file": "data/advanced_rag.json"
+  },
+  {
+    "id": "ai_agents",
+    "title": "AI Agents & Tool Use",
+    "file": "data/ai_agents_and_tool_use.json"
+  },
+  {
+    "id": "mcp",
+    "title": "MCP & Tool Use",
+    "file": "data/mcp_and_tool_use.json"
+  },
+  {
+    "id": "inference",
+    "title": "Inference & Serving",
+    "file": "data/inference_serving.json"
+  },
+  {
+    "id": "ml_systems",
+    "title": "ML Systems Engineering",
+    "file": "data/ml_systems_engineering.json"
+  },
+  {
+    "id": "evaluation_alignment",
+    "title": "AI Evaluation & Alignment",
+    "file": "data/ai_evaluation_and_alignment.json"
+  },
+  {
+    "id": "safety_alignment",
+    "title": "AI Safety & Alignment",
+    "file": "data/ai_safety_and_alignment.json"
+  }
+]

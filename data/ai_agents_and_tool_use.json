@@ -1,0 +1,122 @@
+[
+  {
+    "id": "agents_001",
+    "category": "AI Agents Fundamentals",
+    "question": "What is an AI agent?",
+    "answer": "An AI agent is a system where an LLM is given a goal, the ability to observe information, make decisions, and take actions through tools. The key difference from a chatbot is that an agent can interact with external systems instead of only generating text."
+  },
+  {
+    "id": "agents_002",
+    "category": "AI Agents Fundamentals",
+    "question": "What is the simplest mental model for an AI agent?",
+    "answer": "An agent is an LLM inside a control loop. The loop is: observe the current state, reason about what to do next, call a tool or produce an action, observe the result, and repeat until the goal is achieved."
+  },
+  {
+    "id": "agents_003",
+    "category": "AI Agents Fundamentals",
+    "question": "How is an AI agent different from a traditional backend workflow?",
+    "answer": "Traditional workflows have explicitly programmed branches: if X happens, do Y. Agents use an LLM to dynamically decide which actions to take based on context. The tradeoff is flexibility versus predictability."
+  },
+  {
+    "id": "agents_004",
+    "category": "AI Agents Fundamentals",
+    "question": "What is the ReAct pattern?",
+    "answer": "ReAct stands for Reasoning and Acting. The model alternates between thinking about a problem and taking actions through tools. Example: Thought: 'I need customer data.' Action: call CRM API. Observation: receive customer record. Continue reasoning."
+  },
+  {
+    "id": "agents_005",
+    "category": "AI Agents Fundamentals",
+    "question": "Why are agent loops necessary instead of one large prompt?",
+    "answer": "Many real tasks require multiple steps, external information, verification, and adaptation. A single prompt asks the model to predict an answer immediately. An agent loop allows the model to gather information and adjust its plan."
+  },
+  {
+    "id": "agents_006",
+    "category": "Tool Use",
+    "question": "What is tool calling in an LLM system?",
+    "answer": "Tool calling allows an LLM to request execution of predefined functions. The model does not directly execute code. It outputs a structured request like a function name and arguments, and the application executes the tool and returns the result."
+  },
+  {
+    "id": "agents_007",
+    "category": "Tool Use",
+    "question": "Why should tools have strict schemas?",
+    "answer": "Structured schemas prevent ambiguous requests and make tool execution safer. Instead of allowing free-form text like 'send an email somehow', the model must provide required fields such as recipient, subject, and body."
+  },
+  {
+    "id": "agents_008",
+    "category": "Tool Use",
+    "question": "What is the analogy between tool calling and software engineering?",
+    "answer": "An LLM with tools is similar to a senior engineer with access to APIs. The engineer decides what needs to happen, but the APIs perform the actual deterministic operations."
+  },
+  {
+    "id": "agents_009",
+    "category": "Model Context Protocol",
+    "question": "What problem does MCP solve?",
+    "answer": "Model Context Protocol standardizes how AI models connect to external tools, resources, and data sources. Instead of every AI application creating custom integrations, MCP provides a common interface."
+  },
+  {
+    "id": "agents_010",
+    "category": "Model Context Protocol",
+    "question": "How is MCP similar to an API standard?",
+    "answer": "MCP plays a role similar to HTTP or REST conventions. It defines a predictable communication layer between AI models and external capabilities."
+  },
+  {
+    "id": "agents_011",
+    "category": "Agent Architecture",
+    "question": "What are the major components of a production AI agent system?",
+    "answer": "A production agent typically includes: an LLM, prompt/context manager, tool execution layer, memory system, retrieval system, state manager, evaluator, monitoring, and safety controls."
+  },
+  {
+    "id": "agents_012",
+    "category": "Agent Architecture",
+    "question": "What is the difference between short-term and long-term memory in agents?",
+    "answer": "Short-term memory is the current conversation or task context supplied to the model. Long-term memory stores information across sessions, such as user preferences, previous results, or learned facts, usually through databases or vector stores."
+  },
+  {
+    "id": "agents_013",
+    "category": "Agent Architecture",
+    "question": "Why is agent memory usually implemented outside the model?",
+    "answer": "The model weights are expensive and slow to change. External memory allows information to be updated instantly without retraining. This is similar to how humans use notebooks instead of modifying their brain every time they learn something."
+  },
+  {
+    "id": "agents_014",
+    "category": "Agent Planning",
+    "question": "What is the difference between planning and execution in an agent?",
+    "answer": "Planning decides the sequence of steps needed to achieve a goal. Execution performs those steps. Some agents generate an entire plan first; others continuously plan one step ahead."
+  },
+  {
+    "id": "agents_015",
+    "category": "Agent Planning",
+    "question": "Why can autonomous agents fail?",
+    "answer": "Agents can fail because the model misunderstands the goal, chooses incorrect tools, enters loops, lacks necessary information, takes unsafe actions, or cannot verify whether the result is correct."
+  },
+  {
+    "id": "agents_016",
+    "category": "Agent Reliability",
+    "question": "How do you make AI agents more reliable?",
+    "answer": "Use constrained tools, explicit validation steps, smaller specialized agents, deterministic code for critical operations, human approval gates, evaluation datasets, observability, and clear failure handling."
+  },
+  {
+    "id": "agents_017",
+    "category": "Agent Reliability",
+    "question": "Why are multi-agent systems not always better?",
+    "answer": "Multiple agents introduce communication overhead, increased cost, more failure points, and harder debugging. A single well-designed agent with good tools often outperforms unnecessary complexity."
+  },
+  {
+    "id": "agents_018",
+    "category": "Production AI Engineering",
+    "question": "How would you debug an agent that gets stuck in a loop?",
+    "answer": "Inspect the full trace: prompts, tool calls, tool outputs, intermediate decisions, and termination logic. Common fixes include adding maximum steps, better tool descriptions, validation checks, or changing the planning strategy."
+  },
+  {
+    "id": "agents_019",
+    "category": "Production AI Engineering",
+    "question": "What is an agent evaluation harness?",
+    "answer": "An evaluation harness is a repeatable test framework that measures whether an agent completes tasks correctly. It runs standardized tasks, captures traces, scores outcomes, and compares changes between versions."
+  },
+  {
+    "id": "agents_020",
+    "category": "Production AI Engineering",
+    "question": "What is the biggest misconception about AI agents?",
+    "answer": "The misconception is that agents are magical autonomous workers. In reality, they are software systems combining probabilistic language models with deterministic engineering around them."
+  }
+]

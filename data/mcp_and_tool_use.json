@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mcp_001",
+    "category": "Model Context Protocol",
+    "question": "What problem does MCP solve?",
+    "answer": "Before MCP every AI application invented its own way of exposing tools. MCP standardizes how models discover tools, understand their schemas, invoke them, and receive results. Think of MCP as USB-C for AI tools."
+  },
+  {
+    "id": "mcp_002",
+    "category": "Model Context Protocol",
+    "question": "Why is MCP becoming important?",
+    "answer": "Because one assistant can immediately use thousands of existing tools without every tool vendor writing custom integrations for every model provider."
+  },
+  {
+    "id": "mcp_003",
+    "category": "Architecture",
+    "question": "Who initiates an MCP request?",
+    "answer": "The LLM decides that it needs external information. The client forwards the request to the MCP server, which executes the tool and returns structured results."
+  },
+  {
+    "id": "mcp_004",
+    "category": "Architecture",
+    "question": "What is an MCP server?",
+    "answer": "An MCP server exposes tools and resources using the MCP protocol. Examples include GitHub servers, filesystem servers, database servers and browser automation servers."
+  },
+  {
+    "id": "mcp_005",
+    "category": "Architecture",
+    "question": "What is an MCP client?",
+    "answer": "The application hosting the LLM. It connects to MCP servers, advertises available tools to the model and executes requested tool calls."
+  },
+  {
+    "id": "mcp_006",
+    "category": "Tool Discovery",
+    "question": "How does an LLM know what tools exist?",
+    "answer": "The client sends tool schemas describing names, descriptions, parameters and expected outputs. The model reasons over those descriptions."
+  },
+  {
+    "id": "mcp_007",
+    "category": "Schemas",
+    "question": "Why are JSON schemas important?",
+    "answer": "They precisely define valid inputs. This greatly reduces hallucinated arguments and allows deterministic validation."
+  },
+  {
+    "id": "mcp_008",
+    "category": "Resources",
+    "question": "What are MCP resources?",
+    "answer": "Read-only information sources such as files, documentation or datasets that the model can inspect."
+  },
+  {
+    "id": "mcp_009",
+    "category": "Tools",
+    "question": "How are resources different from tools?",
+    "answer": "Resources provide information. Tools perform actions."
+  },
+  {
+    "id": "mcp_010",
+    "category": "Reasoning",
+    "question": "Why shouldn't every prompt invoke tools?",
+    "answer": "Tool calls increase latency and cost. Good agents only invoke tools when reasoning determines they're necessary."
+  },
+  {
+    "id": "mcp_011",
+    "category": "Planning",
+    "question": "Why do modern agents plan before acting?",
+    "answer": "Planning reduces unnecessary tool calls and lets the model determine dependencies between tasks."
+  },
+  {
+    "id": "mcp_012",
+    "category": "Multi-step Reasoning",
+    "question": "What is an execution plan?",
+    "answer": "A sequence of reasoning and tool invocations that eventually solves the user's request."
+  },
+  {
+    "id": "mcp_013",
+    "category": "Parallelism",
+    "question": "When can tool calls execute in parallel?",
+    "answer": "Whenever they have no dependencies on one another."
+  },
+  {
+    "id": "mcp_014",
+    "category": "Latency",
+    "question": "Why do agent systems often batch tool calls?",
+    "answer": "Reducing round trips dramatically lowers end-to-end latency."
+  },
+  {
+    "id": "mcp_015",
+    "category": "Reliability",
+    "question": "Why should tool failures be recoverable?",
+    "answer": "Agents should retry, fall back to alternatives or explain the failure rather than crashing."
+  },
+  {
+    "id": "mcp_016",
+    "category": "Permissions",
+    "question": "Why do MCP servers expose permissions?",
+    "answer": "Some tools are read-only while others modify external systems. Permission boundaries prevent accidental destructive actions."
+  },
+  {
+    "id": "mcp_017",
+    "category": "Security",
+    "question": "Why shouldn't models receive unrestricted shell access?",
+    "answer": "Models may issue unsafe commands. Restricting permissions limits the blast radius."
+  },
+  {
+    "id": "mcp_018",
+    "category": "Security",
+    "question": "What is prompt injection?",
+    "answer": "Malicious instructions hidden inside retrieved content attempting to manipulate the model."
+  },
+  {
+    "id": "mcp_019",
+    "category": "Security",
+    "question": "How can MCP reduce prompt injection risk?",
+    "answer": "By separating trusted tool metadata from untrusted retrieved content and enforcing permission boundaries."
+  },
+  {
+    "id": "mcp_020",
+    "category": "Anthropic Interviews",
+    "question": "Why does Anthropic emphasize tool use so heavily?",
+    "answer": "Because frontier models increasingly spend more time interacting with external systems than simply generating text. Safe, reliable tool use is a core capability."
+  }
+]

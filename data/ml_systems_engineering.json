@@ -1,0 +1,152 @@
+[
+  {
+    "id": "mlsys_001",
+    "category": "ML Systems",
+    "question": "What is ML Systems Engineering?",
+    "answer": "ML Systems Engineering is the discipline of building reliable, scalable software around machine learning models. Machine learning creates the model; ML systems engineering gets that model into production where thousands or millions of users can use it safely and efficiently."
+  },
+  {
+    "id": "mlsys_002",
+    "category": "ML Systems",
+    "question": "Why isn't training a model the hardest part of production AI?",
+    "answer": "Training is only one stage. Production systems must ingest data, retrain models, version datasets, deploy new models, monitor quality, detect failures, roll back regressions, scale inference, manage costs, and collect feedback. Most engineering effort happens after the model exists."
+  },
+  {
+    "id": "mlsys_003",
+    "category": "ML Lifecycle",
+    "question": "What are the major stages of an ML system lifecycle?",
+    "answer": "Collect data → clean data → engineer features (or embeddings) → train → evaluate → deploy → monitor → collect feedback → retrain. This loop repeats continuously rather than ending after deployment."
+  },
+  {
+    "id": "mlsys_004",
+    "category": "ML Lifecycle",
+    "question": "How is an ML lifecycle different from a traditional software lifecycle?",
+    "answer": "Traditional software changes when developers modify code. ML systems also change when data changes. Data becomes another source of software behavior, so both code and datasets must be versioned."
+  },
+  {
+    "id": "mlsys_005",
+    "category": "Data Engineering",
+    "question": "Why is data often called the fuel of machine learning?",
+    "answer": "The architecture determines what the model can learn, but the data determines what it actually learns. Poor data usually produces poor models regardless of architecture."
+  },
+  {
+    "id": "mlsys_006",
+    "category": "Data Engineering",
+    "question": "Why is data cleaning important?",
+    "answer": "Real-world data contains duplicates, incorrect labels, missing values, formatting inconsistencies, spam, and irrelevant information. Models faithfully learn these mistakes unless they are removed."
+  },
+  {
+    "id": "mlsys_007",
+    "category": "Data Engineering",
+    "question": "What is feature engineering?",
+    "answer": "Feature engineering transforms raw data into representations that models can learn from. Classical ML relied heavily on manual feature engineering, while deep learning learns many useful features automatically."
+  },
+  {
+    "id": "mlsys_008",
+    "category": "Feature Stores",
+    "question": "What is a feature store?",
+    "answer": "A feature store is a centralized system that stores, versions, and serves features for machine learning models so that both training and inference use consistent feature definitions."
+  },
+  {
+    "id": "mlsys_009",
+    "category": "Feature Stores",
+    "question": "Why were feature stores invented?",
+    "answer": "Without feature stores, different teams often compute slightly different versions of the same feature. A feature store ensures consistency and prevents training-serving skew."
+  },
+  {
+    "id": "mlsys_010",
+    "category": "Training",
+    "question": "What is training-serving skew?",
+    "answer": "Training-serving skew occurs when the data or feature calculations used during inference differ from those used during training. The model performs well offline but poorly in production."
+  },
+  {
+    "id": "mlsys_011",
+    "category": "Model Registry",
+    "question": "What is a model registry?",
+    "answer": "A model registry stores trained models together with metadata such as version, metrics, dataset, training code, hyperparameters, approval status, and deployment history."
+  },
+  {
+    "id": "mlsys_012",
+    "category": "Model Registry",
+    "question": "Why should trained models be versioned?",
+    "answer": "Versioning allows engineers to reproduce experiments, compare performance, roll back regressions, audit deployments, and understand exactly which model produced a prediction."
+  },
+  {
+    "id": "mlsys_013",
+    "category": "Deployment",
+    "question": "What is model serving?",
+    "answer": "Model serving is the process of making trained models available through an API or service so applications can request predictions."
+  },
+  {
+    "id": "mlsys_014",
+    "category": "Deployment",
+    "question": "What is the difference between training infrastructure and serving infrastructure?",
+    "answer": "Training infrastructure optimizes for maximum throughput over huge datasets. Serving infrastructure optimizes for low latency, high availability, predictable response times, and efficient resource utilization."
+  },
+  {
+    "id": "mlsys_015",
+    "category": "Deployment",
+    "question": "Why are GPUs often unnecessary during inference?",
+    "answer": "Many production workloads are small enough that CPUs provide lower cost and sufficient latency. GPUs are mainly beneficial when models are very large or throughput requirements are extremely high."
+  },
+  {
+    "id": "mlsys_016",
+    "category": "Inference",
+    "question": "What determines inference latency?",
+    "answer": "Latency depends on model size, hardware, sequence length, batching, network overhead, token generation speed, and caching."
+  },
+  {
+    "id": "mlsys_017",
+    "category": "Inference",
+    "question": "What is batching during inference?",
+    "answer": "Batching combines multiple prediction requests into one GPU computation. This improves throughput but increases waiting time for individual requests."
+  },
+  {
+    "id": "mlsys_018",
+    "category": "Inference",
+    "question": "Why is batching a latency-throughput tradeoff?",
+    "answer": "Waiting for more requests increases GPU efficiency but delays responses. Production systems choose batch sizes based on service-level objectives."
+  },
+  {
+    "id": "mlsys_019",
+    "category": "Monitoring",
+    "question": "Why does an ML system require monitoring beyond CPU and memory?",
+    "answer": "Even healthy infrastructure can produce poor predictions. ML systems monitor prediction quality, drift, confidence, accuracy, latency, token usage, and business metrics in addition to infrastructure health."
+  },
+  {
+    "id": "mlsys_020",
+    "category": "Monitoring",
+    "question": "What is model drift?",
+    "answer": "Model drift occurs when model performance gradually degrades because the real-world data distribution changes after training."
+  },
+  {
+    "id": "mlsys_021",
+    "category": "Monitoring",
+    "question": "Give an analogy for model drift.",
+    "answer": "Imagine studying last year's traffic patterns to optimize routes. If a new bridge opens, your knowledge becomes outdated. The model hasn't changed—the world has."
+  },
+  {
+    "id": "mlsys_022",
+    "category": "Monitoring",
+    "question": "What is data drift?",
+    "answer": "Data drift means the statistical properties of incoming data have changed compared with training data. Detecting drift often signals that retraining may be needed."
+  },
+  {
+    "id": "mlsys_023",
+    "category": "Deployment Strategies",
+    "question": "What is canary deployment for ML models?",
+    "answer": "A canary deployment routes a small percentage of production traffic to a new model. Engineers compare metrics before increasing traffic gradually."
+  },
+  {
+    "id": "mlsys_024",
+    "category": "Deployment Strategies",
+    "question": "Why are A/B tests useful for machine learning?",
+    "answer": "Offline metrics don't always predict user satisfaction. A/B testing compares models using real user behavior while limiting deployment risk."
+  },
+  {
+    "id": "mlsys_025",
+    "category": "Senior AI Engineering",
+    "question": "What distinguishes an ML engineer from an ML systems engineer?",
+    "answer": "An ML engineer focuses primarily on building better models. An ML systems engineer focuses on making those models reliable, observable, scalable, reproducible, deployable, and maintainable in production."
+  }
+]

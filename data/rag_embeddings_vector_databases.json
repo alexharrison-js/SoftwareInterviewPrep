@@ -1,0 +1,182 @@
+[
+  {
+    "id": "rag-001",
+    "category": "Embeddings",
+    "question": "What is an embedding?",
+    "answer": "An embedding is a vector of numbers representing the meaning of some data. In LLM applications, text is converted into vectors where semantically similar concepts are positioned closer together in mathematical space."
+  },
+  {
+    "id": "rag-002",
+    "category": "Embeddings",
+    "question": "Why are embeddings useful for AI applications?",
+    "answer": "Embeddings allow computers to compare meaning instead of exact words. A search for 'automobile' can find documents containing 'car' because their vectors are mathematically similar."
+  },
+  {
+    "id": "rag-003",
+    "category": "Embeddings",
+    "question": "What is the difference between keyword search and semantic search?",
+    "answer": "Keyword search matches exact terms. Semantic search uses embeddings to find information based on meaning and context."
+  },
+  {
+    "id": "rag-004",
+    "category": "Embeddings",
+    "question": "How does an embedding model create vectors?",
+    "answer": "An embedding model is a neural network trained to map inputs like text into numerical vectors where similar meanings produce similar vector locations."
+  },
+  {
+    "id": "rag-005",
+    "category": "Embeddings",
+    "question": "What does a dimension in an embedding vector represent?",
+    "answer": "A dimension is a learned feature of meaning. Humans cannot usually interpret individual dimensions, but together they encode semantic relationships."
+  },
+  {
+    "id": "rag-006",
+    "category": "Embeddings",
+    "question": "Why are embeddings usually hundreds or thousands of dimensions?",
+    "answer": "Language contains enormous complexity. A high-dimensional space gives the model enough capacity to represent subtle relationships between concepts."
+  },
+  {
+    "id": "rag-007",
+    "category": "Similarity",
+    "question": "How do we compare two embeddings?",
+    "answer": "The most common method is cosine similarity, which measures the angle between vectors rather than their absolute magnitude."
+  },
+  {
+    "id": "rag-008",
+    "category": "Similarity",
+    "question": "What does a high cosine similarity score mean?",
+    "answer": "It means the vectors point in similar directions, suggesting the underlying concepts are semantically related."
+  },
+  {
+    "id": "rag-009",
+    "category": "Vector Databases",
+    "question": "What is a vector database?",
+    "answer": "A vector database stores embeddings and provides efficient similarity search to retrieve items with nearby vectors."
+  },
+  {
+    "id": "rag-010",
+    "category": "Vector Databases",
+    "question": "Why can't we just store embeddings in a normal SQL database?",
+    "answer": "Traditional databases are optimized for exact lookups and structured queries. Vector databases are optimized for approximate nearest-neighbor search across millions or billions of vectors."
+  },
+  {
+    "id": "rag-011",
+    "category": "Vector Databases",
+    "question": "What is nearest neighbor search?",
+    "answer": "Nearest neighbor search finds the vectors closest to a query vector based on a similarity metric."
+  },
+  {
+    "id": "rag-012",
+    "category": "Vector Databases",
+    "question": "Why is approximate nearest neighbor search used?",
+    "answer": "Exact search requires comparing against every vector, which becomes too slow at large scale. Approximate methods trade tiny accuracy loss for massive speed improvements."
+  },
+  {
+    "id": "rag-013",
+    "category": "Vector Databases",
+    "question": "What is an index in a vector database?",
+    "answer": "An index is a data structure that organizes vectors so similarity searches can be performed efficiently without scanning every item."
+  },
+  {
+    "id": "rag-014",
+    "category": "RAG",
+    "question": "What does RAG stand for?",
+    "answer": "RAG stands for Retrieval-Augmented Generation. It combines information retrieval with an LLM to provide the model with relevant external knowledge before generating an answer."
+  },
+  {
+    "id": "rag-015",
+    "category": "RAG",
+    "question": "Why was RAG invented?",
+    "answer": "LLMs have limited knowledge, can hallucinate, and may not know private company information. RAG lets them access external documents at inference time."
+  },
+  {
+    "id": "rag-016",
+    "category": "RAG",
+    "question": "What problem does RAG solve compared with fine-tuning?",
+    "answer": "RAG allows knowledge to be updated by changing the document database instead of retraining the model. Fine-tuning changes behavior; RAG supplies information."
+  },
+  {
+    "id": "rag-017",
+    "category": "RAG",
+    "question": "What are the major steps in a RAG pipeline?",
+    "answer": "The pipeline is: ingest documents, split into chunks, create embeddings, store vectors, retrieve relevant chunks for a query, insert them into a prompt, and generate a response."
+  },
+  {
+    "id": "rag-018",
+    "category": "RAG",
+    "question": "Why do we chunk documents before creating embeddings?",
+    "answer": "Embedding an entire document loses detail because the vector represents too much information. Smaller chunks create more precise retrieval."
+  },
+  {
+    "id": "rag-019",
+    "category": "RAG",
+    "question": "What is chunk size in RAG?",
+    "answer": "Chunk size determines how much text is grouped into each embedding. Smaller chunks improve precision while larger chunks preserve more context."
+  },
+  {
+    "id": "rag-020",
+    "category": "RAG",
+    "question": "Why use overlapping chunks?",
+    "answer": "Overlap prevents important information from being split across chunk boundaries and lost during retrieval."
+  },
+  {
+    "id": "rag-021",
+    "category": "RAG",
+    "question": "What is the retrieval step in RAG?",
+    "answer": "Retrieval converts the user's question into an embedding, searches the vector database, and returns the most relevant document chunks."
+  },
+  {
+    "id": "rag-022",
+    "category": "RAG",
+    "question": "What is context augmentation?",
+    "answer": "Context augmentation means adding retrieved information into the prompt so the LLM can use it when generating its answer."
+  },
+  {
+    "id": "rag-023",
+    "category": "RAG",
+    "question": "Why can RAG still hallucinate?",
+    "answer": "The retrieved information may be wrong, incomplete, irrelevant, or the model may incorrectly interpret the provided context."
+  },
+  {
+    "id": "rag-024",
+    "category": "RAG",
+    "question": "What is hybrid search?",
+    "answer": "Hybrid search combines traditional keyword search with semantic vector search to improve retrieval quality."
+  },
+  {
+    "id": "rag-025",
+    "category": "RAG",
+    "question": "What is reranking in a RAG system?",
+    "answer": "Reranking uses a second model to score retrieved documents more accurately and reorder them before sending context to the LLM."
+  },
+  {
+    "id": "rag-026",
+    "category": "Production AI",
+    "question": "Why is retrieval quality often more important than the LLM itself?",
+    "answer": "A powerful model with poor context produces poor answers. A smaller model with excellent retrieved information can outperform a larger model with irrelevant context."
+  },
+  {
+    "id": "rag-027",
+    "category": "Production AI",
+    "question": "How do you evaluate a RAG system?",
+    "answer": "You evaluate retrieval accuracy, answer correctness, hallucination rate, latency, cost, and whether retrieved documents actually support generated answers."
+  },
+  {
+    "id": "rag-028",
+    "category": "Production AI",
+    "question": "What is the difference between RAG and traditional search?",
+    "answer": "Traditional search returns documents to humans. RAG retrieves documents and gives them to an LLM that synthesizes an answer."
+  },
+  {
+    "id": "rag-029",
+    "category": "Mental Models",
+    "question": "What is the best analogy for RAG?",
+    "answer": "An LLM is like a brilliant employee who read many books but forgot some details. RAG gives that employee an open filing cabinet containing the exact documents needed for the current question."
+  },
+  {
+    "id": "rag-030",
+    "category": "Big Picture",
+    "question": "Explain a production RAG system in 30 seconds.",
+    "answer": "Documents are split into chunks, converted into embeddings, stored in a vector database, retrieved when users ask questions, inserted into the LLM context window, and used by the model to generate grounded answers."
+  }
+]

@@ -207,9 +207,19 @@
   // Data loading
   // ============================================================
   const state = {
-    dsa: null, // { patternPool, problems }
-    sysdesign: null, // [ ... ]
-    ml: null, // [ ... ]
+    dsa: null,
+    sysdesign: null,
+    ml: null,
+    cloud: null,
+    leadership: null,
+    estimation: null,
+    debugging: null,
+
+    // New unified AI curriculum deck.
+    // This combines the AI engineering curriculum JSON files into one
+    // continuous study path while leaving ml.json untouched.
+    aiStudies: null,
+
     lang: localStorage.getItem("drillset_lang") || "python",
     decks: {},
   };
@@ -225,7 +235,65 @@
     ? document.currentScript.src
     : window.location.href;
   const BASE_URL = SCRIPT_URL.substring(0, SCRIPT_URL.lastIndexOf("/") + 1);
+  const AI_STUDIES_FILES = [
+    "01_ai_foundations.json",
 
+    "neural_network_foundations.json",
+    "neural_network_math.json",
+    "neural_networks.json",
+    "deep_learning.json",
+
+    "transformer_architecture.json",
+    "transformers.json",
+
+    "llm_training_pipeline.json",
+
+    "embeddings_and_vector_search.json",
+    "embeddings_and_rag.json",
+    "rag_foundations.json",
+    "rag_embeddings_vector_databases.json",
+    "advanced_rag.json",
+
+    "mcp_and_tool_use.json",
+    "ai_agents_and_tool_use.json",
+
+    "inference_and_serving.json",
+    "inference_serving.json",
+
+    "ml_systems_engineering.json",
+
+    "ai_evaluation_and_alignment.json",
+    "ai_safety_and_alignment.json",
+  ];
+
+  async function loadAiStudiesDeck() {
+    const decks = await Promise.all(
+      AI_STUDIES_FILES.map((file) => fetchJson(`data/${file}`)),
+    );
+
+    /*
+    Preserve curriculum order by file ordering.
+
+    Each JSON deck contains cards:
+    {
+      id,
+      category,
+      question,
+      answer
+    }
+
+    Prefix IDs with filename to prevent collisions.
+  */
+    return decks.flatMap((cards, index) => {
+      const source = AI_STUDIES_FILES[index];
+
+      return cards.map((card) => ({
+        ...card,
+        id: `ai_${source.replace(".json", "")}_${card.id}`,
+        curriculumOrder: index,
+      }));
+    });
+  }
   async function fetchJson(path) {
     const url = BASE_URL + path;
     const res = await fetch(url);
@@ -245,16 +313,25 @@
   }
 
   async function loadData() {
-    const [dsa, sysdesign, ml, cloud, leadership, estimation, debugging] =
-      await Promise.all([
-        fetchJson("data/dsa.json"),
-        fetchJson("data/system_design.json"),
-        fetchJson("data/ml.json"),
-        fetchJson("data/cloud.json"),
-        fetchJson("data/leadership.json"),
-        fetchJson("data/estimation.json"),
-        fetchJson("data/debugging.json"),
-      ]);
+    const [
+      dsa,
+      sysdesign,
+      ml,
+      cloud,
+      leadership,
+      estimation,
+      debugging,
+      aiStudies,
+    ] = await Promise.all([
+      fetchJson("data/dsa.json"),
+      fetchJson("data/system_design.json"),
+      fetchJson("data/ml.json"),
+      fetchJson("data/cloud.json"),
+      fetchJson("data/leadership.json"),
+      fetchJson("data/estimation.json"),
+      fetchJson("data/debugging.json"),
+      loadAiStudiesDeck(),
+    ]);
     state.dsa = dsa;
     state.sysdesign = sysdesign;
     state.ml = ml;
@@ -262,7 +339,7 @@
     state.leadership = leadership;
     state.estimation = estimation;
     state.debugging = debugging;
-
+    state.aiStudies = aiStudies;
     const dsaPatternById = new Map(
       dsa.problems.map((p) => [p.id, p.correctPattern]),
     );
@@ -276,6 +353,9 @@
     );
     const debuggingCategoryById = new Map(
       debugging.map((c) => [c.id, c.category]),
+    );
+    const aiStudiesCategoryById = new Map(
+      aiStudies.map((c) => [c.id, c.category]),
     );
 
     state.decks.dsa = new Deck(
@@ -314,6 +394,17 @@
       debugging.map((c) => c.id),
       (id) => debuggingCategoryById.get(id),
     );
+    state.decks.aiStudies = new Deck(
+      "drillset_aiStudies_state",
+      aiStudies.map((c) => c.id),
+      (id) => aiStudiesCategoryById.get(id),
+    );
+
+    // Preserve curriculum progression on first pass.
+    // After completion, Deck will still reshuffle.
+    state.decks.aiStudies.order = aiStudies.map((c) => c.id);
+    state.decks.aiStudies.pointer = 0;
+    state.decks.aiStudies._save();
 
     renderHomeStats();
   }
@@ -344,6 +435,9 @@
     document.getElementById("stat-debugging").textContent = deckStatLine(
       state.decks.debugging,
     );
+    document.getElementById("stat-aiStudies").textContent = deckStatLine(
+      state.decks.aiStudies,
+    );
   }
 
   // ============================================================
@@ -358,6 +452,7 @@
     "leadership",
     "estimation",
     "debugging",
+    "aiStudies",
   ];
 
   function showView(name) {
@@ -375,6 +470,8 @@
       estimationDeckUI.render(state.decks.estimation.current());
     if (name === "debugging")
       renderDebugScenario(state.decks.debugging.current());
+    if (name === "aiStudies")
+      aiStudiesDeckUI.render(state.decks.aiStudies.current());
     window.scrollTo(0, 0);
   }
 
@@ -1030,13 +1127,23 @@
     }
     function render(id) {
       const c = getCard(id);
-      document.getElementById(`${prefix}CategoryPill`).textContent = c.category;
+
+      const pill = document.getElementById(`${prefix}CategoryPill`);
+
+      if (prefix === "aiStudies") {
+        pill.textContent = `${c.category} · Module ${c.curriculumOrder + 1}`;
+      } else {
+        pill.textContent = c.category;
+      }
+
       document.getElementById(`${prefix}Question`).textContent = c.question;
       document.getElementById(`${prefix}Answer`).textContent = c.answer;
+
       document.getElementById(`${prefix}AnswerZone`).hidden = true;
       document.getElementById(`${prefix}ShowAnswerBtn`).hidden = false;
       document.getElementById(`${prefix}RetryBtn`).hidden = true;
       document.getElementById(`${prefix}NextBtn`).hidden = true;
+
       document.querySelector(`#${prefix}Card .card-scroll`).scrollTop = 0;
     }
 
@@ -1083,6 +1190,11 @@
     "estimation",
     () => state.estimation,
     () => state.decks.estimation,
+  );
+  const aiStudiesDeckUI = initSimpleDeck(
+    "aiStudies",
+    () => state.aiStudies,
+    () => state.decks.aiStudies,
   );
 
   // ============================================================
@@ -1215,11 +1327,9 @@
         <p><strong>Couldn't load flashcard data.</strong></p>
         <p style="color:#8B93A7;">${escapeHtml(err.message)}</p>
         <p style="color:#8B93A7;">
-          If you're running this locally by double-clicking index.html (a file:// URL), serve the
-          folder over http instead, e.g. <code>python3 -m http.server</code> then open
-          http://localhost:8000. If this is on GitHub Pages, confirm the data/ folder was actually
-          pushed to the repo and check the exact file URL (e.g. yoursite/data/dsa.json) loads directly
-          in the browser without a 404.
+          Confirm the data folder contains all JSON decks including the AI Studies
+          curriculum files. If running locally, serve the folder over http instead
+          of opening index.html directly.
         </p>
       </div>`;
   });

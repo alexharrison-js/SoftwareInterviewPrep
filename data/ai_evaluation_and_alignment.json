@@ -1,0 +1,122 @@
+[
+  {
+    "id": "eval_001",
+    "category": "Evaluation Fundamentals",
+    "question": "Why is evaluation one of the most important parts of AI engineering?",
+    "answer": "Machine learning is probabilistic. Unlike traditional software where unit tests often have a single correct answer, AI systems produce varying outputs. Good evaluation tells you whether a change actually improved the system or simply changed its behavior."
+  },
+  {
+    "id": "eval_002",
+    "category": "Evaluation Fundamentals",
+    "question": "What is an evaluation dataset?",
+    "answer": "An evaluation dataset is a collection of representative tasks with expected outcomes. Every time the model or prompts change, the system is run against the same dataset so performance can be compared objectively."
+  },
+  {
+    "id": "eval_003",
+    "category": "Evaluation Fundamentals",
+    "question": "Why shouldn't you evaluate a model using its training data?",
+    "answer": "Because the model may simply memorize examples instead of demonstrating general understanding. Good evaluation measures performance on previously unseen data."
+  },
+  {
+    "id": "eval_004",
+    "category": "Evaluation Fundamentals",
+    "question": "What is overfitting from an evaluation perspective?",
+    "answer": "Overfitting occurs when improvements only help the evaluation benchmark itself instead of improving general performance. This is why evaluation sets should evolve over time."
+  },
+  {
+    "id": "eval_005",
+    "category": "Benchmarks",
+    "question": "What is an AI benchmark?",
+    "answer": "A benchmark is a standardized collection of tasks used to compare models. Examples include reasoning, coding, mathematics, factual knowledge, and reading comprehension benchmarks."
+  },
+  {
+    "id": "eval_006",
+    "category": "Benchmarks",
+    "question": "Why can benchmark scores be misleading?",
+    "answer": "A model can optimize specifically for benchmark tasks without becoming generally smarter. High benchmark performance does not always translate to better performance in real-world applications."
+  },
+  {
+    "id": "eval_007",
+    "category": "Human Feedback",
+    "question": "Why is human evaluation still necessary?",
+    "answer": "Many qualities such as helpfulness, clarity, creativity, tone, and usefulness cannot be measured with simple automated metrics. Humans provide judgments that automated metrics often cannot."
+  },
+  {
+    "id": "eval_008",
+    "category": "Human Feedback",
+    "question": "What is preference data?",
+    "answer": "Preference data consists of humans comparing multiple model responses and selecting the better one. Instead of labeling an answer simply correct or incorrect, humans express which response they prefer."
+  },
+  {
+    "id": "eval_009",
+    "category": "RLHF",
+    "question": "What does RLHF stand for?",
+    "answer": "Reinforcement Learning from Human Feedback. It is a process where human preferences are collected, a reward model learns those preferences, and reinforcement learning adjusts the language model to produce outputs humans prefer."
+  },
+  {
+    "id": "eval_010",
+    "category": "RLHF",
+    "question": "What problem does RLHF solve?",
+    "answer": "Pretraining teaches a model to predict text, not necessarily to be helpful. RLHF teaches the model which kinds of responses humans actually prefer after the language understanding has already been learned."
+  },
+  {
+    "id": "eval_011",
+    "category": "RLHF",
+    "question": "Give an analogy for RLHF.",
+    "answer": "Imagine a medical student who has memorized every textbook. Pretraining is learning the textbooks. RLHF is experienced doctors supervising bedside manner and correcting how the student interacts with patients."
+  },
+  {
+    "id": "eval_012",
+    "category": "Alignment",
+    "question": "What does AI alignment mean?",
+    "answer": "Alignment is the process of making AI systems behave according to human intentions, values, and safety objectives rather than simply maximizing predictive accuracy."
+  },
+  {
+    "id": "eval_013",
+    "category": "Alignment",
+    "question": "Why is alignment difficult?",
+    "answer": "Human preferences are complex, sometimes contradictory, and highly dependent on context. There is rarely a single objective definition of the 'correct' answer."
+  },
+  {
+    "id": "eval_014",
+    "category": "Constitutional AI",
+    "question": "What is Constitutional AI?",
+    "answer": "Instead of relying only on human feedback, Constitutional AI uses a written set of principles that the model follows when critiquing and improving its own responses. The constitution acts as a consistent guide for behavior."
+  },
+  {
+    "id": "eval_015",
+    "category": "Constitutional AI",
+    "question": "Why can Constitutional AI scale better than RLHF alone?",
+    "answer": "Human reviewers are expensive and limited. A constitutional approach allows the model to perform much of the critique process itself while still following explicit principles."
+  },
+  {
+    "id": "eval_016",
+    "category": "Production Evaluation",
+    "question": "What is evaluation-driven development?",
+    "answer": "Evaluation-driven development means every prompt change, retrieval improvement, model upgrade, or architecture change is measured against an automated evaluation suite before deployment."
+  },
+  {
+    "id": "eval_017",
+    "category": "Production Evaluation",
+    "question": "Why are prompts version controlled in production systems?",
+    "answer": "Prompt changes can significantly affect behavior. Version control allows engineers to reproduce previous results, compare versions, and safely roll back regressions."
+  },
+  {
+    "id": "eval_018",
+    "category": "Production Evaluation",
+    "question": "What should be logged for every production LLM request?",
+    "answer": "Typical logs include prompts, retrieved context, model version, parameters, tool calls, latency, token usage, costs, outputs, and evaluation results. These logs make debugging possible."
+  },
+  {
+    "id": "eval_019",
+    "category": "Safety",
+    "question": "What is a safety evaluation?",
+    "answer": "A safety evaluation measures whether a model follows policies regarding harmful requests, privacy, security, bias, and other behaviors beyond simple correctness."
+  },
+  {
+    "id": "eval_020",
+    "category": "Senior AI Engineering",
+    "question": "What mindset separates junior AI engineers from senior AI engineers?",
+    "answer": "Junior engineers ask, 'Can I make the model work?' Senior engineers ask, 'Can I measure whether it works, detect regressions, understand failures, and safely improve it over time?' Evaluation becomes the engineering discipline that enables reliable AI systems."
+  }
+]
